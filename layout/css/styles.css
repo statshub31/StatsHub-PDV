@@ -1,0 +1,289 @@
+/* 769 Largura Computador */
+/* 768 Largura SmartPhone */
+
+:root {
+  --primary-color: #000e40;
+  --secondary-color: #e9e9e9;
+}
+
+* {
+  margin: 0px;
+  padding: 0px;
+}
+
+html {
+  background-image: url(/layout/images/config/background.avif);
+  background-position: center;
+  background-size: 100% 100%;
+  background-repeat: no-repeat;
+}
+
+@media only screen and (min-width: 769px) {
+  header {
+    background-color: #000e40;
+    width: 100vw;
+    height: 60px;
+  }
+
+  #header {}
+
+  #logo-header {
+    float: left;
+    width: 80px;
+    position: relative;
+    left: 25px;
+  }
+
+  #logo-header a {
+    width: 100%;
+    height: 100%;
+    display: table;
+  }
+
+  #logo-header a img {
+    width: 100%;
+  }
+
+  #menu-header {
+    padding: 10px;
+    float: right;
+  }
+
+  #menu-header a {
+    margin: 0px 10px;
+    font-size: 35px;
+    color: white !important;
+  }
+
+  #menu-footer {
+    display: none;
+  }
+
+  footer {
+    background-color: var(--secondary-color);
+    margin: auto;
+    margin: auto;
+    width: calc(80vw - 30px);
+    padding: 15px;
+  }
+}
+
+@media only screen and (max-width: 768px) {
+  header {
+    background-color: var(--primary-color);
+    width: 100vw;
+    height: 60px;
+  }
+
+  #header {}
+
+  #logo-header {
+    float: left;
+    width: 80px;
+    position: relative;
+    left: 25px;
+  }
+
+  #logo-header a {
+    width: 100%;
+    height: 100%;
+    display: table;
+  }
+
+  #logo-header a img {
+    width: 100%;
+  }
+
+  #menu-header {
+    display: none;
+  }
+
+  #menu-footer {
+    background-color: var(--primary-color);
+    width: 100vw;
+    height: 60px;
+    position: fixed;
+    bottom: 0px;
+    z-index: 2;
+  }
+
+  #menu-footer {
+    font-size: 45px;
+    display: flex;
+    justify-content: space-around;
+  }
+
+  #menu-footer a {
+    margin: 0 calc(5vw / 5);
+    color: white !important;
+  }
+
+  #menu-footer a:nth-child(3) {
+    position: relative;
+    bottom: 35px;
+  }
+
+  .menu-option-center {
+    border: 7px solid !important;
+    padding: 10px !important;
+    border-radius: 53px !important;
+    background-color: var(--primary-color);
+  }
+
+  footer {
+    background-color: var(--secondary-color);
+    margin: auto;
+    height: 150px;
+    margin: auto;
+    width: calc(80vw - 30px);
+    padding: 15px;
+  }
+
+  .none {
+    display: none;
+  }
+}
+
+
+main {
+  min-height: 800px;
+  background-color: var(--secondary-color);
+  margin: auto;
+  width: calc(80vw - 30px);
+  padding: 15px;
+}
+
+
+
+/* MENU.PHP */
+
+#menu-nav {
+  display: flex;
+  justify-content: space-around;
+  max-width: 100%;
+  overflow: auto;
+  padding: 10px;
+}
+
+#menu-nav li {
+  list-style: none;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  align-content: center;
+  align-items: center;
+  margin-right: 2vw;
+  padding: 10px;
+}
+
+#menu-nav li:hover {
+  cursor: pointer;
+  border-bottom: 3px solid var(--primary-color);
+}
+
+#menu-nav li svg {
+  margin-right: 10px;
+  font-size: 25px;
+  color: var(--primary-color);
+}
+
+.nav-select {
+  border-bottom: 3px solid var(--primary-color);
+}
+
+#menu-list {
+  display: flex;
+  flex-wrap: wrap; /* Permite que os itens quebrem para a próxima linha conforme necessário */
+  justify-content: space-between; /* Distribui os itens uniformemente ao longo do eixo principal */
+}
+
+.card {
+  width: calc(20% - 10px); /* Defina a largura de cada card, levando em conta o espaço entre eles */
+  margin-bottom: 20px; /* Adiciona um espaço entre as linhas de cards */
+}
+
+
+/* COMPLEMENT.PHP */
+
+.complement-option {
+  display: flex;
+  align-content: center;
+  align-items: center;
+}
+.complement-option input {
+  margin-right: 5px; 
+}
+.complement-description h6 {
+  margin: 0px;
+  padding: 0px;
+}
+
+.complement-description {
+  width: 100% !important;
+}
+
+legend {
+  text-align: center;
+}
+
+.list-quantity {
+  display: inline-flex !important;
+}
+
+.list-group-item .decrease {
+  width: 35%;
+  margin-right: 10px;
+}
+
+.list-group-item .increase {
+  width: 35%;
+}
+
+.list-group-item .quantity {
+  width: 30%;
+  text-align: center;
+  margin-right: 10px !important;
+}
+
+
+/* CART.PHP */
+
+.cart-product {
+  width: 15vw;
+}
+
+.cart-product .product-photo {
+  width: 15vw;
+}
+
+.cart-product .product-photo img {
+  width: 100%;
+  height: 100%;
+}
+.cart-product .product-name {
+  text-align: center;
+}
+
+
+.list-quantity {
+  display: inline-flex !important;
+}
+
+div .decrease {
+  width: 35%;
+  margin-right: 10px;
+}
+
+div .increase {
+  width: 35%;
+}
+
+div .quantity {
+  width: 30%;
+  text-align: center;
+  margin-right: 10px !important;
+}
+
+.v {
+  float: right;
+}

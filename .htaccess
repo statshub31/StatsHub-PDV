@@ -1,0 +1,35 @@
+RewriteEngine On
+
+# Bloqueia o acesso direto a pastas e subpastas chamadas "engine"
+RewriteRule ^engine/ - [F]
+RewriteRule ^init/ - [F]
+RewriteRule ^logs/ - [F]
+
+# Impedir o acesso direto a arquivos .php
+RewriteCond %{THE_REQUEST} \.php
+RewriteRule ^ - [F]
+
+# Redirecionar para cadastro.php se a URL contiver /campanha
+RewriteRule ^gamecode(/.*)?$ gamecode.php$1 [L]
+RewriteRule ^gametele(/.*)?$ gametele.php$1 [L]
+RewriteRule ^plans/success(/.*)?$ plans/success.php$1 [L]
+RewriteRule ^gameresponse(/.*)?$ gameresponse.php$1 [L]
+
+# Redireciona de /campanha&sub=valor para /campanha/valor
+RewriteCond %{QUERY_STRING} ^sub=([^&]+)$
+RewriteRule ^gamecode$ /gamecode/%1? [R=301,L]
+
+RewriteRule ^admin/deletegame(/.*)?$ admin/deletegame.php$1 [L]
+
+RewriteRule ^menu(/.*)?$ menu.php$1 [L]
+RewriteRule ^complement(/.*)?$ complement.php$1 [L]
+RewriteRule ^cart(/.*)?$ cart.php$1 [L]
+RewriteRule ^login(/.*)?$ login.php$1 [L]
+RewriteRule ^myaccount(/.*)?$ myaccount.php$1 [L]
+RewriteRule ^logout(/.*)?$ logout.php$1 [L]
+RewriteRule ^favorite(/.*)?$ favorite.php$1 [L]
+
+# Redirecionar todas as outras solicitações para index.php
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^(.*)$ index.php/$1 [L]
