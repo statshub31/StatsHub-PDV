@@ -19,7 +19,22 @@ RewriteRule ^gameresponse(/.*)?$ gameresponse.php$1 [L]
 RewriteCond %{QUERY_STRING} ^sub=([^&]+)$
 RewriteRule ^gamecode$ /gamecode/%1? [R=301,L]
 
-RewriteRule ^admin/deletegame(/.*)?$ admin/deletegame.php$1 [L]
+RewriteRule ^panel/settings(/.*)?$ panel/settings.php$1 [L]
+RewriteRule ^panel/users(/.*)?$ panel/users.php$1 [L]
+RewriteRule ^panel/userupdate(/.*)?$ panel/userupdate.php$1 [L]
+RewriteRule ^panel/useradd(/.*)?$ panel/useradd.php$1 [L]
+RewriteRule ^panel/teams(/.*)?$ panel/teams.php$1 [L]
+RewriteRule ^panel/index(/.*)?$ panel/index.php$1 [L]
+RewriteRule ^panel/products(/.*)?$ panel/products.php$1 [L]
+RewriteRule ^panel/tickets(/.*)?$ panel/tickets.php$1 [L]
+RewriteRule ^panel/ticketadd(/.*)?$ panel/ticketadd.php$1 [L]
+RewriteRule ^panel/productadd(/.*)?$ panel/productadd.php$1 [L]
+RewriteRule ^panel/additional(/.*)?$ panel/additional.php$1 [L]
+RewriteRule ^panel/additionaladd(/.*)?$ panel/additionaladd.php$1 [L]
+RewriteRule ^panel/reports(/.*)?$ panel/reports.php$1 [L]
+
+RewriteRule ^panel/complements(/.*)?$ panel/complements.php$1 [L]
+RewriteRule ^panel/complementadd(/.*)?$ panel/complementadd.php$1 [L]
 
 RewriteRule ^menu(/.*)?$ menu.php$1 [L]
 RewriteRule ^complement(/.*)?$ complement.php$1 [L]

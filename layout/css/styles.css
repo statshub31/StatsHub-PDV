@@ -4,6 +4,11 @@
 :root {
   --primary-color: #000e40;
   --secondary-color: #e9e9e9;
+  --border-color: #ced4da;
+}
+
+table {
+  border: 1px solid #ced4da;
 }
 
 * {
@@ -11,11 +16,11 @@
   padding: 0px;
 }
 
-html {
-  background-image: url(/layout/images/config/background.avif);
-  background-position: center;
-  background-size: 100% 100%;
-  background-repeat: no-repeat;
+body {
+  background-image: url(/layout/images/config/background.avif) !important;
+  background-position: center !important;
+  background-size: 110vw 100vw !important;
+  background-repeat: no-repeat !important;
 }
 
 @media only screen and (min-width: 769px) {
@@ -59,12 +64,21 @@ html {
     display: none;
   }
 
+  main {
+    min-height: 500px;
+  }
+
   footer {
     background-color: var(--secondary-color);
     margin: auto;
     margin: auto;
     width: calc(80vw - 30px);
     padding: 15px;
+  }
+
+
+  #user_panel section:nth-child(1) {
+    margin-right: 20px;
   }
 }
 
@@ -130,6 +144,10 @@ html {
     background-color: var(--primary-color);
   }
 
+  main {
+    min-height: 800px;
+  }
+
   footer {
     background-color: var(--secondary-color);
     margin: auto;
@@ -142,11 +160,18 @@ html {
   .none {
     display: none;
   }
+
+  #user_panel section:nth-child(1) {
+    margin-bottom: 20px;
+  }
+
+  #restaurant-info section:not(:last-child) {
+    margin-bottom: 10px;
+  }
 }
 
 
 main {
-  min-height: 800px;
   background-color: var(--secondary-color);
   margin: auto;
   width: calc(80vw - 30px);
@@ -193,13 +218,18 @@ main {
 
 #menu-list {
   display: flex;
-  flex-wrap: wrap; /* Permite que os itens quebrem para a próxima linha conforme necessário */
-  justify-content: space-between; /* Distribui os itens uniformemente ao longo do eixo principal */
+  flex-wrap: wrap;
+  /* Permite que os itens quebrem para a próxima linha conforme necessário */
+  /* justify-content: space-between; */
+  justify-content: space-around;
+  /* Distribui os itens uniformemente ao longo do eixo principal */
 }
 
 .card {
-  width: calc(20% - 10px); /* Defina a largura de cada card, levando em conta o espaço entre eles */
-  margin-bottom: 20px; /* Adiciona um espaço entre as linhas de cards */
+  width: calc(20% - 10px);
+  /* Defina a largura de cada card, levando em conta o espaço entre eles */
+  margin-bottom: 20px;
+  /* Adiciona um espaço entre as linhas de cards */
 }
 
 
@@ -210,9 +240,11 @@ main {
   align-content: center;
   align-items: center;
 }
+
 .complement-option input {
-  margin-right: 5px; 
+  margin-right: 5px;
 }
+
 .complement-description h6 {
   margin: 0px;
   padding: 0px;
@@ -260,6 +292,7 @@ legend {
   width: 100%;
   height: 100%;
 }
+
 .cart-product .product-name {
   text-align: center;
 }
@@ -286,4 +319,218 @@ div .quantity {
 
 .v {
   float: right;
+}
+
+
+/* MYPANEL.PHP */
+
+#user_panel {
+  display: flex !important;
+  flex-wrap: wrap !important;
+  justify-content: center !important;
+}
+
+#user_photo {
+  flex: 1 0 200px; /* Largura flexível com um tamanho mínimo de 200 pixels */
+  margin-right: 20px; /* Espaço entre as seções */
+}
+
+#user_infos {
+  flex: 1 0 calc(100% - 400px); /* Largura flexível com base no espaço restante */
+}
+
+
+/* INDEX.PHP */
+#rating {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-evenly;
+}
+
+#general-rating {
+  text-align: center;
+  padding-right: 20px;
+  margin-right: 20px;
+  border-right: 5px solid black;
+}
+
+#general-rating p, #general-rating label {
+  margin: 0px;
+}
+
+#general-rating label {
+  font-size: 20px;
+  font-weight: bold;
+}
+
+#stars {
+  display: inline-flex;
+  float: right;
+}
+
+.star {
+  width: 20px;
+}
+.star img {
+  width: 100%;
+  height: 100%;
+}
+
+#users-rating {
+  overflow: hidden; /* Oculta qualquer conteúdo que ultrapasse a largura do contêiner */
+  position: relative; /* Define o contexto de posicionamento para os pseudoelementos */
+}
+.rating-wrapper {
+  display: flex;
+  flex-wrap: nowrap; /* Evita que os elementos quebrem para a próxima linha */
+  overflow-x: hidden; /* Oculta a barra de rolagem nativa */
+}
+
+.rating-container {
+  flex: 0 0 auto; /* Define a largura automática dos elementos */
+  margin-right: 20px; /* Adiciona um espaço entre os elementos */
+}
+
+.scroll-left,
+.scroll-right {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 30px; /* Largura das setas */
+  background-color: rgba(255, 255, 255, 0.5); /* Cor de fundo das setas */
+  z-index: 1; /* Coloca as setas sobre o conteúdo */
+  cursor: pointer; /* Altera o cursor ao passar sobre as setas */
+}
+
+.scroll-left {
+  left: 0; /* Define a seta esquerda */
+}
+
+.scroll-right {
+  right: 0; /* Define a seta direita */
+}
+
+#users-rating .rating-wrapper .rating-container {
+  border: 1px solid var(--border-color);
+  padding: 5px;
+  width: 15em;
+  text-align: center;
+  border-radius: 10px;
+  box-shadow: 0px 0px 7px 0px white;
+}
+
+#users-rating .rating-wrapper .rating-container .user-photo {
+  width: 3em;
+  border-radius: 50%;
+  overflow: hidden;
+  height: 3em;
+  margin: auto;
+}
+
+#users-rating .rating-wrapper .rating-container .user-photo img {
+  width: 100%;
+
+}
+
+#users-rating .rating-wrapper .rating-container .user-comment {
+  background-color: white;
+  border-radius: 5px;
+}
+
+
+#address-restaurant {
+  background-image: url(/layout/images/model/map.png);
+  background-color: var(--primary-color);
+  background-attachment: fixed;
+  background-size: 100% 100%;
+  background-position: center;
+  height: 400px;
+  margin: auto;
+  width: calc(80vw - 30px);
+  padding: 15px;
+}
+
+#restaurant-info {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-around;
+}
+
+#restaurant-info section:not(:last-child) {
+  margin-right: 10px;
+}
+
+#status-info {
+  display: flex;
+  align-items: center;
+}
+
+#three-info {
+}
+
+#three-info p {
+  margin: 0px;
+  font-size: 0.9em;
+}
+
+#status {
+  cursor: pointer;
+}
+
+#status-icon {
+  width: 3em;
+  margin-right: 5px;
+  background-color: red;
+  height: 3em;
+  border: 2px solid black;
+  border-radius: 50%;
+}
+
+#week-horary {
+  display: none;
+}
+
+#week-horary p {
+  margin: 0px;
+}
+
+#week-horary p label {
+  float: right;
+  margin-bottom: 0px !important;
+  display: block !important;
+}
+
+#time-info {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+#time-icon {
+  margin-right: 10px;
+}
+#time-icon svg {
+  font-size: 3em;
+}
+
+#pays {
+  cursor: pointer;
+}
+
+#pays-info {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+#pays-icon {
+  margin-right: 10px;
+}
+#pays-icon svg {
+  font-size: 3em;
+}
+
+#pays-type {
+  display: none;
 }

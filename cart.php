@@ -21,7 +21,7 @@ include_once __DIR__ . '/layout/php/header.php';
             <td>
                 <div class="cart-product">
                     <section class="product-photo">
-                        <img src="/layout/images/product/1.jpeg">
+                        <img src="/layout/images/products/1.jpeg">
                     </section>
                     <section class="product-name">
                         <label>Produto 1</label>

@@ -14,7 +14,7 @@ include_once (__DIR__ . "/../../engine/init.php");
     <title>Título Plataforma</title>
 
     <!-- Favicon-->
-    <!-- <link rel="icon" href="<?php echo $imagesPath; ?>/favicon.<?php echo $faviconType; ?>" type="image/png"> -->
+    <link rel="icon" href="/../../../layout/images/config/favicon.png" type="image/png">
 
     <!-- Font Awesome icons (free version)-->
     <script src="https://use.fontawesome.com/releases/v6.3.0/js/all.js" crossorigin="anonymous"></script>
@@ -51,7 +51,7 @@ include_once (__DIR__ . "/../../engine/init.php");
             </section>
             <section id="menu-header">
                 <a href="/index">
-                <i class="fa-solid fa-house"></i>
+                    <i class="fa-solid fa-house"></i>
                 </a>
                 <a href="/cart">
                     <i class="fa-solid fa-cart-shopping"></i>
@@ -60,7 +60,7 @@ include_once (__DIR__ . "/../../engine/init.php");
                     <i class="fa-solid fa-star"></i>
                 </a>
                 <a href="/menu">
-                <i class="fa-solid fa-bars"></i>
+                    <i class="fa-solid fa-bars"></i>
                 </a>
                 <a href="/myaccount">
                     <i class="fa-solid fa-user"></i>
@@ -78,7 +78,7 @@ include_once (__DIR__ . "/../../engine/init.php");
                 <i class="fa-solid fa-house menu-option-center"></i>
             </a>
             <a href="/menu">
-            <i class="fa-solid fa-bars"></i>
+                <i class="fa-solid fa-bars"></i>
             </a>
             <a href="/myaccount">
                 <i class="fa-solid fa-user"></i>

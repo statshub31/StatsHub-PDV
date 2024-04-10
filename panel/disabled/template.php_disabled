@@ -1,0 +1,32 @@
+<?php
+include_once(realpath(__DIR__ . "/front/php/header.php"));
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST) && getToken('tokenQueryEdit')) {
+    
+    if (empty($_POST) === false) {
+        $required_fields = array('fName', 'sName', 'bDate', 'fPhone', 'cpf', 'email', 'password');
+        if (validateRequiredFields($_POST, $required_fields) === false) {
+            $errors[] = "Obrigatório o preenchimento de todos os campos.";
+        }
+    }
+
+
+    if (empty($errors)) {
+        // Coloque o código que deve ser executado após as verificações bem-sucedidas aqui
+    }
+
+
+    if (empty($errors) === false) {
+        header("HTTP/1.1 401 Not Found");
+        echo doPopupError($errors);
+    }
+}
+
+
+?>
+
+
+    <input name="token" type="text" value="<?php echo addToken('settingsSave') ?>" hidden />
+<?php
+include_once(realpath(__DIR__ . "/front/php/footer.php"));
+?>
