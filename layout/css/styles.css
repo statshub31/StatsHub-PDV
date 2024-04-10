@@ -321,6 +321,59 @@ div .quantity {
   float: right;
 }
 
+#sizes {
+  background-color: white;
+  padding: 5px;
+  border: 1px solid var(--border-color);
+}
+
+.size-select {
+  border-bottom: 1px solid var(--border-color);
+  margin-bottom: 20px;
+}
+
+#questions {
+  background-color: white;
+  padding: 5px;
+  border: 1px solid var(--border-color);
+}
+
+
+.question-select {
+  border-bottom: 1px solid var(--border-color);
+  margin-bottom: 20px;
+}
+
+#complements {
+  background-color: white;
+  padding: 5px;
+  border: 1px solid var(--border-color);
+}
+
+
+.complement-select {
+  border-bottom: 1px solid var(--border-color);
+  margin-bottom: 20px;
+}
+
+#additional {
+  background-color: white;
+  padding: 5px;
+  border: 1px solid var(--border-color);
+}
+
+
+.additional-select {
+  border-bottom: 1px solid var(--border-color);
+  margin-bottom: 20px;
+}
+
+#obs {
+  background-color: white;
+  padding: 5px;
+  border: 1px solid var(--border-color);
+}
+
 
 /* MYPANEL.PHP */
 

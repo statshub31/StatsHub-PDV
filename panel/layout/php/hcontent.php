@@ -78,7 +78,7 @@
             <i class="fa-solid fa-chart-line"></i>
             <span>Relatórios</span></a>
 
-        <a class="nav-link" href="/panel/avaliables">
+        <a class="nav-link" href="/panel/availables">
             <i class="fa-solid fa-star"></i>
             <span>Avaliações</span></a>
         <!-- <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#plans" aria-expanded="true"

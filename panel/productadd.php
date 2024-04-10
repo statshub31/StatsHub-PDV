@@ -42,7 +42,8 @@ include_once (realpath(__DIR__ . "/layout/php/header.php"));
                     </span>
                     <div id="previewImage"
                         style="width: 100px; height: 100px; overflow: hidden; border: 1px solid #ccc;">
-                        <img id="productSelect" src="/layout/images/model/no-image.png" style="width: 100%; height: 100%;">
+                        <img id="productSelect" src="/layout/images/model/no-image.png"
+                            style="width: 100%; height: 100%;">
                     </div>
                 </div>
                 <div class="custom-file">
@@ -67,18 +68,6 @@ include_once (realpath(__DIR__ . "/layout/php/header.php"));
                         <option value="2">Two</option>
                         <option value="3">Three</option>
                     </select>
-                </div>
-
-                <div class="form-group">
-                    <label for="cost-price">Preço de Custo:</label>
-                    <font color="red">*</font>
-                    <input type="text" name="cost-price" class="form-control" id="cost-price" value="">
-                </div>
-
-                <div class="form-group">
-                    <label for="sale-price">Preço de Venda:</label>
-                    <font color="red">*</font>
-                    <input type="text" name="sale-price" class="form-control" id="sale-price" value="">
                 </div>
             </section>
 
@@ -155,30 +144,37 @@ include_once (realpath(__DIR__ . "/layout/php/header.php"));
             </div>
         </div>
 
+        <fieldset style="display: flex;">
+            <legend>Tamanho 1</legend>
+            <div class="form-group">
+                <label for="size-p">Tamanho:
+                    <small><i class="fa fa-question-circle" aria-hidden="true" data-toggle="tooltip"
+                            data-placement="top"
+                            title="Somente será aceito caracteres alfanúmericos, por exemplo: P, M, G, 200g, 400g, 1kg..."></i></small>
+                </label>
+                <input name="size-p" type="text" class="form-control w-50" id="size-p" value="">
+            </div>
+            <div class="form-group" style="width: 100%">
+                <label for="size-p-description">Descrição:
+                    <small><i class="fa fa-question-circle" aria-hidden="true" data-toggle="tooltip"
+                            data-placement="top"
+                            title="Descrição sobre o tamanho, caso for diferenciado por P, M, G, você poderá inserir a descrição em gramagem."></i></small>
+                </label>
+                <input name="size-p-description" type="text" class="form-control w-50" id="size-p-description" value="">
+            </div>
+            <div class="form-group">
+                <label for="price-p">Valor:
+                    <small><i class="fa fa-question-circle" aria-hidden="true" data-toggle="tooltip"
+                            data-placement="top"
+                            title="Somente será aceito caracteres númerico e virgula, por exemplo: 20,00 | 30,00..."></i></small>
+                </label>
+                <input name="price-p" type="text" class="form-control w-50" id="price-p" value="">
+            </div>
+        </fieldset>
         <div id="price-size-status-container">
             <div class="alert alert-info" role="alert">
                 Os campos que estiverem vazio, serão considerados como inexistente.
             </div>
-            <fieldset style="display: flex;">
-                <legend>Tamanho 1</legend>
-                <div class="form-group">
-                    <label for="size-p">Tamanho:
-                        <small><i class="fa fa-question-circle" aria-hidden="true" data-toggle="tooltip"
-                                data-placement="top"
-                                title="Somente será aceito caracteres alfanúmericos, por exemplo: P, M, G, 200g, 400g, 1kg..."></i></small>
-                    </label>
-                    <input name="size-p" type="text" class="form-control w-50" id="size-p" value="">
-                </div>
-                <div class="form-group" style="width: 100%">
-                    <label for="size-p-description">Descrição:
-                        <small><i class="fa fa-question-circle" aria-hidden="true" data-toggle="tooltip"
-                                data-placement="top"
-                                title="Descrição sobre o tamanho, caso for diferenciado por P, M, G, você poderá inserir a descrição em gramagem."></i></small>
-                    </label>
-                    <input name="size-p-description" type="text" class="form-control w-50" id="size-p-description"
-                        value="">
-                </div>
-            </fieldset>
             <fieldset style="display: flex;">
                 <legend>Tamanho 2</legend>
                 <div class="form-group">
@@ -197,6 +193,14 @@ include_once (realpath(__DIR__ . "/layout/php/header.php"));
                     </label>
                     <input name="size-m-description" type="text" class="form-control w-50" id="size-m-description"
                         value="">
+                </div>
+                <div class="form-group">
+                    <label for="price-m">Valor:
+                        <small><i class="fa fa-question-circle" aria-hidden="true" data-toggle="tooltip"
+                                data-placement="top"
+                                title="Somente será aceito caracteres númerico e virgula, por exemplo: 20,00 | 30,00..."></i></small>
+                    </label>
+                    <input name="price-m" type="text" class="form-control w-50" id="price-m" value="">
                 </div>
             </fieldset>
             <fieldset style="display: flex;">
@@ -218,6 +222,14 @@ include_once (realpath(__DIR__ . "/layout/php/header.php"));
                     <input name="size-g-description" type="text" class="form-control w-50" id="size-g-description"
                         value="">
                 </div>
+                <div class="form-group">
+                    <label for="price-g">Valor:
+                        <small><i class="fa fa-question-circle" aria-hidden="true" data-toggle="tooltip"
+                                data-placement="top"
+                                title="Somente será aceito caracteres númerico e virgula, por exemplo: 20,00 | 30,00..."></i></small>
+                    </label>
+                    <input name="price-g" type="text" class="form-control w-50" id="price-g" value="">
+                </div>
             </fieldset>
             <fieldset style="display: flex;">
                 <legend>Tamanho 4</legend>
@@ -237,6 +249,14 @@ include_once (realpath(__DIR__ . "/layout/php/header.php"));
                     </label>
                     <input name="size-xg-description" type="text" class="form-control w-50" id="size-xg-description"
                         value="">
+                </div>
+                <div class="form-group">
+                    <label for="price-xg">Valor:
+                        <small><i class="fa fa-question-circle" aria-hidden="true" data-toggle="tooltip"
+                                data-placement="top"
+                                title="Somente será aceito caracteres númerico e virgula, por exemplo: 20,00 | 30,00..."></i></small>
+                    </label>
+                    <input name="price-xg" type="text" class="form-control w-50" id="price-xg" value="">
                 </div>
             </fieldset>
         </div>

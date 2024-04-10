@@ -20,6 +20,7 @@ RewriteCond %{QUERY_STRING} ^sub=([^&]+)$
 RewriteRule ^gamecode$ /gamecode/%1? [R=301,L]
 
 RewriteRule ^panel/settings(/.*)?$ panel/settings.php$1 [L]
+RewriteRule ^panel/availables(/.*)?$ panel/availables.php$1 [L]
 RewriteRule ^panel/users(/.*)?$ panel/users.php$1 [L]
 RewriteRule ^panel/userupdate(/.*)?$ panel/userupdate.php$1 [L]
 RewriteRule ^panel/useradd(/.*)?$ panel/useradd.php$1 [L]

@@ -45,6 +45,93 @@ include_once __DIR__ . '/layout/php/header.php';
 </table>
 <hr>
 <div>
+
+    <section id="sizes">
+        <center>
+            <h6>Tamanhos</h6>
+        </center>
+        <div class="size-select">
+            <input type="radio" />
+            <label>P (R$ 20,00)</label>
+            <br>
+            <small>Vem um tamanho pequeno</small>
+        </div>
+        <div class="size-select">
+            <input type="radio" />
+            <label>P (R$ 20,00)</label>
+            <br>
+            <small>Vem um tamanho pequeno</small>
+        </div>
+        <div class="size-select">
+            <input type="radio" />
+            <label>P (R$ 20,00)</label>
+            <br>
+            <small>Vem um tamanho pequeno</small>
+        </div>
+        <div class="size-select">
+            <input type="radio" />
+            <label>P (R$ 20,00)</label>
+            <br>
+            <small>Vem um tamanho pequeno</small>
+        </div>
+        <div class="size-select">
+            <input type="radio" />
+            <label>P (R$ 20,00)</label>
+            <br>
+            <small>Vem um tamanho pequeno</small>
+        </div>
+    </section>
+    <hr>
+    <section id="questions">
+        <center>
+            <h6>Perguntas</h6>
+        </center>
+        <div class="question-select">
+            <label>Quer Ketchup?</label>
+            <br>
+
+            <input type="radio" /> <small>Vem um tamanho pequeno</small><br>
+            <input type="radio" /> <small>Vem um tamanho pequeno</small><br>
+            <input type="radio" /> <small>Vem um tamanho pequeno</small><br>
+
+            <input type="checkbox" /> <small>Vem um tamanho pequeno</small><br>
+            <input type="checkbox" /> <small>Vem um tamanho pequeno</small><br>
+            <input type="checkbox" /> <small>Vem um tamanho pequeno</small>
+        </div>
+    </section>
+    <hr>
+    <section id="complements">
+        <center>
+            <h6>Complementos</h6>
+        </center>
+        <div class="complement-select">
+            <input type="radio" />
+            <label>Salada</label>
+            <br>
+            <small>Cebola, Tomate</small>
+        </div>
+    </section>
+    <hr>
+    <section id="additional">
+        <center>
+            <h6>Adicionais</h6>
+        </center>
+        <div class="additional-select">
+            <input type="radio" />
+            <label>Salada</label>
+            <br>
+            <small>Cebola, Tomate</small>
+        </div>
+    </section>
+    <hr>
+    <section id="obs">
+        <center>
+            <h6>Observações</h6>
+        </center>
+  <textarea class="form-control" aria-label="With textarea"></textarea>
+    </section>
+    <hr>
+
     <section id="address">
         <div>Av. Arcilio Federzoni, 399, Jardim Silvia, Francisco Morato-SP</div>
         <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#addressModal">Alterar</button>

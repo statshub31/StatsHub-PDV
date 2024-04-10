@@ -330,7 +330,7 @@ include_once (realpath(__DIR__ . "/layout/php/header.php"));
                     <!-- Card Header - Accordion -->
                     <a href="#topBuyers" class="d-block card-header py-3 collapsed" data-toggle="collapse" role="button"
                         aria-expanded="false" aria-controls="topBuyers">
-                        <h6 class="m-0 font-weight-bold text-primary">Top 10 - Produtos</h6>
+                        <h6 class="m-0 font-weight-bold text-primary">Top 5 - Mais Vendido</h6>
                     </a>
                     <!-- Card Content - Collapse -->
                     <div class="collapse" id="topBuyers">
@@ -374,7 +374,7 @@ include_once (realpath(__DIR__ . "/layout/php/header.php"));
                     <!-- Card Header - Accordion -->
                     <a href="#topWinners" class="d-block card-header py-3 collapsed" data-toggle="collapse"
                         role="button" aria-expanded="false" aria-controls="topWinners">
-                        <h6 class="m-0 font-weight-bold text-primary">Top 10 - </h6>
+                        <h6 class="m-0 font-weight-bold text-primary">Top 5 - Menos Vendido</h6>
                     </a>
                     <!-- Card Content - Collapse -->
                     <div class="collapse" id="topWinners">

@@ -12978,3 +12978,60 @@ table {
     bottom: -25px;
     color: red;
 }
+
+
+.product-photo-circle {
+    overflow: hidden;
+    width: 100px;
+    border-radius: 50%;
+    height: 85px;
+}
+
+
+.product-photo-circle img {
+    width: 100%;
+    height: 100%;
+}
+
+
+.available {
+    display: flex;
+    align-items: flex-start;
+    border: 1px solid var(--border-color);
+    padding: 20px;
+    margin-bottom: 20px;
+}
+
+#availables div:not(:last-child) {
+    margin-right: 20px;
+}
+
+.comments {
+    width: 40%;
+    background-color: white;
+    padding: 15px;
+    border: 1px solid var(--border-color);
+    position: relative;
+}
+
+.comments-date {
+    float: right;
+    position: absolute;
+    font-size: 0.5em;
+    right: 5px;
+    bottom: -5px;
+}
+
+#stars {
+    display: inline-flex;
+    float: right;
+  }
+  
+  .star {
+    width: 20px;
+  }
+  .star img {
+    width: 100%;
+    height: 100%;
+  }
+  
