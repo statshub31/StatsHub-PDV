@@ -60,6 +60,10 @@ function getURLLastParam()
 
 function getPathImageFormat($dir, $img)
 {
+
+    if(empty($img)) 
+        return false;
+
     $expr = $_SERVER['DOCUMENT_ROOT'] . $dir . $img . '*';
 
     // Obtém a lista de arquivos que correspondem ao padrão
@@ -91,7 +95,7 @@ function getPathAvatarImage($img)
 
     $format = getPathImageFormat($image_user_dir, $img);
 
-    if ($format) {
+    if ($format !== false) {
         return $image_user_dir . $img . '.' . $format;
     } else {
         return $image_model_dir . 'avatar.jpeg';
@@ -242,4 +246,8 @@ function removerArquivos($caminho_pasta, $nome_arquivo) {
     } else {
         return $num_arquivos_removidos . ' arquivo(s) removido(s) com sucesso.';
     }
+}
+
+function doSelect($f, $d) {
+    return ($f == $d) ? 'selected' : '';
 }

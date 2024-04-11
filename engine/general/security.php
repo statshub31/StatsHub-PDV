@@ -55,7 +55,7 @@ function doGeneralSecurityLoginRedirect() {
 }
 
 function getGeneralSecurityPanelAccess() {
-	doProtect();
+	doGeneralSecurityProtect();
 
 	$query = getDatabaseAccountGroupID(getGeneralSecuritySession('account_id'));
 
@@ -66,7 +66,7 @@ function getGeneralSecurityPanelAccess() {
 }
 
 function getGeneralSecurityDeliveryManAccess() {
-	doProtect();
+	doGeneralSecurityProtect();
 
 	$query = getDatabaseAccountGroupID(getGeneralSecuritySession('account_id'));
 
@@ -76,8 +76,12 @@ function getGeneralSecurityDeliveryManAccess() {
 	}
 }
 
+function isGeneralSecurityDeliveryManAccess() {
+	return (getDatabaseAccountGroupID(getGeneralSecuritySession('account_id')) >= 2) ? true : false;
+}
+
 function getGeneralSecurityAttendantAccess() {
-	doProtect();
+	doGeneralSecurityProtect();
 
 	$query = getDatabaseAccountGroupID(getGeneralSecuritySession('account_id'));
 
@@ -87,8 +91,12 @@ function getGeneralSecurityAttendantAccess() {
 	}
 }
 
+function isGeneralSecurityAttendantAccess() {
+	return (getDatabaseAccountGroupID(getGeneralSecuritySession('account_id')) >= 3) ? true : false;
+}
+
 function getGeneralSecurityManagerAccess() {
-	doProtect();
+	doGeneralSecurityProtect();
 
 	$query = getDatabaseAccountGroupID(getGeneralSecuritySession('account_id'));
 
@@ -96,6 +104,10 @@ function getGeneralSecurityManagerAccess() {
 		header('Location: /index');
 		exit();
 	}
+}
+
+function isGeneralSecurityManagerAccess() {
+	return (getDatabaseAccountGroupID(getGeneralSecuritySession('account_id')) >= 4) ? true : false;
 }
 
 

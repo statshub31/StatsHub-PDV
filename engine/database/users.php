@@ -63,7 +63,7 @@ function isDatabaseUserExistID($id)
     return ($query !== false) ? true : false;
 }
 
-function doDatabaseUserList($status = false)
+function doDatabaseUsersList($status = false)
 {
     
     return doSelectMultiDB("SELECT `id` FROM `users`");
