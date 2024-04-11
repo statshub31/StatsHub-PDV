@@ -27,6 +27,8 @@ require_once(__DIR__ . "/database/groups.php");
 require_once(__DIR__ . "/database/users.php");
 require_once(__DIR__ . "/database/accounts.php");
 require_once(__DIR__ . "/database/address.php");
+require_once(__DIR__ . "/database/tickets.php");
+require_once(__DIR__ . "/database/status.php");
 
 
 if (getGeneralSecurityLoggedIn() === true) {

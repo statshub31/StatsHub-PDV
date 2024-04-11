@@ -396,7 +396,7 @@ if (isCampanhaInURL("user")) {
                                 <?php
                                 if (getDatabaseAccountBlock($account_select_id) == 0) {
                                     ?>
-                                    Você está prestes a desativar o usuário <b>[Thiago de Oliveira Lima]</b>, você tem certeza disso?
+                                    Você está prestes a desativar o usuário <b>[<?php echo getDatabaseUserName($user_select_id) ?>]</b>, você tem certeza disso?
 
                                     <div class="alert alert-danger" role="alert">
                                         Confirmando está ação, o usuário não poderá fazer login ou executar qualquer tarefa.
@@ -407,7 +407,7 @@ if (isCampanhaInURL("user")) {
                                 if (getDatabaseAccountBlock($account_select_id) == 1) {
                                     ?>
 
-                                    Você está prestes a ativar o usuário <b>[Thiago de Oliveira Lima]</b>, você tem certeza disso?
+                                    Você está prestes a ativar o usuário <b>[<?php echo getDatabaseUserName($user_select_id) ?>]</b>, você tem certeza disso?
 
                                     <div class="alert alert-warning" role="alert">
                                         Confirmando está ação, o usuário voltará a fazer login e executar tarefas de sua função.

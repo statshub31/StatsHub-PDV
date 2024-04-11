@@ -50,6 +50,31 @@ create table address (
 
 
 
+create table status (
+    `id` int PRIMARY KEY AUTO_INCREMENT,
+    `title` varchar(50)
+);
+
+INSERT INTO `status`(`title`) VALUES ('Desativado'), ('Ativo'), ('Bloqueado'), ('Pendente'), ('Invalidado'), ('Cancelado');
+
+create table tickets (
+    `id` int PRIMARY KEY AUTO_INCREMENT,
+    `code` varchar(10),
+    `amount` int,
+    `amount_used` int,
+    `created` datetime NOT NULL,
+    `created_by` int NOT NULL,
+    `expiration` datetime,
+    `end` datetime,
+    `finished_by` int NULL,
+    `value` varchar(20),
+    `status` int,
+    `reason` text,
+    FOREIGN KEY (`created_by`) REFERENCES `users`(`id`),
+    FOREIGN KEY (`finished_by`) REFERENCES `users`(`id`),
+    FOREIGN KEY (`status`) REFERENCES `status`(`id`)
+);
+
 
 
 

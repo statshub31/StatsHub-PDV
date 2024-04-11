@@ -11,8 +11,19 @@ function doGeneralValidationUserNameFormat($string) {
 function doGeneralValidationPasswordFormat($string) {
     return preg_match('/^[a-zA-Z!@#$%&0-9]*$/', $string);
 }
+function doGeneralValidationCodeFormat($string) {
+    return preg_match('/^[a-zA-Z0-9]*$/', $string);
+}
+
+function doGeneralValidationDiscountFormat($string) {
+    return preg_match('/^[0-9%]*$/', $string);
+}
 
 function doGeneralValidationPhoneFormat($string) {
+    return preg_match('/^[0-9]*$/', $string);
+}
+
+function doGeneralValidationNumberFormat($string) {
     return preg_match('/^[0-9]*$/', $string);
 }
 
