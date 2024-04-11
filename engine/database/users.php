@@ -1,0 +1,184 @@
+<?php
+
+# get + Pasta + Arquivo + Função + Dependencia
+
+function getDatabaseUsersData($id)
+{ 
+    $data = array();
+    $id_sanitize = sanitize($id);
+
+    $func_num_args = func_num_args();
+    $func_get_args = func_get_args();
+
+    if ($func_num_args > 1) {
+        unset($func_get_args[0]);
+
+        $fields = '`' . implode('`, `', $func_get_args) . '`';
+        return doSelectSingleDB("SELECT $fields FROM `users` WHERE `id` = '" . $id_sanitize . "' LIMIT 1;");
+    } else
+        return false;
+}
+
+function getDatabaseUserAccountID($id)
+{
+    
+    $id_sanitize = sanitize($id);
+
+    $query = getDatabaseUsersData($id_sanitize, 'account_id');
+    return ($query !== false) ? $query['account_id'] : false;
+}
+
+function getDatabaseUserName($id)
+{
+    
+    $id_sanitize = sanitize($id);
+
+    $query = getDatabaseUsersData($id_sanitize, 'name');
+    return ($query !== false) ? $query['name'] : false;
+}
+
+function getDatabaseUserPhone($id)
+{
+    
+    $id_sanitize = sanitize($id);
+
+    $query = getDatabaseUsersData($id_sanitize, 'phone');
+    return ($query !== false) ? $query['phone'] : false;
+}
+function getDatabaseUserPhotoName($id)
+{
+    
+    $id_sanitize = sanitize($id);
+
+    $query = getDatabaseUsersData($id_sanitize, 'photo');
+    return ($query !== false) ? $query['photo'] : false;
+}
+
+function isDatabaseUserExistID($id)
+{
+    
+    $id_sanitize = sanitize($id);
+
+    $query = doSelectSingleDB("SELECT `id` FROM `users` WHERE `id`='".$id_sanitize."';");
+    return ($query !== false) ? true : false;
+}
+
+function doDatabaseUserList($status = false)
+{
+    
+    return doSelectMultiDB("SELECT `id` FROM `users`");
+}
+
+function doDatabaseUserInsert($import_data_query)
+{
+    
+
+    // Remove todos os campos vazios
+    removeEmptyValues($import_data_query);
+
+    // transforma as chaves em um único array
+    $keyArray = doGeneralCreateArrayFromKeys($import_data_query);
+    // transforma os valores em um único array
+    $valueArray = doGeneralCreateArrayFromValues($import_data_query);
+
+    // Converte para o formato Mysql
+    $keys = doMysqlConvertArrayKey($keyArray);
+
+    // Converte para o formato Mysql
+    $values = doMysqlConvertArrayValue($valueArray);
+
+    return doInsertDB("INSERT INTO `users` (" . $keys . ") VALUES (" . $values . ")");
+}
+
+function doDatabaseUserDelete($id)
+{
+    
+    $id_sanitize = sanitize($id);
+
+    doDeleteDB("DELETE FROM `users` WHERE `id`='".$id_sanitize."' limit 1;");
+}
+
+function doDatabaseUserUpdate($id, $import_data_query, $empty = true)
+{
+
+    
+    $id_sanitize = sanitize($id);
+    
+    if ($empty) {
+        // Remove todos os campos vazios
+        removeEmptyValues($import_data_query);
+    }
+
+    // transforma as chaves em um único array
+    $keyArray = doGeneralCreateArrayFromKeys($import_data_query);
+
+    // transforma os valores em um único array
+    $valueArray = doGeneralCreateArrayFromValues($import_data_query);
+
+    // Converte para o formato Mysql
+    $query_sql = doMysqlConvertUpdateArray($keyArray, $valueArray);
+    doUpdateDB("UPDATE `users` SET $query_sql WHERE `id`='" . $id_sanitize . "';");
+}
+
+// 
+// 
+// 
+// SPECIFIC
+// 
+// 
+// 
+
+function getDatabaseUserIDByAccountID($id)
+{
+    
+    $id_sanitize = sanitize($id);
+
+    $query = doSelectSingleDB("SELECT `id` FROM `users` WHERE `account_id`='".$id_sanitize."';");
+    return ($query !== false) ? $query['id'] : false;
+}
+
+function getDatabaseUserIDByPhone($phone)
+{
+    
+    $phone_sanitize = sanitize($phone);
+
+    $query = doSelectSingleDB("SELECT `id` FROM `users` WHERE `phone`='".$phone_sanitize."';");
+    return ($query !== false) ? $query['id'] : false;
+}
+
+function isDatabaseUserByPhone($phone)
+{
+    
+    $phone_sanitize = sanitize($phone);
+
+    $query = doSelectSingleDB("SELECT `id` FROM `users` WHERE `phone`='".$phone_sanitize."';");
+    return ($query !== false) ? true : false;
+}
+
+function isDatabaseUserByAccountID($id)
+{
+    
+    $id_sanitize = sanitize($id);
+
+    $query = doSelectSingleDB("SELECT `id` FROM `users` WHERE `account_id`='".$id_sanitize."';");
+    return ($query !== false) ? true : false;
+}
+
+function isDatabaseUserExistPhone($phone)
+{
+    
+    $phone_sanitize = sanitize($phone);
+
+    $query = doSelectSingleDB("SELECT `id` FROM `users` WHERE `phone`='".$phone_sanitize."';");
+    return ($query !== false) ? true : false;
+}
+
+function isDatabaseUserPhoneValidation($phone, $id) {
+	$phone_sanitize = sanitize($phone);
+	$id_sanitize = $id;
+	
+	$data = doSelectSingleDB("SELECT `id` FROM `users` WHERE `phone`='".$phone_sanitize."' AND `id`='".$id_sanitize."';");
+	
+	return ($data !== false) ? true : false;
+}
+?>

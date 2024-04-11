@@ -385,9 +385,14 @@ div .quantity {
 
 #user_photo {
   flex: 1 0 200px; /* Largura flexível com um tamanho mínimo de 200 pixels */
+  height: 250px;
   margin-right: 20px; /* Espaço entre as seções */
 }
 
+#user_photo img {
+  width: 100%;
+  height: 100%;
+}
 #user_infos {
   flex: 1 0 calc(100% - 400px); /* Largura flexível com base no espaço restante */
 }
