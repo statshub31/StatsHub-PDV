@@ -27,6 +27,10 @@ function doGeneralValidationNumberFormat($string) {
     return preg_match('/^[0-9]*$/', $string);
 }
 
+function doGeneralValidationPriceFormat($string) {
+    return preg_match('/^[0-9.]*$/', $string);
+}
+
 function doGeneralValidationEmailFormat($string) {
     return filter_var($string, FILTER_VALIDATE_EMAIL);
 }

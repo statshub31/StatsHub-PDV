@@ -34,7 +34,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST)) {
 
 
         if (empty($errors)) {
-            $complement_status_toggle = (getDatabaseComplementstatus($_POST['complement_select_id']) == 2) ? 3 : 2;
+            $complement_status_toggle = (getDatabaseComplementsStatus($_POST['complement_select_id']) == 2) ? 3 : 2;
 
             $complement_status_update_field = array(
                 'status' => $complement_status_toggle
@@ -42,10 +42,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST)) {
 
             doDatabaseComplementUpdate($_POST['complement_select_id'], $complement_status_update_field);
 
-            if (getDatabaseComplementstatus($_POST['complement_select_id']) == 2)
+            if (getDatabaseComplementsStatus($_POST['complement_select_id']) == 2)
                 doAlertSuccess("O complemento foi desbloqueado.");
 
-            if (getDatabaseComplementstatus($_POST['complement_select_id']) == 3)
+            if (getDatabaseComplementsStatus($_POST['complement_select_id']) == 3)
                 doAlertSuccess("O complemento foi bloqueado.");
 
         }
@@ -214,7 +214,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST)) {
                             <input name="complement_select_id" type="text" value="<?php echo $complement_list_id ?>" hidden />
                             <div class="vc-toggle-container">
                                 <label class="vc-switch">
-                                    <input type="checkbox" onchange="submitForm(this)" class="vc-switch-input" <?php echo doCheck(getDatabaseComplementStatus($complement_list_id), 2) ?>>
+                                    <input type="checkbox" onchange="submitForm(this)" class="vc-switch-input" <?php echo doCheck(getDatabaseComplementsStatus($complement_list_id), 2) ?>>
                                     <span data-on="Disp" data-off="Indis" class="vc-switch-label"></span>
                                     <span class="vc-handle"></span>
                                 </label>
@@ -343,8 +343,7 @@ if (isCampanhaInURL("complement")) {
                                                 foreach ($list_category as $data) {
                                                     $category_list_id = $data['id'];
                                                     ?>
-                                                    <option value="<?php echo $category_list_id ?>" 
-                                                    <?php echo doSelect(getDatabaseComplementCategoryID($complement_select_id), $category_list_id) ?> >
+                                                    <option <?php echo doSelect(getDatabaseComplementCategoryID($complement_select_id), $category_list_id) ?> value="<?php echo $category_list_id ?>">
                                                         <?php echo getDatabaseCategoryTitle($category_list_id) ?>
                                                     </option>
                                                     <?php

@@ -33,7 +33,7 @@ include_once (realpath(__DIR__ . "/layout/php/header.php"));
             <th>Produto</th>
             <th>Descrição</th>
             <th>Preço</th>
-            <th>Status</th>
+            <th>Estoque</th>
             <th>Opções</th>
         </tr>
     </thead>
@@ -43,7 +43,7 @@ include_once (realpath(__DIR__ . "/layout/php/header.php"));
             <th>Produto</th>
             <th>Descrição</th>
             <th>Preço</th>
-            <th>Status</th>
+            <th>Estoque</th>
             <th>Opções</th>
         </tr>
     </tfoot>
@@ -62,14 +62,7 @@ include_once (realpath(__DIR__ . "/layout/php/header.php"));
                 Sabor Calabresa
             </td>
             <td>R$ 20.00</td>
-            <td>
-                <div class="vc-toggle-container">
-                    <label class="vc-switch">
-                        <input type="checkbox" name="order-withdrawal" id="order-withdrawal" class="vc-switch-input">
-                        <span data-on="Disp" data-off="Indis" class="vc-switch-label"></span>
-                        <span class="vc-handle"></span>
-                    </label>
-                </div>
+            <td>50
             </td>
             <td>
                 <i class="fa fa-edit" aria-hidden="true"></i>

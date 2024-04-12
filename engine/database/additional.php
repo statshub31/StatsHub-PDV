@@ -2,7 +2,7 @@
 
 # get + Pasta + Arquivo + Função + Dependencia
 
-function getDatabaseComplementsData($id)
+function getDatabaseAdditionalData($id)
 {
     
 
@@ -16,81 +16,99 @@ function getDatabaseComplementsData($id)
         unset($func_get_args[0]);
 
         $fields = '`' . implode('`, `', $func_get_args) . '`';
-        return doSelectSingleDB("SELECT $fields FROM `complements` WHERE `id` = '" . $id_sanitize . "' LIMIT 1;");
+        return doSelectSingleDB("SELECT $fields FROM `additional` WHERE `id` = '" . $id_sanitize . "' LIMIT 1;");
     } else
         return false;
 }
 
-function getDatabaseComplementCode($id)
+function getDatabaseAdditionalCode($id)
 {
     
     $id_sanitize = sanitize($id);
 
-    $query = getDatabaseComplementsData($id_sanitize, 'code');
+    $query = getDatabaseAdditionalData($id_sanitize, 'code');
     return ($query !== false) ? $query['code'] : false;
 }
 
-function getDatabaseComplementCategoryID($id)
+function getDatabaseAdditionalCategoryID($id)
 {
     
     $id_sanitize = sanitize($id);
 
-    $query = getDatabaseComplementsData($id_sanitize, 'category_id');
+    $query = getDatabaseAdditionalData($id_sanitize, 'category_id');
     return ($query !== false) ? $query['category_id'] : false;
 }
 
-function getDatabaseComplementDescription($id)
+function getDatabaseAdditionalCostPrice($id)
 {
     
     $id_sanitize = sanitize($id);
 
-    $query = getDatabaseComplementsData($id_sanitize, 'description');
+    $query = getDatabaseAdditionalData($id_sanitize, 'cost_price');
+    return ($query !== false) ? $query['cost_price'] : false;
+}
+function getDatabaseAdditionalSalePrice($id)
+{
+    
+    $id_sanitize = sanitize($id);
+
+    $query = getDatabaseAdditionalData($id_sanitize, 'sale_price');
+    return ($query !== false) ? $query['sale_price'] : false;
+}
+
+
+function getDatabaseAdditionalDescription($id)
+{
+    
+    $id_sanitize = sanitize($id);
+
+    $query = getDatabaseAdditionalData($id_sanitize, 'description');
     return ($query !== false) ? $query['description'] : false;
 }
 
-function getDatabaseComplementCreated($id)
+function getDatabaseAdditionalCreated($id)
 {
     
     $id_sanitize = sanitize($id);
 
-    $query = getDatabaseComplementsData($id_sanitize, 'created');
+    $query = getDatabaseAdditionalData($id_sanitize, 'created');
     return ($query !== false) ? $query['created'] : false;
 }
 
-function getDatabaseComplementCreatedBy($id)
+function getDatabaseAdditionalCreatedBy($id)
 {
     
     $id_sanitize = sanitize($id);
 
-    $query = getDatabaseComplementsData($id_sanitize, 'created_by');
+    $query = getDatabaseAdditionalData($id_sanitize, 'created_by');
     return ($query !== false) ? $query['created_by'] : false;
 }
 
-function getDatabaseComplementsStatus($id)
+function getDatabaseAdditionalStatus($id)
 {
     
     $id_sanitize = sanitize($id);
 
-    $query = getDatabaseComplementsData($id_sanitize, 'status');
+    $query = getDatabaseAdditionalData($id_sanitize, 'status');
     return ($query !== false) ? $query['status'] : false;
 }
 
-function isDatabaseComplementExistID($id)
+function isDatabaseAdditionalExistID($id)
 {
     
     $id_sanitize = sanitize($id);
 
-    $query = doSelectSingleDB("SELECT `id` FROM `complements` WHERE `id`='".$id_sanitize."';");
+    $query = doSelectSingleDB("SELECT `id` FROM `additional` WHERE `id`='".$id_sanitize."';");
     return ($query !== false) ? true : false;
 }
 
-function doDatabaseComplementsList($status = false)
+function doDatabaseAdditionalList($status = false)
 {
     
-    return doSelectMultiDB("SELECT `id` FROM `complements`");
+    return doSelectMultiDB("SELECT `id` FROM `additional`");
 }
 
-function doDatabaseComplementInsert($import_data_query)
+function doDatabaseAdditionalInsert($import_data_query)
 {
     
 
@@ -108,18 +126,18 @@ function doDatabaseComplementInsert($import_data_query)
     // Converte para o formato Mysql
     $values = doMysqlConvertArrayValue($valueArray);
 
-    return doInsertDB("INSERT INTO `complements` (" . $keys . ") VALUES (" . $values . ")");
+    return doInsertDB("INSERT INTO `additional` (" . $keys . ") VALUES (" . $values . ")");
 }
 
-function doDatabaseComplementDelete($id)
+function doDatabaseAdditionalDelete($id)
 {
     
     $id_sanitize = sanitize($id);
 
-    doDeleteDB("DELETE FROM `complements` WHERE `id`='".$id_sanitize."'limit 1;");
+    doDeleteDB("DELETE FROM `additional` WHERE `id`='".$id_sanitize."'limit 1;");
 }
 
-function doDatabaseComplementUpdate($id, $import_data_query, $empty = true)
+function doDatabaseAdditionalUpdate($id, $import_data_query, $empty = true)
 {
 
     
@@ -138,7 +156,7 @@ function doDatabaseComplementUpdate($id, $import_data_query, $empty = true)
 
     // Converte para o formato Mysql
     $query_sql = doMysqlConvertUpdateArray($keyArray, $valueArray);
-    doUpdateDB("UPDATE `complements` SET $query_sql WHERE `id`='" . $id_sanitize . "';");
+    doUpdateDB("UPDATE `additional` SET $query_sql WHERE `id`='" . $id_sanitize . "';");
 }
 
 // 
@@ -149,32 +167,32 @@ function doDatabaseComplementUpdate($id, $import_data_query, $empty = true)
 // 
 // 
 
-function isDatabaseComplementEnabled($id)
+function isDatabaseAdditionalEnabled($id)
 {
     
     $id_sanitize = sanitize($id);
 
-    $query = doSelectSingleDB("SELECT `status` FROM `complements` WHERE `id`='".$id_sanitize."';");
+    $query = doSelectSingleDB("SELECT `status` FROM `additional` WHERE `id`='".$id_sanitize."';");
     return ($query['status'] == 2) ? true : false;
 }
 
 
-function isDatabaseComplementEnabledByCode($code)
+function isDatabaseAdditionalEnabledByCode($code)
 {
     
     $code_sanitize = sanitize($code);
 
-    $query = doSelectSingleDB("SELECT `status` FROM `complements` WHERE `code`='".$code_sanitize."';");
+    $query = doSelectSingleDB("SELECT `status` FROM `additional` WHERE `code`='".$code_sanitize."';");
 
     return ($query !== false && $query['status'] == 2) ? true : false;
 }
 
 
-function isDatabaseComplementValidationCode($code, $id) {
+function isDatabaseAdditionalValidationCode($code, $id) {
 	$code_sanitize = sanitize($code);
 	$id_sanitize = $id;
 	
-	$data = doSelectSingleDB("SELECT `id` FROM `complements` WHERE `code`='".$code_sanitize."' AND `id`='".$id_sanitize."';");
+	$data = doSelectSingleDB("SELECT `id` FROM `additional` WHERE `code`='".$code_sanitize."' AND `id`='".$id_sanitize."';");
 	
 	return ($data !== false) ? true : false;
 }

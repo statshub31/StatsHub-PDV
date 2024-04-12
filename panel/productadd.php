@@ -1,6 +1,12 @@
 <?php
 include_once (realpath(__DIR__ . "/layout/php/header.php"));
 ?>
+
+
+
+
+
+
 <script>
     $(document).ready(function () {
         window.checkboxToggle = function (checkboxId, responseId, className) {

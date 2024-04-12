@@ -145,7 +145,7 @@ create table products_question_reponse (
 
 create table complements (
     `id` int PRIMARY KEY AUTO_INCREMENT,
-    `code` varchar(10),
+    `code` varchar(10) NULL,
     `category_id` int NOT NULL,
     `description` varchar(255) NOT NULL,
     `created` datetime NOT NULL,
@@ -157,15 +157,15 @@ create table complements (
 
 create table additional (
     `id` int PRIMARY KEY AUTO_INCREMENT,
-    `code` varchar(10),
-    `category_id` int,
-    `cost_price` float(5, 2),
-    `sale_price` float(5,2),
-    `description` varchar(255)
+    `code` varchar(10) NULL,
+    `category_id` int NOT NULL,
+    `cost_price` float(5, 2) NOT NULL,
+    `sale_price` float(5,2) NOT NULL,
+    `description` varchar(255),
     `created` datetime NOT NULL,
     `created_by` int NOT NULL,
-    `status` int,
-    FOREIGN KEY (`status`) REFERENCES `status`(`id`)
+    `status` int NOT NULL,
+    FOREIGN KEY (`status`) REFERENCES `status`(`id`),
     FOREIGN KEY (`category_id`) REFERENCES `categorys`(`id`)
 );
 

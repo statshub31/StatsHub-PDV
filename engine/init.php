@@ -32,6 +32,7 @@ require_once(__DIR__ . "/database/status.php");
 require_once(__DIR__ . "/database/measure.php");
 require_once(__DIR__ . "/database/categorys.php");
 require_once(__DIR__ . "/database/complements.php");
+require_once(__DIR__ . "/database/additional.php");
 
 
 if (getGeneralSecurityLoggedIn() === true) {
