@@ -2,188 +2,413 @@
 include_once (realpath(__DIR__ . "/layout/php/header.php"));
 
 ?>
+
+
+<?php
+// <!-- INICIO DA VALIDAÇÃO PHP -->
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST)) {
+
+    // ATIVAR/DESATIVAR SWITCH
+    if (getGeneralSecurityToken('tokenSwitch')) {
+
+        if (empty($_POST) === false) {
+            $required_fields_status = true;
+            $required_fields = array('complement_select_id');
+
+            if (validateRequiredFields($_POST, $required_fields) === false) {
+                $errors[] = "Obrigatório o preenchimento de todos os campos.";
+                $required_fields_status = false;
+            }
+
+            if ($required_fields_status) {
+                if (isDatabaseComplementExistID($_POST['complement_select_id']) === false) {
+                    $errors[] = "Houve um erro ao processar solicitação, complemento é inexistente.";
+                }
+
+                if (isGeneralSecurityManagerAccess() === false) {
+                    $errors[] = "É obrigatório ter um cargo igual ou superior ao de gestor, para executar está ação.";
+                }
+            }
+
+        }
+
+
+        if (empty($errors)) {
+            $complement_status_toggle = (getDatabaseComplementstatus($_POST['complement_select_id']) == 2) ? 3 : 2;
+
+            $complement_status_update_field = array(
+                'status' => $complement_status_toggle
+            );
+
+            doDatabaseComplementUpdate($_POST['complement_select_id'], $complement_status_update_field);
+
+            if (getDatabaseComplementstatus($_POST['complement_select_id']) == 2)
+                doAlertSuccess("O complemento foi desbloqueado.");
+
+            if (getDatabaseComplementstatus($_POST['complement_select_id']) == 3)
+                doAlertSuccess("O complemento foi bloqueado.");
+
+        }
+    }
+
+
+    // REMOVER COMPLEMENTO
+    if (getGeneralSecurityToken('tokenRemoveComplement')) {
+
+        if (empty($_POST) === false) {
+            $required_fields_status = true;
+            $required_fields = array('complement_select_id');
+
+            if (validateRequiredFields($_POST, $required_fields) === false) {
+                $errors[] = "Obrigatório o preenchimento de todos os campos.";
+                $required_fields_status = false;
+            }
+
+            if ($required_fields_status) {
+                if (isDatabaseComplementExistID($_POST['complement_select_id']) === false) {
+                    $errors[] = "Houve um erro ao processar solicitação, complemento é inexistente.";
+                }
+
+                if (isGeneralSecurityManagerAccess() === false) {
+                    $errors[] = "É obrigatório ter um cargo igual ou superior ao de gestor, para executar está ação.";
+                }
+            }
+
+        }
+
+
+        if (empty($errors)) {
+            doDatabaseComplementDelete($_POST['complement_select_id']);
+            doAlertSuccess("O complemento foi removido com sucesso.");
+        }
+    }
+
+
+    // EDITAR COMPLEMENTO
+    if (getGeneralSecurityToken('tokenEditComplement')) {
+
+        if (empty($_POST) === false) {
+            $required_fields_status = true;
+            $required_fields = array('complement_select_id', 'category', 'description');
+
+            if (validateRequiredFields($_POST, $required_fields) === false) {
+                $errors[] = "Obrigatório o preenchimento de todos os campos.";
+                $required_fields_status = false;
+            }
+
+            if ($required_fields_status) {
+                if (isDatabaseComplementExistID($_POST['complement_select_id']) === false) {
+                    $errors[] = "Houve um erro ao processar solicitação, complemento é inexistente.";
+                }
+
+
+                if (isDatabaseCategoryExistID($_POST['category']) === false) {
+                    $errors[] = "Houve um erro ao processar solicitação, categoria é inexistente.";
+                }
+
+                if (!empty($_POST['code'])) {
+                    if (isDatabaseComplementEnabledByCode($_POST['code'])) {
+                        if (isDatabaseComplementValidationCode($_POST['code'], $_POST['complement_select_id']) === false) {
+                            $errors[] = "O codigo é existente, preencha com outro ou deixe em branco.";
+                        }
+                    }
+                }
+
+                if (isGeneralSecurityManagerAccess() === false) {
+                    $errors[] = "É obrigatório ter um cargo igual ou superior ao de gestor, para executar está ação.";
+                }
+            }
+
+        }
+
+
+        if (empty($errors)) {
+            $complement_update_fields = array(
+                'code' => (!empty($_POST['code']) ? $_POST['code'] : NULL),
+                'category_id' => $_POST['category'],
+                'description' => $_POST['description']
+            );
+
+            doDatabaseComplementUpdate($_POST['complement_select_id'], $complement_update_fields);
+
+            doAlertSuccess("As informações do complemento foram alteradas!");
+
+        }
+    }
+
+
+    if (empty($errors) === false) {
+        header("HTTP/1.1 401 Not Found");
+        echo doAlertError($errors);
+    }
+}
+
+
+// <!-- FINAL DA VALIDAÇÃO PHP -->
+?>
+
+
+
+
+
+
+
 <h1 class="h3 mb-0 text-gray-800">Complementos</h1>
 <a href="/panel/complementadd">
     <button type="submit" class="btn btn-primary">Novo Complemento</button>
 </a>
-<hr>
-<div class="input-group">
-  <select class="custom-select" id="inputGroupSelect04">
-    <option selected>-- Ação --</option>
-    <option value="1">Remover</option>
-    <option value="2">Promocionar</option>
-    <option value="3">Montar Kit</option>
-    <option value="3">Isentar de Taxa</option>
-    <option value="3">Bloquear</option>
-    <option value="3">Desbloquear</option>
-  </select>
-  <div class="input-group-append">
-    <button class="btn btn-outline-secondary" type="button">Executar</button>
-  </div>
+<hr hidden>
+<div class="input-group" disabled hidden>
+    <select class="custom-select" id="inputGroupSelect04">
+        <option selected>-- Ação --</option>
+        <option value="1">Remover</option>
+        <option value="2">Promocionar</option>
+        <option value="3">Montar Kit</option>
+        <option value="3">Isentar de Taxa</option>
+        <option value="3">Bloquear</option>
+        <option value="3">Desbloquear</option>
+    </select>
+    <div class="input-group-append">
+        <button class="btn btn-outline-secondary" type="button">Executar</button>
+    </div>
 </div>
 <hr>
 <link href="/layout/vendor/datatables/dataTables.bootstrap4.min.css" rel="stylesheet">
 <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
     <thead>
         <tr>
-            <th>Marcar</th>
-            <th>Produto</th>
+            <th>Código</th>
             <th>Descrição</th>
-            <th>Preço</th>
             <th>Status</th>
             <th>Opções</th>
         </tr>
     </thead>
     <tfoot>
         <tr>
-            <th>Marcar</th>
-            <th>Produto</th>
+            <th>Código</th>
             <th>Descrição</th>
-            <th>Preço</th>
             <th>Status</th>
             <th>Opções</th>
         </tr>
     </tfoot>
     <tbody>
-        <tr>
-            <td>
-                <input type="checkbox">
-            </td>
-            <td>
-                <section class="product_photo">
-                    <img src="/../../../layout/images/products/1.jpeg"></img>
-                </section>
-                <label>Pizza 1</label>
-            </td>
-            <td>
-                Sabor Calabresa
-            </td>
-            <td>R$ 20.00</td>
-            <td>
-                <div class="vc-toggle-container">
-                    <label class="vc-switch">
-                        <input type="checkbox" name="order-withdrawal" id="order-withdrawal" class="vc-switch-input">
-                        <span data-on="Disp" data-off="Indis" class="vc-switch-label"></span>
-                        <span class="vc-handle"></span>
-                    </label>
-                </div>
-            </td>
-            <td>
-                <i class="fa fa-edit" aria-hidden="true"></i>
-                <i class="fa fa-trash" aria-hidden="true" data-toggle="modal" data-target="#exampleModal"></i>
-                <i class="fa fa-eye" aria-hidden="true" data-toggle="modal" data-target="#exampleModalLong"></i>
-            </td>
-        </tr>
+        <!-- COMPLEMENTOS LISTA START -->
+        <?php
+        $tokenSwitch = addGeneralSecurityToken('tokenSwitch');
+        $complements_list = doDatabaseComplementsList();
+        if ($complements_list) {
+            foreach ($complements_list as $data) {
+                $complement_list_id = $data['id'];
+                ?>
+                <tr>
+                    <td>
+                        <label><?php echo getDatabaseComplementCode($complement_list_id) ?></label>
+                    </td>
+                    <td>
+                        <label><?php echo getDatabaseComplementDescription($complement_list_id) ?></label>
+                    </td>
+                    <td>
+                        <form action="/panel/complements" method="post">
+
+                            <input name="token" type="text" value="<?php echo $tokenSwitch ?>" hidden />
+                            <input name="complement_select_id" type="text" value="<?php echo $complement_list_id ?>" hidden />
+                            <div class="vc-toggle-container">
+                                <label class="vc-switch">
+                                    <input type="checkbox" onchange="submitForm(this)" class="vc-switch-input" <?php echo doCheck(getDatabaseComplementStatus($complement_list_id), 2) ?>>
+                                    <span data-on="Disp" data-off="Indis" class="vc-switch-label"></span>
+                                    <span class="vc-handle"></span>
+                                </label>
+                            </div>
+                        </form>
+                    </td>
+                    <td>
+                        <a href="/panel/complements/edit/complement/<?php echo $complement_list_id ?>">
+                            <i class="fa fa-edit" aria-hidden="true"></i>
+                        </a>
+                        <a href="/panel/complements/remove/complement/<?php echo $complement_list_id ?>">
+                            <i class="fa fa-trash" aria-hidden="true"></i>
+                        </a>
+                    </td>
+                </tr>
+                <?php
+            }
+        } else {
+            ?>
+
+            <tr>
+                <td colspan="6">Não existe nenhum complemento cadastrado.
+                </td>
+            </tr>
+
+            <?php
+        }
+        ?>
+        <!-- COMPLEMENTOS LISTA END -->
     </tbody>
 </table>
 
-<!-- Modal View -->
-<div class="modal fade" id="exampleModalLong" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle"
-    aria-hidden="true">
-    <div class="modal-dialog" style="max-width: 600px" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="exampleModalLongTitle">Modal title</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-            <div class="modal-body">
 
-                <div id="user_panel">
-                    <section id="user_photo">
-                        <img src="/layout/images/users/1.jpg">
-                    </section>
-                    <section id="user_infos">
-                        <b><label>Nome:</label></b>
-                        <span>Thiago de Oliveira Lima</span><br>
-                        <b><label>Email:</label></b>
-                        <span>usuario@gmail.com</span><br>
-                        <b><label>Celular:</label></b>
-                        <span>00 00000 0000</span><br>
-                    </section>
-                </div>
-                <br>
+<?php
+if (isCampanhaInURL("complement")) {
 
-                <div id="user_address">
-                    <table border="1" width="100%">
-                        <tr>
-                            <th>#</th>
-                            <th>Endereço</th>
-                        </tr>
-                        <tr>
-                            <td>1</td>
-                            <td>Av. Arcilio Federzoni, 399, Jardim Silvia, Francisco Morato-SP</td>
-                        </tr>
-                    </table>
-                </div>
-                <br>
-                <div id="user_history">
-                    <table class="table table-bordered" id="dataTableDeliverys" width="100%" cellspacing="0">
-                        <thead>
-                            <tr>
-                                <th>#</th>
-                                <th>Data</th>
-                                <th>Opções</th>
-                            </tr>
-                        </thead>
-                        <tfoot>
-                            <tr>
-                                <th>#</th>
-                                <th>Data</th>
-                                <th>Opções</th>
-                            </tr>
-                        </tfoot>
-                        <tbody>
-                            <tr>
-                                <td>#255</td>
-                                <td>08/04/2024 10:30</td>
-                                <td><i class="fa-solid fa-eye" data-toggle="modal" data-target="#exampleModal"></i></td>
-                            </tr>
-                        </tbody>
-                    </table>
+    // <!-- Modal REMOVE -->
+    if (isCampanhaInURL("remove")) {
+        $complement_select_id = getURLLastParam();
+        if (isDatabaseComplementExistID($complement_select_id)) {
+            ?>
+
+            <div class="modal fade show" style="padding-right: 19px; display: block;" id="removeComplementModal" tabindex="-1"
+                role="dialog" aria-labelledby="removeComplementModalLabel" aria-hidden="true">
+                <div class="modal-dialog" style="max-width: 600px" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="removeComplementModalTitle">Remover</h5>
+                            <a href="/panel/complements">
+                                <button type="button" class="close" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </a>
+                        </div>
+                        <div class="modal-body">
+                            Você está prestes a remover o complemento
+                            <b>[<?php echo getDatabaseComplementDescription($complement_select_id) ?>]</b>, você tem certeza disso?
+
+                            <div class="alert alert-danger" role="alert">
+                                Confirmando está ação, pode impactar produtos que utilizam dele.
+                            </div>
+
+                            <form action="/panel/complements" method="post">
+                                <div class="modal-footer">
+                                    <input type="text" name="complement_select_id" value="<?php echo $complement_select_id ?>"
+                                        hidden />
+
+                                    <input name="token" type="text"
+                                        value="<?php echo addGeneralSecurityToken('tokenRemoveComplement') ?>" hidden>
+                                    <a href="/panel/complements">
+                                        <button type="button" class="btn btn-danger">Cancelar</button>
+                                    </a>
+                                    <button type="submit" class="btn btn-success">Confirmar</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
                 </div>
 
-
             </div>
-        </div>
-    </div>
-</div>
 
-<!-- Modal Remove -->
-<div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
-    aria-hidden="true">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-            <div class="modal-body">
-                Você está prestes a desativar o usuário <b>[Thiago de Oliveira Lima]</b>, você tem certeza disso?
+            <div class="modal-backdrop fade show"></div>
+            <?php
+        } else {
+            header('Location: /myaccount');
+        }
+    }
 
-                <div class="alert alert-danger" role="alert">
-                    Confirmando está ação, o usuário não poderá fazer login ou executar qualquer tarefa.
+
+
+    // <!-- Modal EDIT -->
+    if (isCampanhaInURL("edit")) {
+        $complement_select_id = getURLLastParam();
+        if (isDatabaseComplementExistID($complement_select_id)) {
+            ?>
+
+            <div class="modal fade show" style="padding-right: 19px; display: block;" id="editComplementModal" tabindex="-1"
+                role="dialog" aria-labelledby="editComplementModalLabel" aria-hidden="true">
+                <div class="modal-dialog" style="max-width: 600px" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="editComplementModalTitle">Editar</h5>
+                            <a href="/panel/complements">
+                                <button type="button" class="close" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </a>
+                        </div>
+                        <div class="modal-body">
+                            <form action="/panel/complements" method="post">
+                                <section id="product-left">
+                                    <div class="form-group">
+                                        <label for="cod">COD. Pers.</label>
+                                        <input type="text" name="code" class="form-control" id="cod"
+                                            value="<?php echo getDatabaseComplementCode($complement_select_id) ?>">
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="category">Categoria:</label>
+                                        <font color="red">*</font>
+                                        <select class="custom-select" name="category" id="category">
+                                            <option selected>Escolha...</option>
+                                            <!-- CATEGORIA LISTA START -->
+                                            <?php
+                                            $list_category = doDatabaseCategorysList();
+                                            if ($list_category) {
+                                                foreach ($list_category as $data) {
+                                                    $category_list_id = $data['id'];
+                                                    ?>
+                                                    <option value="<?php echo $category_list_id ?>" 
+                                                    <?php echo doSelect(getDatabaseComplementCategoryID($complement_select_id), $category_list_id) ?> >
+                                                        <?php echo getDatabaseCategoryTitle($category_list_id) ?>
+                                                    </option>
+                                                    <?php
+                                                }
+                                            }
+                                            ?>
+                                            <!-- CATEGORIA LISTA FIM -->
+
+                                        </select>
+                                    </div>
+                                </section>
+                                <section id="product-left">
+                                    <div class="form-group">
+                                        <label for="description">Descrição:</label>
+                                        <font color="red">*</font>
+                                        <textarea class="form-control" name="description"
+                                            id="description"><?php echo getDatabaseComplementDescription($complement_select_id) ?></textarea>
+                                    </div>
+                                </section>
+
+                                <div class="modal-footer">
+                                    <input type="text" name="complement_select_id" value="<?php echo $complement_select_id ?>"
+                                        hidden />
+
+                                    <input name="token" type="text"
+                                        value="<?php echo addGeneralSecurityToken('tokenEditComplement') ?>" hidden>
+                                    <a href="/panel/complements">
+                                        <button type="button" class="btn btn-danger">Cancelar</button>
+                                    </a>
+                                    <button type="submit" class="btn btn-success">Confirmar</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
                 </div>
 
-
-                Você está prestes a ativar o usuário <b>[Thiago de Oliveira Lima]</b>, você tem certeza disso?
-
-                <div class="alert alert-warning" role="alert">
-                    Confirmando está ação, o usuário voltará a fazer login e executar tarefas de sua função.
-                </div>
             </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-danger" data-dismiss="modal">Cancelar</button>
-                <button type="button" class="btn btn-success">Confirmar</button>
-            </div>
-        </div>
-    </div>
-</div>
+
+            <div class="modal-backdrop fade show"></div>
+            <?php
+        } else {
+            header('Location: /myaccount');
+        }
+    }
+}
+?>
 
 <script>
+    // SWITCH
+    function submitForm(checkbox) {
+        var form = checkbox.closest('form');
+        if (checkbox.checked) {
+            form.submit();
+        } else {
+            // Se o checkbox for desmarcado, você pode enviar um valor vazio ou fazer algo diferente, como resetar o formulário
+            // Aqui, vamos simplesmente enviar um valor vazio
+            var hiddenInput = document.createElement('input');
+            form.appendChild(hiddenInput);
+            form.submit();
+        }
+    }
+
+
+
     $(document).ready(function () {
         $('#dataTable').DataTable({
             "language": {

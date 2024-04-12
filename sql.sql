@@ -94,6 +94,7 @@ create table categorys (
 
 INSERT INTO `categorys`(`title`) VALUES ('Comida'), ('Bebida');
 
+
 create table products (
     `id` int PRIMARY KEY AUTO_INCREMENT,
     `code` varchar(10),
@@ -145,13 +146,13 @@ create table products_question_reponse (
 create table complements (
     `id` int PRIMARY KEY AUTO_INCREMENT,
     `code` varchar(10),
-    `category_id` int,
-    `description` varchar(255)
+    `category_id` int NOT NULL,
+    `description` varchar(255) NOT NULL,
     `created` datetime NOT NULL,
     `created_by` int NOT NULL,
-    `status` int,
-    FOREIGN KEY (`status`) REFERENCES `status`(`id`)
-    FOREIGN KEY (`category_id`) REFERENCES `category`(`id`)
+    `status` int NOT NULL,
+    FOREIGN KEY (`status`) REFERENCES `status`(`id`),
+    FOREIGN KEY (`category_id`) REFERENCES `categorys`(`id`)
 );
 
 create table additional (
@@ -165,7 +166,7 @@ create table additional (
     `created_by` int NOT NULL,
     `status` int,
     FOREIGN KEY (`status`) REFERENCES `status`(`id`)
-    FOREIGN KEY (`category_id`) REFERENCES `category`(`id`)
+    FOREIGN KEY (`category_id`) REFERENCES `categorys`(`id`)
 );
 
 

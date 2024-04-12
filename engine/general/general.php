@@ -266,3 +266,6 @@ function removerArquivos($caminho_pasta, $nome_arquivo) {
 function doSelect($f, $d) {
     return ($f == $d) ? 'selected' : '';
 }
+function doCheck($f, $d) {
+    return ($f == $d) ? 'checked' : '';
+}
