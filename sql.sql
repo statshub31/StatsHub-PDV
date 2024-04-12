@@ -95,6 +95,34 @@ create table categorys (
 INSERT INTO `categorys`(`title`) VALUES ('Comida'), ('Bebida');
 
 
+create table complements (
+    `id` int PRIMARY KEY AUTO_INCREMENT,
+    `code` varchar(10) NULL,
+    `category_id` int NOT NULL,
+    `description` varchar(255) NOT NULL,
+    `created` datetime NOT NULL,
+    `created_by` int NOT NULL,
+    `status` int NOT NULL DEFAULT 2,
+    FOREIGN KEY (`status`) REFERENCES `status`(`id`),
+    FOREIGN KEY (`category_id`) REFERENCES `categorys`(`id`),
+    FOREIGN KEY (`created_by`) REFERENCES `users`(`id`)
+);
+
+create table additional (
+    `id` int PRIMARY KEY AUTO_INCREMENT,
+    `code` varchar(10) NULL,
+    `category_id` int NOT NULL,
+    `cost_price` float(5, 2) NOT NULL,
+    `sale_price` float(5,2) NOT NULL,
+    `description` varchar(255),
+    `created` datetime NOT NULL,
+    `created_by` int NOT NULL,
+    `status` int NOT NULL DEFAULT 2,
+    FOREIGN KEY (`status`) REFERENCES `status`(`id`),
+    FOREIGN KEY (`category_id`) REFERENCES `categorys`(`id`),
+    FOREIGN KEY (`created_by`) REFERENCES `users`(`id`)
+);
+
 create table products (
     `id` int PRIMARY KEY AUTO_INCREMENT,
     `code` varchar(10),
@@ -130,12 +158,28 @@ create table stock (
     FOREIGN KEY (`product_id`) REFERENCES `products`(`id`)
 );
 
+create table products_additional (
+    `id` int PRIMARY KEY AUTO_INCREMENT,
+    `product_id` int NOT NULL,
+    `additional_id` int NOT NULL,
+    FOREIGN KEY (`product_id`) REFERENCES `products`(`id`),
+    FOREIGN KEY (`additional_id`) REFERENCES `additional`(`id`)
+);
+
+create table products_complements (
+    `id` int PRIMARY KEY AUTO_INCREMENT,
+    `product_id` int NOT NULL,
+    `complement_id` int NOT NULL,
+    FOREIGN KEY (`product_id`) REFERENCES `products`(`id`),
+    FOREIGN KEY (`complement_id`) REFERENCES `complements`(`id`)
+);
 
 create table products_question (
     `id` int PRIMARY KEY AUTO_INCREMENT,
-    `question` varchar(255),
-    `multiple_response` boolean default 1,
-    `response_free` boolean default 0,
+    `product_id` int not null,
+    `question` varchar(255) not null,
+    `multiple_response` boolean not null default 1,
+    `response_free` boolean not null default 0,
     FOREIGN KEY (`product_id`) REFERENCES `products`(`id`)
 );
 
@@ -145,36 +189,6 @@ create table products_question_reponse (
     `response` boolean default 1,
     FOREIGN KEY (`question_id`) REFERENCES `question`(`id`)
 );
-
-
-create table complements (
-    `id` int PRIMARY KEY AUTO_INCREMENT,
-    `code` varchar(10) NULL,
-    `category_id` int NOT NULL,
-    `description` varchar(255) NOT NULL,
-    `created` datetime NOT NULL,
-    `created_by` int NOT NULL,
-    `status` int NOT NULL DEFAULT 2,
-    FOREIGN KEY (`status`) REFERENCES `status`(`id`),
-    FOREIGN KEY (`category_id`) REFERENCES `categorys`(`id`),
-    FOREIGN KEY (`created_by`) REFERENCES `users`(`id`)
-);
-
-create table additional (
-    `id` int PRIMARY KEY AUTO_INCREMENT,
-    `code` varchar(10) NULL,
-    `category_id` int NOT NULL,
-    `cost_price` float(5, 2) NOT NULL,
-    `sale_price` float(5,2) NOT NULL,
-    `description` varchar(255),
-    `created` datetime NOT NULL,
-    `created_by` int NOT NULL,
-    `status` int NOT NULL DEFAULT 2,
-    FOREIGN KEY (`status`) REFERENCES `status`(`id`),
-    FOREIGN KEY (`category_id`) REFERENCES `categorys`(`id`),
-    FOREIGN KEY (`created_by`) REFERENCES `users`(`id`)
-);
-
 
 
 

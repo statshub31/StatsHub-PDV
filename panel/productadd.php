@@ -12,7 +12,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST)) {
     // ADD PRODUCT
     // if (getGeneralSecurityToken('tokenAddProduct')) {
     if (1 == 1) {
-        // data_dump($_POST);
+        data_dump($_POST);
         if (empty($_POST) === false) {
             $required_fields_status = true;
             $required_fields = array('category', 'description', 'size-p', 'size-p-description', 'size-p-price');
@@ -253,23 +253,59 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST)) {
                 //     $errors[] = "É obrigatório preencher todos os campos de tamanhos liberado.";
                 // }
 
-                // STOCK
-                if (isset($_POST['stock-status'])) {
-                    $required_stock_fields = array('stock-min', 'stock-actual');
+                // // STOCK
+                // if (isset($_POST['stock-status'])) {
+                //     $required_stock_fields = array('stock-min', 'stock-actual');
 
-                    if (validateRequiredFields($_POST, $required_stock_fields) === false) {
-                        $errors[] = "É obrigatório preencher todos os campos do estoque.";
-                    }
+                //     if (validateRequiredFields($_POST, $required_stock_fields) === false) {
+                //         $errors[] = "É obrigatório preencher todos os campos do estoque.";
+                //     }
 
-                    if(doGeneralValidationNumberFormat($_POST['stock-min']) == false) {
-                        $errors[] = "Estoque mínimo precisa ser um valor numérico.";
-                    }
+                //     if (doGeneralValidationNumberFormat($_POST['stock-min']) == false) {
+                //         $errors[] = "Estoque mínimo precisa ser um valor numérico.";
+                //     }
 
-                    if(doGeneralValidationNumberFormat($_POST['stock-actual']) == false) {
-                        $errors[] = "Estoque atual precisa ser um valor numérico.";
+                //     if (doGeneralValidationNumberFormat($_POST['stock-actual']) == false) {
+                //         $errors[] = "Estoque atual precisa ser um valor numérico.";
+                //     }
+                // }
+
+                // // ADDITIONAL
+                // if (isset($_POST['additional'])) {
+                //     foreach ($_POST['additional'] as $additional) {
+                //         if (isDatabaseAdditionalExistID($additional) === false) {
+                //             $errors[] = "Um ou mais adicional, não existe.";
+                //         }
+                //     }
+                // }
+
+                // // Complemento
+                // if (isset($_POST['complements'])) {
+                //     foreach ($_POST['complements'] as $complements) {
+                //         if (isDatabaseComplementExistID($complements) === false) {
+                //             $errors[] = "Um ou mais complemento, não existe.";
+                //         }
+                //     }
+                // }
+
+                // QUESTION
+                if(isset($_POST['questions-status'])) {
+                    $count = 1;
+                    while(isset($_POST['question'.$count])) {
+
+                        if(empty($_POST['question'.$count])) {
+                            $errors[] = "Você habilitou o questionário, é obrigatório o preenchimento de ao menos uma pergunta.";
+                        }
+    
+                        if(!isset($_POST['response-free'.$count])) {
+                            if(empty($_POST['response'.$count][0])) {
+                                $errors[] = "Você precisa inserir ao menos uma resposta.";
+                            }
+                        }
+                        
+                        $count++;
                     }
                 }
-
             }
 
         }
@@ -300,7 +336,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST)) {
                     'description' => $_POST['description'],
                     'photo' => $newName,
                     'created' => date('Y-m-d'),
-                    'stock_status' => ((isset($_POST['stock_status']) ? 1 : 0)
+                    'stock_status' => (isset($_POST['stock-status']) ? 1 : 0),
                     'price_distinct' => (isset($_POST['price-size-status']) ? 1 : 0),
                     'created_by' => $in_user_id,
                     'status' => 2
@@ -356,7 +392,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST)) {
                 // doDatabaseProductPriceInsertMultipleRow($price_filled_fields);
 
                 // STOCK
-                if($_POST['stock_status']) {
+                if (isset($_POST['stock-status'])) {
                     $product_stock_fields = array(
                         'product_id' => $product_insert_id,
                         'min' => $_POST['category'],
@@ -366,6 +402,31 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST)) {
 
                 // doDatabaseStockInsert($product_stock_fields);
 
+                // ADDITIONAL
+                if(isset($_POST['additional'])) {
+                    foreach($_POST['additional'] as $additional_id) {
+                        $product_additional_fields[] = array(
+                            'product_id' => $product_insert_id,
+                            'additional_id' => $additional_id
+                        ); 
+                    }
+
+                    // doDatabaseProductAdditionalInsertMultipleRow($product_additional_fields);
+                }
+                
+                // COMPLEMENTS
+                if(isset($_POST['complements'])) {
+                    foreach($_POST['complements'] as $complements_id) {
+                        $product_complements_fields[] = array(
+                            'product_id' => $product_insert_id,
+                            'complements_id' => $complements_id
+                        ); 
+                    }
+
+                    // doDatabaseProductComplementInsertMultipleRow($product_complements_fields);
+                }
+
+                // QUESTIONS
 
                 doAlertSuccess("O produto foi adicionado com sucesso.");
             } else {
@@ -474,7 +535,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST)) {
             <section id="product-left">
                 <div class="form-group">
                     <label for="description">Descrição
-                    <font color="red">*</font>:</label>
+                        <font color="red">*</font>:
+                    </label>
                     <textarea class="form-control" name="description" id="description"
                         aria-label="With textarea"></textarea>
                 </div>
@@ -503,7 +565,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST)) {
                 <legend>Estoque</legend>
                 <div class="form-group">
                     <label for="stock-min">Mínimo
-                    <font color="red">*</font>:
+                        <font color="red">*</font>:
                         <small><i class="fa fa-question-circle" aria-hidden="true" data-toggle="tooltip"
                                 data-placement="top"
                                 title="Mínimo para manter em estoque. Não poderá ser menor que o atual."></i></small>
@@ -512,7 +574,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST)) {
                 </div>
                 <div class="form-group">
                     <label for="stock-actual">Atual
-                    <font color="red">*</font>:
+                        <font color="red">*</font>:
                         <small><i class="fa fa-question-circle" aria-hidden="true" data-toggle="tooltip"
                                 data-placement="top"
                                 title="Estoque atual. Não poderá ser menor que o mínimo."></i></small>
@@ -688,7 +750,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST)) {
             <thead>
                 <tr>
                     <th>Marcar</th>
-                    <th>Adicional</th>
+                    <th>Categoria</th>
                     <th>Descrição</th>
                     <th>Preço</th>
                     <th>Desconto</th>
@@ -698,7 +760,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST)) {
             <tfoot>
                 <tr>
                     <th>Marcar</th>
-                    <th>Adicional</th>
+                    <th>Categoria</th>
                     <th>Descrição</th>
                     <th>Preço</th>
                     <th>Desconto</th>
@@ -706,23 +768,43 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST)) {
                 </tr>
             </tfoot>
             <tbody>
-                <tr>
-                    <td>
-                        <input type="checkbox">
-                    </td>
-                    <td>
-                        <section class="product_photo">
-                            <img src="/../../../layout/images/additional/1.jpeg"></img>
-                        </section>
-                        <label>Tomate</label>
-                    </td>
-                    <td>
-                        Sabor Calabresa
-                    </td>
-                    <td>R$ 20.00</td>
-                    <td>R$ 5.00</td>
-                    <td>R$ 15.00</td>
-                </tr>
+                <!-- ADICIONAL LISTA START -->
+                <?php
+                $additional_list = doDatabaseAdditionalList();
+                if ($additional_list) {
+                    foreach ($additional_list as $data) {
+                        $additional_list_id = $data['id'];
+                        ?>
+                        <tr>
+                            <td>
+                                <input type="checkbox" name="additional[]" value="<?php echo $additional_list_id ?>">
+                            </td>
+
+                            <td>
+                                <label><?php echo getDatabaseCategoryTitle(getDatabaseAdditionalCategoryID($additional_list_id)) ?></label>
+                            </td>
+                            <td>
+                                <label><?php echo getDatabaseAdditionalDescription($additional_list_id) ?></label>
+                            </td>
+                            <td>R$ <?php echo getDatabaseAdditionalCostPrice($additional_list_id) ?></td>
+                            <td>R$ <?php echo getDatabaseAdditionalSalePrice($additional_list_id) ?></td>
+                            <td>R$ <?php echo getDatabaseAdditionalTotalPrice($additional_list_id) ?></td>
+                        </tr>
+                        <?php
+                    }
+                } else {
+                    ?>
+                    <tr>
+                        <td>Não existe nenhum adicional cadastrado, para cadastrar <a href="/panel/addicional">clica
+                                aqui</a>
+                        </td>
+                    </tr>
+
+
+                    <?php
+                }
+                ?>
+                <!-- ADICIONAL LISTA FIM -->
             </tbody>
         </table>
     </div>
@@ -732,32 +814,49 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST)) {
             <thead>
                 <tr>
                     <th>Marcar</th>
-                    <th>Complemento</th>
+                    <th>Categoria</th>
                     <th>Descrição</th>
                 </tr>
             </thead>
             <tfoot>
                 <tr>
                     <th>Marcar</th>
-                    <th>Complemento</th>
+                    <th>Categoria</th>
                     <th>Descrição</th>
                 </tr>
             </tfoot>
             <tbody>
-                <tr>
-                    <td>
-                        <input type="checkbox">
-                    </td>
-                    <td>
-                        <section class="product_photo">
-                            <img src="/../../../layout/images/additional/1.jpeg"></img>
-                        </section>
-                        <label>Tomate</label>
-                    </td>
-                    <td>
-                        Sabor Calabresa
-                    </td>
-                </tr>
+                <!-- COMPLEMENTO LISTA START -->
+                <?php
+                $complement_list = doDatabaseComplementsList();
+                if ($complement_list) {
+                    foreach ($complement_list as $data) {
+                        $complement_list_id = $data['id'];
+                        ?>
+                        <tr>
+                            <td>
+                                <input type="checkbox" name="complements[]" value="<?php echo $complement_list_id ?>">
+                            </td>
+                            <td>
+                                <label><?php echo getDatabaseCategoryTitle(getDatabaseComplementCategoryID($complement_list_id)) ?></label>
+                            </td>
+                            <td><?php echo getDatabaseComplementDescription($complement_list_id) ?></td>
+                        </tr>
+                        <?php
+                    }
+                } else {
+                    ?>
+                    <tr>
+                        <td>Não existe nenhum complemento cadastrado, para cadastrar <a href="/panel/complements">clica
+                                aqui</a>
+                        </td>
+                    </tr>
+
+
+                    <?php
+                }
+                ?>
+                <!-- COMPLEMENTO LISTA FIM -->
             </tbody>
         </table>
     </div>
@@ -770,7 +869,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST)) {
                     title="Caso habilite está função, você poderá definir perguntas para o usuário."></i></small>
             <div class="vc-toggle-container">
                 <label class="vc-switch">
-                    <input type="checkbox" name="price-size-status" id="quest-status" class="vc-switch-input">
+                    <input type="checkbox" name="questions-status" id="quest-status" class="vc-switch-input">
                     <span data-on="Sim" data-off="Não" class="vc-switch-label"></span>
                     <span class="vc-handle"></span>
                 </label>

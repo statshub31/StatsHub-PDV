@@ -56,6 +56,15 @@ function getDatabaseAdditionalSalePrice($id)
     return ($query !== false) ? $query['sale_price'] : false;
 }
 
+function getDatabaseAdditionalTotalPrice($id)
+{
+    
+    $id_sanitize = sanitize($id);
+
+    return (getDatabaseAdditionalCostPrice($id_sanitize) - getDatabaseAdditionalSalePrice($id_sanitize));
+}
+
+
 
 function getDatabaseAdditionalDescription($id)
 {
