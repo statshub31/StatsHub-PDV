@@ -31,6 +31,10 @@ function doGeneralValidationEmailFormat($string) {
     return filter_var($string, FILTER_VALIDATE_EMAIL);
 }
 
+function doGeneralCategoryNameFormat($string) {
+    return preg_match('/^[a-zA-Z ]*$/', $string);
+}
+
 function isCampanhaInURL($param)
 {
     // Obtém a parte da URL após o nome do domínio

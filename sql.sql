@@ -78,13 +78,95 @@ create table tickets (
 
 
 
+create table measure (
+    `id` int PRIMARY KEY AUTO_INCREMENT,
+    `title` varchar(50)
+);
+
+INSERT INTO `measure`(`title`) VALUES ('gramas'), ('centimetros');
 
 
 
+create table categorys (
+    `id` int PRIMARY KEY AUTO_INCREMENT,
+    `title` varchar(50) NOT NULL UNIQUE
+);
+
+INSERT INTO `categorys`(`title`) VALUES ('Comida'), ('Bebida');
+
+create table products (
+    `id` int PRIMARY KEY AUTO_INCREMENT,
+    `code` varchar(10),
+    `category_id` int,
+    `description` text,
+    `photo` varchar(255)
+    `created` datetime NOT NULL,
+    `created_by` int NOT NULL,
+    `status` int,
+    FOREIGN KEY (`status`) REFERENCES `status`(`id`),
+    FOREIGN KEY (`category_id`) REFERENCES `category`(`id`)
+);
+
+create table products_price (
+    `id` int PRIMARY KEY AUTO_INCREMENT,
+    `product_id` varchar(10),
+    `size` varchar(50),
+    `description` varchar(255)
+    `price` float(5, 2),
+    FOREIGN KEY (`status`) REFERENCES `status`(`id`)
+    FOREIGN KEY (`product_id`) REFERENCES `products`(`id`)
+);
+
+create table stock (
+    `id` int PRIMARY KEY AUTO_INCREMENT,
+    `product_id` varchar(10),
+    `min` varchar(50),
+    `actual` varchar(255)
+    FOREIGN KEY (`product_id`) REFERENCES `products`(`id`)
+);
 
 
+create table products_question (
+    `id` int PRIMARY KEY AUTO_INCREMENT,
+    `question` varchar(255),
+    `multiple_response` boolean default 1,
+    `response_free` boolean default 0,
+    FOREIGN KEY (`product_id`) REFERENCES `products`(`id`)
+);
+
+create table products_question_reponse (
+    `id` int PRIMARY KEY AUTO_INCREMENT,
+    `question_id` int,
+    `response` boolean default 1,
+    FOREIGN KEY (`question_id`) REFERENCES `question`(`id`)
+);
 
 
+create table complements (
+    `id` int PRIMARY KEY AUTO_INCREMENT,
+    `code` varchar(10),
+    `category_id` int,
+    `description` varchar(255)
+    `created` datetime NOT NULL,
+    `created_by` int NOT NULL,
+    `status` int,
+    FOREIGN KEY (`status`) REFERENCES `status`(`id`)
+    FOREIGN KEY (`category_id`) REFERENCES `category`(`id`)
+);
+
+create table additional (
+    `id` int PRIMARY KEY AUTO_INCREMENT,
+    `code` varchar(10),
+    `category_id` int,
+    `cost_price` float(5, 2),
+    `sale_price` float(5,2),
+    `description` varchar(255)
+    `created` datetime NOT NULL,
+    `created_by` int NOT NULL,
+    `status` int,
+    FOREIGN KEY (`status`) REFERENCES `status`(`id`)
+    FOREIGN KEY (`category_id`) REFERENCES `category`(`id`)
+);
 
 
 
