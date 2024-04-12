@@ -8,10 +8,12 @@ ob_start();
 global $image_config_dir;
 global $image_user_dir;
 global $image_model_dir;
+global $image_product_dir;
 
 $image_config_dir = '/layout/images/config/';
 $image_user_dir = '/layout/images/users/';
 $image_model_dir = '/layout/images/model/';
+$image_product_dir = '/layout/images/products/';
 
 // PLATFORM FUNCTIONS
 require_once(__DIR__ . "/general/general.php");
@@ -33,6 +35,9 @@ require_once(__DIR__ . "/database/measure.php");
 require_once(__DIR__ . "/database/categorys.php");
 require_once(__DIR__ . "/database/complements.php");
 require_once(__DIR__ . "/database/additional.php");
+require_once(__DIR__ . "/database/products.php");
+require_once(__DIR__ . "/database/products_price.php");
+require_once(__DIR__ . "/database/stock.php");
 
 
 if (getGeneralSecurityLoggedIn() === true) {

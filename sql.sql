@@ -83,7 +83,7 @@ create table measure (
     `title` varchar(50)
 );
 
-INSERT INTO `measure`(`title`) VALUES ('gramas'), ('centimetros');
+INSERT INTO `measure`(`title`) VALUES ('Kilograma'), ('Grama'), ('Porção'), ('Unidade'), ('Centimetro');
 
 
 
@@ -98,31 +98,35 @@ INSERT INTO `categorys`(`title`) VALUES ('Comida'), ('Bebida');
 create table products (
     `id` int PRIMARY KEY AUTO_INCREMENT,
     `code` varchar(10),
-    `category_id` int,
+    `category_id` int NOT NULL,
     `description` text,
-    `photo` varchar(255)
+    `photo` varchar(255),
     `created` datetime NOT NULL,
+    `price_distinct` boolean NOT NULL default 0,
     `created_by` int NOT NULL,
-    `status` int,
+    `status` int NOT NULL DEFAULT 2,
+    `stock_status` int NOT NULL 0,
     FOREIGN KEY (`status`) REFERENCES `status`(`id`),
-    FOREIGN KEY (`category_id`) REFERENCES `category`(`id`)
+    FOREIGN KEY (`category_id`) REFERENCES `categorys`(`id`),
+    FOREIGN KEY (`created_by`) REFERENCES `users`(`id`)
 );
 
 create table products_price (
     `id` int PRIMARY KEY AUTO_INCREMENT,
-    `product_id` varchar(10),
-    `size` varchar(50),
-    `description` varchar(255)
-    `price` float(5, 2),
-    FOREIGN KEY (`status`) REFERENCES `status`(`id`)
-    FOREIGN KEY (`product_id`) REFERENCES `products`(`id`)
+    `product_id` int NOT NULL,
+    `size_measure_id` int NOT NULL,
+    `size` varchar(50) NOT NULL,
+    `description` varchar(255),
+    `price` float(5, 2) NOT NULL,
+    FOREIGN KEY (`product_id`) REFERENCES `products`(`id`),
+    FOREIGN KEY (`size_measure_id`) REFERENCES `measure`(`id`)
 );
 
 create table stock (
     `id` int PRIMARY KEY AUTO_INCREMENT,
-    `product_id` varchar(10),
+    `product_id` int,
     `min` varchar(50),
-    `actual` varchar(255)
+    `actual` varchar(255),
     FOREIGN KEY (`product_id`) REFERENCES `products`(`id`)
 );
 
@@ -150,9 +154,10 @@ create table complements (
     `description` varchar(255) NOT NULL,
     `created` datetime NOT NULL,
     `created_by` int NOT NULL,
-    `status` int NOT NULL,
+    `status` int NOT NULL DEFAULT 2,
     FOREIGN KEY (`status`) REFERENCES `status`(`id`),
-    FOREIGN KEY (`category_id`) REFERENCES `categorys`(`id`)
+    FOREIGN KEY (`category_id`) REFERENCES `categorys`(`id`),
+    FOREIGN KEY (`created_by`) REFERENCES `users`(`id`)
 );
 
 create table additional (
@@ -164,9 +169,10 @@ create table additional (
     `description` varchar(255),
     `created` datetime NOT NULL,
     `created_by` int NOT NULL,
-    `status` int NOT NULL,
+    `status` int NOT NULL DEFAULT 2,
     FOREIGN KEY (`status`) REFERENCES `status`(`id`),
-    FOREIGN KEY (`category_id`) REFERENCES `categorys`(`id`)
+    FOREIGN KEY (`category_id`) REFERENCES `categorys`(`id`),
+    FOREIGN KEY (`created_by`) REFERENCES `users`(`id`)
 );
 
 
