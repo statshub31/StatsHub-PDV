@@ -78,7 +78,7 @@ function getURLLastParam()
 
 
 
-
+// ARQUIVOS
 
 function getPathImageFormat($dir, $img)
 {
@@ -134,10 +134,59 @@ function getPathProductImage($img)
     if ($format !== false) {
         return $image_product_dir . $img . '.' . $format;
     } else {
-        return $image_model_dir . 'product.jpeg';
+        return $image_model_dir . 'product.png';
     }
 }
 
+
+function doGeneralRemoveArchives($caminho_pasta, $nome_arquivo) {
+    // Obtém uma lista de todos os arquivos no diretório
+    $arquivos = scandir($caminho_pasta);
+
+    // Variável para armazenar o número de arquivos removidos
+    $num_arquivos_removidos = 0;
+
+    // Percorre todos os arquivos encontrados
+    foreach ($arquivos as $arquivo) {
+        // Verifica se o arquivo corresponde ao nome conhecido
+        if (strpos($arquivo, $nome_arquivo) !== false) {
+            // Remove o arquivo
+            if (unlink($caminho_pasta . $arquivo)) {
+                $num_arquivos_removidos++;
+            }
+        }
+    }
+
+    // Se nenhum arquivo correspondente for encontrado
+    if ($num_arquivos_removidos === 0) {
+        return 'Nenhum arquivo correspondente encontrado.';
+    } else {
+        return $num_arquivos_removidos . ' arquivo(s) removido(s) com sucesso.';
+    }
+}
+
+function doGeneralRemoveArchive($caminho_pasta, $nome_arquivo) {
+    // Caminho completo para o arquivo
+    
+    $format = getPathImageFormat($caminho_pasta, $nome_arquivo);
+    $caminho_arquivo = $_SERVER['DOCUMENT_ROOT'] . $caminho_pasta . $nome_arquivo.'.'.$format;
+
+    // Verifica se o arquivo existe
+    if (file_exists($caminho_arquivo)) {
+        // Tenta remover o arquivo
+        if (unlink($caminho_arquivo)) {
+            return 'Arquivo removido com sucesso.';
+        } else {
+            return 'Falha ao remover o arquivo.';
+        }
+    } else {
+        return 'Arquivo não encontrado.';
+    }
+}
+
+
+
+// 
 
 
 

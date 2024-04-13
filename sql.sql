@@ -191,10 +191,26 @@ create table products_question_reponse (
     FOREIGN KEY (`question_id`) REFERENCES `products_question`(`id`)
 );
 
+create table stock_actions (
+    `id` int PRIMARY KEY AUTO_INCREMENT,
+    `title` varchar(50)
+);
+
+insert into `stock_actions` (`title`) VALUES ('Entrada'), ('Saida'), ('Devolução');
 
 
-
-
+create table logs_stock (
+    `id` int PRIMARY KEY AUTO_INCREMENT,
+    `product_id` int NOT NULL,
+    `action_id` int not null,
+    `user_id` int not null,
+    `amount` int not null,
+    `reason` text not null,
+    `date` datetime not null,
+    FOREIGN KEY (`product_id`) REFERENCES `products`(`id`),
+    FOREIGN KEY (`action_id`) REFERENCES `stock_actions`(`id`),
+    FOREIGN KEY (`user_id`) REFERENCES `users`(`id`)
+);
 
 
 

@@ -10,7 +10,7 @@ include_once (realpath(__DIR__ . "/layout/php/header.php"));
 // <!-- INICIO DA VALIDAÇÃO PHP -->
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST)) {
 
-    // ATIVAR/DESATIVAR SWITCH
+    // STOCK PRODUCTS
     if (getGeneralSecurityToken('tokenStock')) {
 
         if (empty($_POST) === false) {
@@ -22,7 +22,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST)) {
                 $required_fields_status = false;
             }
 
-            if($_POST['action'] < 1 || $_POST['action'] > 3) {
+            if (isDatabaseStockActionExistID($_POST['action']) === false) {
                 $errors[] = "Selecione uma ação.";
             }
 
@@ -46,15 +46,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST)) {
         if (empty($errors)) {
             $stock_total = getDatabaseStockActual(getDatabaseStockIDByProductID($_POST['product_select_id']));
 
-            if($_POST['action'] == 1 || $_POST['action'] == 3) {
+            if ($_POST['action'] == 1 || $_POST['action'] == 3) {
                 $stock_total += $_POST['amount'];
             }
 
-            if($_POST['action'] == 2) {
+            if ($_POST['action'] == 2) {
                 $stock_total -= $_POST['amount'];
             }
 
-            if($stock_total < 0) 
+            if ($stock_total < 0)
                 $stock_total = 0;
 
             $stock_update_fields = array(
@@ -62,7 +62,34 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST)) {
             );
 
 
-            doDatabaseStockUpdate($_POST['product_select_id'], $stock_update_fields);
+            if (isDatabaseProductStockEnabled($_POST['product_select_id'])) {
+                doDatabaseStockUpdate($_POST['product_select_id'], $stock_update_fields);
+            } else {
+                $product_stock_insert_fields = array(
+                    'product_id' => $_POST['product_select_id'],
+                    'min' => $_POST['amount'],
+                    'actual' => $_POST['amount']
+                );
+                doDatabaseStockInsert($product_stock_insert_fields);
+
+                $product_update_fields = array(
+                    'stock_status' => 1
+                );
+
+                doDatabaseProductUpdate($_POST['product_select_id'], $product_update_fields);
+            }
+
+
+            $log_stock_insert_fields = array(
+                'product_id' => $_POST['product_select_id'],
+                'action_id' => $_POST['action'],
+                'user_id' => $in_user_id,
+                'amount' => $_POST['amount'],
+                'reason' => $_POST['reason'],
+                'date' => date('Y-m-d H:i:s')
+            );
+
+            doDatabaseLogStockInsert($log_stock_insert_fields);
 
             doAlertSuccess("O estoque foi ajustado com sucesso.");
 
@@ -70,12 +97,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST)) {
     }
 
 
-    // REMOVER COMPLEMENTO
-    if (getGeneralSecurityToken('tokenRemoveComplement')) {
+    // PRODUCT REMOVE
+    if (getGeneralSecurityToken('tokenRemoveProduct')) {
 
         if (empty($_POST) === false) {
             $required_fields_status = true;
-            $required_fields = array('complement_select_id');
+            $required_fields = array('product_select_id');
 
             if (validateRequiredFields($_POST, $required_fields) === false) {
                 $errors[] = "Obrigatório o preenchimento de todos os campos.";
@@ -83,7 +110,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST)) {
             }
 
             if ($required_fields_status) {
-                if (isDatabaseComplementExistID($_POST['complement_select_id']) === false) {
+                if (isDatabaseProductExistID($_POST['product_select_id']) === false) {
                     $errors[] = "Houve um erro ao processar solicitação, complemento é inexistente.";
                 }
 
@@ -96,60 +123,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST)) {
 
 
         if (empty($errors)) {
-            doDatabaseComplementDelete($_POST['complement_select_id']);
-            doAlertSuccess("O complemento foi removido com sucesso.");
-        }
-    }
 
-
-    // EDITAR COMPLEMENTO
-    if (getGeneralSecurityToken('tokenEditComplement')) {
-
-        if (empty($_POST) === false) {
-            $required_fields_status = true;
-            $required_fields = array('complement_select_id', 'category', 'description');
-
-            if (validateRequiredFields($_POST, $required_fields) === false) {
-                $errors[] = "Obrigatório o preenchimento de todos os campos.";
-                $required_fields_status = false;
-            }
-
-            if ($required_fields_status) {
-                if (isDatabaseComplementExistID($_POST['complement_select_id']) === false) {
-                    $errors[] = "Houve um erro ao processar solicitação, complemento é inexistente.";
-                }
-
-
-                if (isDatabaseCategoryExistID($_POST['category']) === false) {
-                    $errors[] = "Houve um erro ao processar solicitação, categoria é inexistente.";
-                }
-
-                if (!empty($_POST['code'])) {
-                    if (isDatabaseComplementEnabledByCode($_POST['code'])) {
-                        if (isDatabaseComplementValidationCode($_POST['code'], $_POST['complement_select_id']) === false) {
-                            $errors[] = "O codigo é existente, preencha com outro ou deixe em branco.";
-                        }
-                    }
-                }
-
-                if (isGeneralSecurityManagerAccess() === false) {
-                    $errors[] = "É obrigatório ter um cargo igual ou superior ao de gestor, para executar está ação.";
-                }
-            }
-
-        }
-
-
-        if (empty($errors)) {
-            $complement_update_fields = array(
-                'code' => (!empty($_POST['code']) ? $_POST['code'] : NULL),
-                'category_id' => $_POST['category'],
-                'description' => $_POST['description']
-            );
-
-            doDatabaseComplementUpdate($_POST['complement_select_id'], $complement_update_fields);
-
-            doAlertSuccess("As informações do complemento foram alteradas!");
+            doDatabaseRemoveProduct($_POST['product_select_id']);
+            doAlertSuccess("Foram removido todas as informações vinculado a este produto.");
 
         }
     }
@@ -243,8 +219,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST)) {
                     </td>
                     <td>
                         <i class="fa fa-edit" aria-hidden="true"></i>
-                        <i class="fa fa-trash" aria-hidden="true" data-toggle="modal" data-target="#exampleModal"></i>
-                        <i class="fa fa-eye" aria-hidden="true" data-toggle="modal" data-target="#exampleModalLong"></i>
+                        <a href="/panel/products/view/product/<?php echo $product_list_id ?>">
+                            <i class="fa fa-trash" aria-hidden="true"></i>
+                        </a>
+                        <a href="/panel/products/view/product/<?php echo $product_list_id ?>">
+                            <i class="fa fa-eye" aria-hidden="true"></i>
+                        </a>
                     </td>
                 </tr>
                 <?php
@@ -281,7 +261,7 @@ if (isCampanhaInURL("product")) {
                     <div class="modal-content">
                         <div class="modal-header">
                             <h5 class="modal-title" id="viewProductModalTitle">Visualização</h5>
-                            <a href="/panel/complements">
+                            <a href="/panel/products">
                                 <button type="button" class="close" aria-label="Close">
                                     <span aria-hidden="true">&times;</span>
                                 </button>
@@ -291,7 +271,7 @@ if (isCampanhaInURL("product")) {
 
                             <div id="user_panel">
                                 <section class="product-photo-circle">
-                                    <img src="<?php echo getPathProductImage(getDatabaseProductPhotoName($product_list_id)); ?>">
+                                    <img src="<?php echo getPathProductImage(getDatabaseProductPhotoName($product_select_id)); ?>">
                                 </section>
                                 <section style="width: 40%">
                                     <b><label>Cod:</label></b>
@@ -499,22 +479,45 @@ if (isCampanhaInURL("product")) {
                         <div class="modal-content">
                             <div class="modal-header">
                                 <h5 class="modal-title" id="exampleModalLabel">Ajuste de Estoque</h5>
-                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                    <span aria-hidden="true">&times;</span>
-                                </button>
+                                <a href="/panel/products/view/product/<?php echo $product_select_id ?>">
+                                    <button type="button" class="close">
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
+                                </a>
                             </div>
                             <form action="/panel/products/view/product/<?php echo $product_select_id ?>" method="post">
                                 <div class="modal-body">
-
+                                    <?php
+                                    if (isDatabaseProductStockEnabled($product_select_id) === false) {
+                                        ?>
+                                        <div class="alert alert-info" role="alert">
+                                            O estoque para este produto, está desabilitado, caso você faça uma entrada, o valor inserido
+                                            será dado como minimo e o estoque será habilitado automaticamente.
+                                        </div>
+                                        <?php
+                                    }
+                                    ?>
                                     <div class="input-group">
                                         <select class="custom-select" name="action" id="inputGroupSelect04"
                                             aria-label="Example select with button addon">
                                             <option selected>Escolha uma Ação...
                                                 <font color="red">*</font>
                                             </option>
-                                            <option value="1">Entrada</option>
-                                            <option value="2">Saida</option>
-                                            <option value="3">Devolução</option>
+                                            <!-- STOCK ACTION LIST START -->
+                                            <?PHP
+                                            $stock_action_list = doDatabaseStockActionsList();
+                                            if ($stock_action_list) {
+                                                foreach ($stock_action_list as $dataStockAction) {
+                                                    $stock_action_list_id = $dataStockAction['id'];
+                                                    ?>
+                                                    <option value="<?php echo $stock_action_list_id ?>">
+                                                        <?php echo getDatabaseStockActionTitle($stock_action_list_id) ?>
+                                                    </option>
+                                                    <?php
+                                                }
+                                            }
+                                            ?>
+                                            <!-- STOCK ACTION LIST END -->
                                         </select>
                                     </div><br>
 
@@ -534,11 +537,9 @@ if (isCampanhaInURL("product")) {
 
                                 </div>
                                 <div class="modal-footer">
-                                    
-                                <input name="product_select_id" type="text"
-                                        value="<?php echo $product_select_id ?>" hidden>
-                                <input name="token" type="text"
-                                        value="<?php echo addGeneralSecurityToken('tokenStock') ?>" hidden>
+
+                                    <input name="product_select_id" type="text" value="<?php echo $product_select_id ?>" hidden>
+                                    <input name="token" type="text" value="<?php echo addGeneralSecurityToken('tokenStock') ?>" hidden>
                                     <a href="/panel/products/view/product/<?php echo $product_select_id ?>">
                                         <button type="button" class="btn btn-danger" data-dismiss="modal">Cancelar</button>
                                     </a>
@@ -560,6 +561,57 @@ if (isCampanhaInURL("product")) {
         }
     }
 
+    // <!-- Modal REMOVE -->
+    if (isCampanhaInURL("remove")) {
+        $product_select_id = getURLLastParam();
+        if (isDatabaseProductExistID($product_select_id)) {
+            ?>
+
+            <div class="modal fade show" style="padding-right: 19px; display: block;" id="removeProductModal" tabindex="-1"
+                role="dialog" aria-labelledby="removeProductModalLabel" aria-hidden="true">
+                <div class="modal-dialog" style="max-width: 600px" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="removeProductModalTitle">Remover</h5>
+                            <a href="/panel/products">
+                                <button type="button" class="close" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </a>
+                        </div>
+                        <div class="modal-body">
+                            Você está prestes a remover o produto
+                            <b>[<?php echo getDatabaseProductName($product_select_id) ?>]</b>, você tem certeza disso?
+
+                            <div class="alert alert-danger" role="alert">
+                                Confirmando está ação, você afirma que poderá remover do histórico do banco de dados, toda e
+                                qualquer informação, vinculada ao mesmo.
+                            </div>
+
+                            <form action="/panel/products" method="post">
+                                <div class="modal-footer">
+                                    <input type="text" name="product_select_id" value="<?php echo $product_select_id ?>" hidden />
+
+                                    <input name="token" type="text"
+                                        value="<?php echo addGeneralSecurityToken('tokenRemoveProduct') ?>" hidden>
+                                    <a href="/panel/products">
+                                        <button type="button" class="btn btn-danger">Cancelar</button>
+                                    </a>
+                                    <button type="submit" class="btn btn-success">Confirmar</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="modal-backdrop fade show"></div>
+            <?php
+        } else {
+            header('Location: /myaccount');
+        }
+    }
 
 }
 ?>
@@ -571,7 +623,7 @@ if (isCampanhaInURL("product")) {
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <button type="button" class="close">
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>

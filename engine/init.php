@@ -42,6 +42,10 @@ require_once(__DIR__ . "/database/products_additional.php");
 require_once(__DIR__ . "/database/products_complements.php");
 require_once(__DIR__ . "/database/products_question.php");
 require_once(__DIR__ . "/database/products_question_response.php");
+require_once(__DIR__ . "/database/stock_actions.php");
+require_once(__DIR__ . "/database/logs_stock.php");
+require_once(__DIR__ . "/database/multiples_tables.php");
+
 
 
 if (getGeneralSecurityLoggedIn() === true) {

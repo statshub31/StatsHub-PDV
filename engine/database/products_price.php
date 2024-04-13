@@ -164,4 +164,12 @@ function doDatabaseProductPriceInsertMultipleRow($import_data_query)
     doInsertDB($query);
 }
 
+function doDatabaseProductPriceTruncateByProductID($product_id)
+{
+    
+    $product_id_sanitize = sanitize($product_id);
+
+    doDeleteDB("DELETE FROM `products_price` WHERE `product_id`='".$product_id_sanitize."';");
+}
+
 ?>

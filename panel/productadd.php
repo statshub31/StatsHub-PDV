@@ -402,9 +402,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST)) {
                         'min' => $_POST['stock-min'],
                         'actual' => $_POST['stock-actual']
                     );
+                    doDatabaseStockInsert($product_stock_fields);
                 }
 
-                doDatabaseStockInsert($product_stock_fields);
 
                 // ADDITIONAL
                 if (isset($_POST['additional'])) {

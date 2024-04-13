@@ -132,4 +132,11 @@ function getDatabaseStockIDByProductID($id)
 }
 
 
+function doDatabaseStockTruncateByProductID($product_id)
+{
+    
+    $product_id_sanitize = sanitize($product_id);
+
+    doDeleteDB("DELETE FROM `stock` WHERE `product_id`='".$product_id_sanitize."';");
+}
 ?>

@@ -112,6 +112,16 @@ function getDatabaseProductsStockStatus($id)
     return ($query !== false) ? $query['stock_status'] : false;
 }
 
+function isDatabaseProductStockEnabled($id)
+{
+    
+    $id_sanitize = sanitize($id);
+
+    $query = doSelectSingleDB("SELECT `stock_status` FROM `products` WHERE `id`='".$id_sanitize."';");
+    return ($query !== false && $query['stock_status'] == 1) ? true : false;
+}
+
+
 function isDatabaseProductExistID($id)
 {
     
@@ -215,5 +225,6 @@ function isDatabaseProductValidationCode($code, $id) {
 	
 	return ($data !== false) ? true : false;
 }
+
 
 ?>

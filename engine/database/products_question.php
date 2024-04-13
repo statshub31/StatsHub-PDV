@@ -158,4 +158,24 @@ function doDatabaseProductQuestionInsertMultipleRow($import_data_query)
     doInsertDB($query);
 }
 
+
+function doDatabaseProductQuestionTruncateByProductID($product_id)
+{
+    
+    $product_id_sanitize = sanitize($product_id);
+
+    doDeleteDB("DELETE FROM `products_question` WHERE `product_id`='".$product_id_sanitize."';");
+}
+
+
+function getDatabaseProductQuestionIDByProductID($product_id)
+{
+    
+    $product_id_sanitize = sanitize($product_id);
+
+    $query = doSelectSingleDB("SELECT `id` FROM `products_question` WHERE `product_id`='".$product_id_sanitize."';");
+    return ($query !== false) ? $query['id'] : false;
+}
+
+
 ?>

@@ -139,4 +139,13 @@ function doDatabaseProductComplementInsertMultipleRow($import_data_query)
     doInsertDB($query);
 }
 
+
+function doDatabaseProductComplementTruncateByProductID($product_id)
+{
+    
+    $product_id_sanitize = sanitize($product_id);
+
+    doDeleteDB("DELETE FROM `products_complements` WHERE `product_id`='".$product_id_sanitize."';");
+}
+
 ?>

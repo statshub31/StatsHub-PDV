@@ -139,4 +139,13 @@ function doDatabaseProductQuestionResponseInsertMultipleRow($import_data_query)
     doInsertDB($query);
 }
 
+
+function doDatabaseProductQuestionResponseTruncateByProductID($product_id)
+{
+    
+    $product_id_sanitize = sanitize($product_id);
+
+    doDeleteDB("DELETE FROM `products_question_reponse` WHERE `question_id`='".$product_id_sanitize."';");
+}
+
 ?>
