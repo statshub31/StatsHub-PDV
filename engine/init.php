@@ -40,6 +40,8 @@ require_once(__DIR__ . "/database/products_price.php");
 require_once(__DIR__ . "/database/stock.php");
 require_once(__DIR__ . "/database/products_additional.php");
 require_once(__DIR__ . "/database/products_complements.php");
+require_once(__DIR__ . "/database/products_question.php");
+require_once(__DIR__ . "/database/products_question_response.php");
 
 
 if (getGeneralSecurityLoggedIn() === true) {

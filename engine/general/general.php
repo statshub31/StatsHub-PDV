@@ -5,6 +5,9 @@
 function doGeneralValidationNameFormat($string) {
     return preg_match('/^[a-zA-Z ]*$/', $string);
 }
+function doGeneralValidationProductNameFormat($string) {
+    return preg_match('/^[a-zA-Z0-9 ]*$/', $string);
+}
 function doGeneralValidationUserNameFormat($string) {
     return preg_match('/^[a-zA-Z0-9]*$/', $string);
 }

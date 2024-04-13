@@ -127,13 +127,14 @@ create table products (
     `id` int PRIMARY KEY AUTO_INCREMENT,
     `code` varchar(10),
     `category_id` int NOT NULL,
+    `name` varchar(100) NOT NULL,
     `description` text,
     `photo` varchar(255),
     `created` datetime NOT NULL,
     `price_distinct` boolean NOT NULL default 0,
     `created_by` int NOT NULL,
     `status` int NOT NULL DEFAULT 2,
-    `stock_status` int NOT NULL 0,
+    `stock_status` int NOT NULL default 0,
     FOREIGN KEY (`status`) REFERENCES `status`(`id`),
     FOREIGN KEY (`category_id`) REFERENCES `categorys`(`id`),
     FOREIGN KEY (`created_by`) REFERENCES `users`(`id`)
@@ -185,9 +186,9 @@ create table products_question (
 
 create table products_question_reponse (
     `id` int PRIMARY KEY AUTO_INCREMENT,
-    `question_id` int,
-    `response` boolean default 1,
-    FOREIGN KEY (`question_id`) REFERENCES `question`(`id`)
+    `question_id` int not null,
+    `response` text null,
+    FOREIGN KEY (`question_id`) REFERENCES `products_question`(`id`)
 );
 
 

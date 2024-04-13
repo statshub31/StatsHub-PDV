@@ -12,10 +12,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST)) {
     // ADD PRODUCT
     // if (getGeneralSecurityToken('tokenAddProduct')) {
     if (1 == 1) {
-        data_dump($_POST);
+        // data_dump($_POST);
         if (empty($_POST) === false) {
             $required_fields_status = true;
-            $required_fields = array('category', 'description', 'size-p', 'size-p-description', 'size-p-price');
+            $required_fields = array('category', 'name', 'description', 'size-p', 'size-p-description', 'size-p-price');
 
             if (validateRequiredFields($_POST, $required_fields) === false) {
                 // $errors[] = "Obrigatório o preenchimento de todos os campos.";
@@ -25,284 +25,287 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST)) {
             if ($required_fields_status) {
 
                 // INFORMAÇÕES
-                // if (isset($_FILES['productImage']) && $_FILES['productImage']['size'] > 0) {
-                //     // Verifica se o arquivo foi enviado sem erros
-                //     if ($_FILES['productImage']['error'] !== UPLOAD_ERR_OK) {
-                //         $errors[] = 'Erro no upload do arquivo.';
-                //     }
+                if (isset($_FILES['productImage']) && $_FILES['productImage']['size'] > 0) {
+                    // Verifica se o arquivo foi enviado sem erros
+                    if ($_FILES['productImage']['error'] !== UPLOAD_ERR_OK) {
+                        $errors[] = 'Erro no upload do arquivo.';
+                    }
 
-                //     // Verifica se é uma imagem válida
-                //     $imageInfo = getimagesize($_FILES['productImage']['tmp_name']);
-                //     if (!$imageInfo || !in_array($imageInfo['mime'], array('image/jpeg', 'image/png'))) {
-                //         $errors[] = 'O arquivo enviado para a foto de perfil não é uma imagem válida.';
-                //     } elseif ($imageInfo[0] > 1500 || $imageInfo[1] > 1500) {
-                //         $errors[] = 'A imagem para foto precisa ser menor que 1500x1500.';
-                //     }
-                // }
+                    // Verifica se é uma imagem válida
+                    $imageInfo = getimagesize($_FILES['productImage']['tmp_name']);
+                    if (!$imageInfo || !in_array($imageInfo['mime'], array('image/jpeg', 'image/png'))) {
+                        $errors[] = 'O arquivo enviado para a foto de perfil não é uma imagem válida.';
+                    } elseif ($imageInfo[0] > 1500 || $imageInfo[1] > 1500) {
+                        $errors[] = 'A imagem para foto precisa ser menor que 1500x1500.';
+                    }
+                }
 
-                // if (isDatabaseCategoryExistID($_POST['category']) === false) {
-                //     $errors[] = "Houve um erro ao processar solicitação, categoria é inexistente.";
-                // }
+                if (isDatabaseCategoryExistID($_POST['category']) === false) {
+                    $errors[] = "Houve um erro ao processar solicitação, categoria é inexistente.";
+                }
 
-                // if (!empty($_POST['code'])) {
-                //     if (isDatabaseProductEnabledByCode($_POST['code'])) {
-                //         $errors[] = "O codigo é existente, preencha com outro ou deixe em branco.";
-                //     }
-                // }
+                if (!empty($_POST['code'])) {
+                    if (isDatabaseProductEnabledByCode($_POST['code'])) {
+                        $errors[] = "O codigo é existente, preencha com outro ou deixe em branco.";
+                    }
+                }
+                if(doGeneralValidationProductNameFormat($_POST['name']) == false) {
+                    $errors[] = "Escolha outro nome, somente é aceito caracteres alfanumérico.";
+                }
 
-                // if (isGeneralSecurityManagerAccess() === false) {
-                //     $errors[] = "É obrigatório ter um cargo igual ou superior ao de gestor, para executar está ação.";
-                // }
+                if (isGeneralSecurityManagerAccess() === false) {
+                    $errors[] = "É obrigatório ter um cargo igual ou superior ao de gestor, para executar está ação.";
+                }
 
-                // // PREÇOS
-                // if (isDatabaseMeasureExistID($_POST['measure']) === false) {
-                //     $errors[] = "A unidade de medida selecionada, não é existente.";
-                // }
+                // PREÇOS
+                if (isDatabaseMeasureExistID($_POST['measure']) === false) {
+                    $errors[] = "A unidade de medida selecionada, não é existente.";
+                }
 
-                // if (doGeneralValidationPriceFormat($_POST['price-p']) == false) {
-                //     $errors[] = "É obrigatório preencher com valores númerico, o campo de valor do tamanho 1.";
-                // }
+                if (doGeneralValidationPriceFormat($_POST['price-p']) == false) {
+                    $errors[] = "É obrigatório preencher com valores númerico, o campo de valor do tamanho 1.";
+                }
 
-                // // KILOGRAMA
-                // if ($_POST['measure'] == 1) {
+                // KILOGRAMA
+                if ($_POST['measure'] == 1) {
 
-                //     if (doGeneralValidationNumberFormat($_POST['size-p']) == false) {
-                //         $errors[] = "Você selecionou kilograma como unidade de medida, é obrigatório digitar um valor númerico no tamanho  de tamanho 1.";
-                //     }
+                    if (doGeneralValidationNumberFormat($_POST['size-p']) == false) {
+                        $errors[] = "Você selecionou kilograma como unidade de medida, é obrigatório digitar um valor númerico no tamanho  de tamanho 1.";
+                    }
 
-                //     if (isset($_POST['price-size-status'])) {
-                //         if (doGeneralValidationNumberFormat($_POST['size-m']) == false) {
-                //             $errors[] = "Você selecionou kilograma como unidade de medida, é obrigatório digitar um valor númerico no tamanho  de tamanho 2.";
-                //         }
-
-                //         if (!empty($_POST['size-g'])) {
-                //             if (doGeneralValidationNumberFormat($_POST['size-g']) == false) {
-                //                 $errors[] = "Você selecionou kilograma como unidade de medida, é obrigatório digitar um valor númerico no tamanho  de tamanho 3.";
-                //             }
-                //         }
-
-                //         if (!empty($_POST['size-xg'])) {
-                //             if (doGeneralValidationNumberFormat($_POST['size-xg']) == false) {
-                //                 $errors[] = "Você selecionou kilograma como unidade de medida, é obrigatório digitar um valor númerico no tamanho  de tamanho 4.";
-                //             }
-                //         }
-                //     }
-                // }
-
-                // // GRAMA
-                // if ($_POST['measure'] == 2) {
-
-                //     if (doGeneralValidationNumberFormat($_POST['size-p']) == false) {
-                //         $errors[] = "Você selecionou grama como unidade de medida, é obrigatório digitar um valor númerico no tamanho  de tamanho 1.";
-                //     }
-
-                //     if (isset($_POST['price-size-status'])) {
-                //         if (doGeneralValidationNumberFormat($_POST['size-m']) == false) {
-                //             $errors[] = "Você selecionou grama como unidade de medida, é obrigatório digitar um valor númerico no tamanho  de tamanho 2.";
-                //         }
-
-                //         if (!empty($_POST['size-g'])) {
-                //             if (doGeneralValidationNumberFormat($_POST['size-g']) == false) {
-                //                 $errors[] = "Você selecionou grama como unidade de medida, é obrigatório digitar um valor númerico no tamanho  de tamanho 3.";
-                //             }
-                //         }
-
-                //         if (!empty($_POST['size-g'])) {
-                //             if (doGeneralValidationNumberFormat($_POST['size-xg']) == false) {
-                //                 $errors[] = "Você selecionou grama como unidade de medida, é obrigatório digitar um valor númerico no tamanho  de tamanho 4.";
-                //             }
-                //         }
-                //     }
-                // }
-
-                // // PORÇÃO
-                // if ($_POST['measure'] == 3) {
-
-                //     if (doGeneralValidationNumberFormat($_POST['size-p']) == false) {
-                //         $errors[] = "Você selecionou porção como unidade de medida, é obrigatório digitar um valor númerico no tamanho  de tamanho 1.";
-                //     }
-
-                //     if (isset($_POST['price-size-status'])) {
-                //         if (doGeneralValidationNumberFormat($_POST['size-m']) == false) {
-                //             $errors[] = "Você selecionou porção como unidade de medida, é obrigatório digitar um valor númerico no tamanho  de tamanho 2.";
-                //         }
-
-                //         if (!empty($_POST['size-g'])) {
-                //             if (doGeneralValidationNumberFormat($_POST['size-g']) == false) {
-                //                 $errors[] = "Você selecionou porção como unidade de medida, é obrigatório digitar um valor númerico no tamanho  de tamanho 3.";
-                //             }
-                //         }
-                //         if (!empty($_POST['size-xg'])) {
-                //             if (doGeneralValidationNumberFormat($_POST['size-xg']) == false) {
-                //                 $errors[] = "Você selecionou porção como unidade de medida, é obrigatório digitar um valor númerico no tamanho  de tamanho 4.";
-                //             }
-                //         }
-                //     }
-                // }
-
-                // // UNIDADE
-                // if ($_POST['measure'] == 4) {
-
-                //     if (doGeneralValidationNumberFormat($_POST['size-p']) == false) {
-                //         $errors[] = "Você selecionou unidade como unidade de medida, é obrigatório digitar um valor númerico no tamanho  de tamanho 1.";
-                //     }
-
-                //     if (isset($_POST['price-size-status'])) {
-                //         if (doGeneralValidationNumberFormat($_POST['size-m']) == false) {
-                //             $errors[] = "Você selecionou unidade como unidade de medida, é obrigatório digitar um valor númerico no tamanho  de tamanho 2.";
-                //         }
-
-                //         if (!empty($_POST['size-g'])) {
-                //             if (doGeneralValidationNumberFormat($_POST['size-g']) == false) {
-                //                 $errors[] = "Você selecionou unidade como unidade de medida, é obrigatório digitar um valor númerico no tamanho  de tamanho 3.";
-                //             }
-                //         }
-
-                //         if (!empty($_POST['size-xg'])) {
-                //             if (doGeneralValidationNumberFormat($_POST['size-xg']) == false) {
-                //                 $errors[] = "Você selecionou unidade como unidade de medida, é obrigatório digitar um valor númerico no tamanho  de tamanho 4.";
-                //             }
-                //         }
-                //     }
-                // }
-
-                // // CENTIMETRO
-                // if ($_POST['measure'] == 5) {
-
-                //     if (doGeneralValidationNumberFormat($_POST['size-p']) == false) {
-                //         $errors[] = "Você selecionou centimetro como unidade de medida, é obrigatório digitar um valor númerico no tamanho  de tamanho 1.";
-                //     }
-
-                //     if (isset($_POST['price-size-status'])) {
-                //         if (doGeneralValidationNumberFormat($_POST['size-m']) == false) {
-                //             $errors[] = "Você selecionou centimetro como unidade de medida, é obrigatório digitar um valor númerico no tamanho  de tamanho 2.";
-                //         }
-
-                //         if (!empty($_POST['size-g'])) {
-                //             if (doGeneralValidationNumberFormat($_POST['size-g']) == false) {
-                //                 $errors[] = "Você selecionou centimetro como unidade de medida, é obrigatório digitar um valor númerico no tamanho  de tamanho 3.";
-                //             }
-                //         }
-                //         if (!empty($_POST['size-xg'])) {
-                //             if (doGeneralValidationNumberFormat($_POST['size-xg']) == false) {
-                //                 $errors[] = "Você selecionou centimetro como unidade de medida, é obrigatório digitar um valor númerico no tamanho  de tamanho 4.";
-                //             }
-                //         }
-                //     }
-                // }
-
-                // // MEDIDA
-                // if ($_POST['measure'] == 6) {
-
-                //     if (doGeneralValidationNumberFormat($_POST['size-p']) == false) {
-                //         $errors[] = "Você selecionou porção como unidade de medida, é obrigatório digitar um caracter alfabetico no tamanho  de tamanho 1.";
-                //     }
-
-                //     if (isset($_POST['price-size-status'])) {
-                //         if (doGeneralValidationNumberFormat($_POST['size-m']) == false) {
-                //             $errors[] = "Você selecionou porção como unidade de medida, é obrigatório digitar um caracter alfabetico no tamanho  de tamanho 2.";
-                //         }
-
-                //         if (!empty($_POST['size-g'])) {
-                //             if (doGeneralValidationNumberFormat($_POST['size-g']) == false) {
-                //                 $errors[] = "Você selecionou porção como unidade de medida, é obrigatório digitar um caracter alfabetico no tamanho  de tamanho 3.";
-                //             }
-                //         }
-
-                //         if (!empty($_POST['size-xg'])) {
-                //             if (doGeneralValidationNumberFormat($_POST['size-xg']) == false) {
-                //                 $errors[] = "Você selecionou porção como unidade de medida, é obrigatório digitar um caracter alfabetico no tamanho  de tamanho 4.";
-                //             }
-                //         }
-                //     }
-                // }
-
-                // $required_price_fields[] = array(
-                //     'size-p',
-                //     'size-p-description',
-                //     'price-p',
-                // );
-
-                // if (isset($_POST['price-size-status'])) {
-                //     $required_price_fields[] = array(
-                //         'size-m',
-                //         'size-m-description',
-                //         'price-m'
-                //     );
-
-                //     if (doGeneralValidationPriceFormat($_POST['price-m']) == false) {
-                //         $errors[] = "É obrigatório preencher com valores númerico, o campo de valor do tamanho 2.";
-                //     }
-
-                //     if (!empty($_POST['price-g'])) {
-                //         if (doGeneralValidationPriceFormat($_POST['price-g']) == false) {
-                //             $errors[] = "É obrigatório preencher com valores númerico, o campo de valor do tamanho 3.";
-                //         }
-                //     }
-
-                //     if (!empty($_POST['price-xg'])) {
-                //         if (doGeneralValidationPriceFormat($_POST['price-xg']) == false) {
-                //             $errors[] = "É obrigatório preencher com valores númerico, o campo de valor do tamanho 4.";
-                //         }
-                //     }
-
-                //     $required_price_fields = array_merge($required_price_fields[0], $required_price_fields[1]);
-                // }
-
-                // if (validateRequiredFields($_POST, $required_price_fields) === false) {
-                //     $errors[] = "É obrigatório preencher todos os campos de tamanhos liberado.";
-                // }
-
-                // // STOCK
-                // if (isset($_POST['stock-status'])) {
-                //     $required_stock_fields = array('stock-min', 'stock-actual');
-
-                //     if (validateRequiredFields($_POST, $required_stock_fields) === false) {
-                //         $errors[] = "É obrigatório preencher todos os campos do estoque.";
-                //     }
-
-                //     if (doGeneralValidationNumberFormat($_POST['stock-min']) == false) {
-                //         $errors[] = "Estoque mínimo precisa ser um valor numérico.";
-                //     }
-
-                //     if (doGeneralValidationNumberFormat($_POST['stock-actual']) == false) {
-                //         $errors[] = "Estoque atual precisa ser um valor numérico.";
-                //     }
-                // }
-
-                // // ADDITIONAL
-                // if (isset($_POST['additional'])) {
-                //     foreach ($_POST['additional'] as $additional) {
-                //         if (isDatabaseAdditionalExistID($additional) === false) {
-                //             $errors[] = "Um ou mais adicional, não existe.";
-                //         }
-                //     }
-                // }
-
-                // // Complemento
-                // if (isset($_POST['complements'])) {
-                //     foreach ($_POST['complements'] as $complements) {
-                //         if (isDatabaseComplementExistID($complements) === false) {
-                //             $errors[] = "Um ou mais complemento, não existe.";
-                //         }
-                //     }
-                // }
-
-                // QUESTION
-                if(isset($_POST['questions-status'])) {
-                    $count = 1;
-                    while(isset($_POST['question'.$count])) {
-
-                        if(empty($_POST['question'.$count])) {
-                            $errors[] = "Você habilitou o questionário, é obrigatório o preenchimento de ao menos uma pergunta.";
+                    if (isset($_POST['price-size-status'])) {
+                        if (doGeneralValidationNumberFormat($_POST['size-m']) == false) {
+                            $errors[] = "Você selecionou kilograma como unidade de medida, é obrigatório digitar um valor númerico no tamanho  de tamanho 2.";
                         }
-    
-                        if(!isset($_POST['response-free'.$count])) {
-                            if(empty($_POST['response'.$count][0])) {
-                                $errors[] = "Você precisa inserir ao menos uma resposta.";
+
+                        if (!empty($_POST['size-g'])) {
+                            if (doGeneralValidationNumberFormat($_POST['size-g']) == false) {
+                                $errors[] = "Você selecionou kilograma como unidade de medida, é obrigatório digitar um valor númerico no tamanho  de tamanho 3.";
                             }
                         }
-                        
+
+                        if (!empty($_POST['size-xg'])) {
+                            if (doGeneralValidationNumberFormat($_POST['size-xg']) == false) {
+                                $errors[] = "Você selecionou kilograma como unidade de medida, é obrigatório digitar um valor númerico no tamanho  de tamanho 4.";
+                            }
+                        }
+                    }
+                }
+
+                // GRAMA
+                if ($_POST['measure'] == 2) {
+
+                    if (doGeneralValidationNumberFormat($_POST['size-p']) == false) {
+                        $errors[] = "Você selecionou grama como unidade de medida, é obrigatório digitar um valor númerico no tamanho  de tamanho 1.";
+                    }
+
+                    if (isset($_POST['price-size-status'])) {
+                        if (doGeneralValidationNumberFormat($_POST['size-m']) == false) {
+                            $errors[] = "Você selecionou grama como unidade de medida, é obrigatório digitar um valor númerico no tamanho  de tamanho 2.";
+                        }
+
+                        if (!empty($_POST['size-g'])) {
+                            if (doGeneralValidationNumberFormat($_POST['size-g']) == false) {
+                                $errors[] = "Você selecionou grama como unidade de medida, é obrigatório digitar um valor númerico no tamanho  de tamanho 3.";
+                            }
+                        }
+
+                        if (!empty($_POST['size-g'])) {
+                            if (doGeneralValidationNumberFormat($_POST['size-xg']) == false) {
+                                $errors[] = "Você selecionou grama como unidade de medida, é obrigatório digitar um valor númerico no tamanho  de tamanho 4.";
+                            }
+                        }
+                    }
+                }
+
+                // PORÇÃO
+                if ($_POST['measure'] == 3) {
+
+                    if (doGeneralValidationNumberFormat($_POST['size-p']) == false) {
+                        $errors[] = "Você selecionou porção como unidade de medida, é obrigatório digitar um valor númerico no tamanho  de tamanho 1.";
+                    }
+
+                    if (isset($_POST['price-size-status'])) {
+                        if (doGeneralValidationNumberFormat($_POST['size-m']) == false) {
+                            $errors[] = "Você selecionou porção como unidade de medida, é obrigatório digitar um valor númerico no tamanho  de tamanho 2.";
+                        }
+
+                        if (!empty($_POST['size-g'])) {
+                            if (doGeneralValidationNumberFormat($_POST['size-g']) == false) {
+                                $errors[] = "Você selecionou porção como unidade de medida, é obrigatório digitar um valor númerico no tamanho  de tamanho 3.";
+                            }
+                        }
+                        if (!empty($_POST['size-xg'])) {
+                            if (doGeneralValidationNumberFormat($_POST['size-xg']) == false) {
+                                $errors[] = "Você selecionou porção como unidade de medida, é obrigatório digitar um valor númerico no tamanho  de tamanho 4.";
+                            }
+                        }
+                    }
+                }
+
+                // UNIDADE
+                if ($_POST['measure'] == 4) {
+
+                    if (doGeneralValidationNumberFormat($_POST['size-p']) == false) {
+                        $errors[] = "Você selecionou unidade como unidade de medida, é obrigatório digitar um valor númerico no tamanho  de tamanho 1.";
+                    }
+
+                    if (isset($_POST['price-size-status'])) {
+                        if (doGeneralValidationNumberFormat($_POST['size-m']) == false) {
+                            $errors[] = "Você selecionou unidade como unidade de medida, é obrigatório digitar um valor númerico no tamanho  de tamanho 2.";
+                        }
+
+                        if (!empty($_POST['size-g'])) {
+                            if (doGeneralValidationNumberFormat($_POST['size-g']) == false) {
+                                $errors[] = "Você selecionou unidade como unidade de medida, é obrigatório digitar um valor númerico no tamanho  de tamanho 3.";
+                            }
+                        }
+
+                        if (!empty($_POST['size-xg'])) {
+                            if (doGeneralValidationNumberFormat($_POST['size-xg']) == false) {
+                                $errors[] = "Você selecionou unidade como unidade de medida, é obrigatório digitar um valor númerico no tamanho  de tamanho 4.";
+                            }
+                        }
+                    }
+                }
+
+                // CENTIMETRO
+                if ($_POST['measure'] == 5) {
+
+                    if (doGeneralValidationNumberFormat($_POST['size-p']) == false) {
+                        $errors[] = "Você selecionou centimetro como unidade de medida, é obrigatório digitar um valor númerico no tamanho  de tamanho 1.";
+                    }
+
+                    if (isset($_POST['price-size-status'])) {
+                        if (doGeneralValidationNumberFormat($_POST['size-m']) == false) {
+                            $errors[] = "Você selecionou centimetro como unidade de medida, é obrigatório digitar um valor númerico no tamanho  de tamanho 2.";
+                        }
+
+                        if (!empty($_POST['size-g'])) {
+                            if (doGeneralValidationNumberFormat($_POST['size-g']) == false) {
+                                $errors[] = "Você selecionou centimetro como unidade de medida, é obrigatório digitar um valor númerico no tamanho  de tamanho 3.";
+                            }
+                        }
+                        if (!empty($_POST['size-xg'])) {
+                            if (doGeneralValidationNumberFormat($_POST['size-xg']) == false) {
+                                $errors[] = "Você selecionou centimetro como unidade de medida, é obrigatório digitar um valor númerico no tamanho  de tamanho 4.";
+                            }
+                        }
+                    }
+                }
+
+                // MEDIDA
+                if ($_POST['measure'] == 6) {
+
+                    if (doGeneralValidationNumberFormat($_POST['size-p']) == false) {
+                        $errors[] = "Você selecionou porção como unidade de medida, é obrigatório digitar um caracter alfabetico no tamanho  de tamanho 1.";
+                    }
+
+                    if (isset($_POST['price-size-status'])) {
+                        if (doGeneralValidationNumberFormat($_POST['size-m']) == false) {
+                            $errors[] = "Você selecionou porção como unidade de medida, é obrigatório digitar um caracter alfabetico no tamanho  de tamanho 2.";
+                        }
+
+                        if (!empty($_POST['size-g'])) {
+                            if (doGeneralValidationNumberFormat($_POST['size-g']) == false) {
+                                $errors[] = "Você selecionou porção como unidade de medida, é obrigatório digitar um caracter alfabetico no tamanho  de tamanho 3.";
+                            }
+                        }
+
+                        if (!empty($_POST['size-xg'])) {
+                            if (doGeneralValidationNumberFormat($_POST['size-xg']) == false) {
+                                $errors[] = "Você selecionou porção como unidade de medida, é obrigatório digitar um caracter alfabetico no tamanho  de tamanho 4.";
+                            }
+                        }
+                    }
+                }
+
+                $required_price_fields[] = array(
+                    'size-p',
+                    'size-p-description',
+                    'price-p',
+                );
+
+                if (isset($_POST['price-size-status'])) {
+                    $required_price_fields[] = array(
+                        'size-m',
+                        'size-m-description',
+                        'price-m'
+                    );
+
+                    if (doGeneralValidationPriceFormat($_POST['price-m']) == false) {
+                        $errors[] = "É obrigatório preencher com valores númerico, o campo de valor do tamanho 2.";
+                    }
+
+                    if (!empty($_POST['price-g'])) {
+                        if (doGeneralValidationPriceFormat($_POST['price-g']) == false) {
+                            $errors[] = "É obrigatório preencher com valores númerico, o campo de valor do tamanho 3.";
+                        }
+                    }
+
+                    if (!empty($_POST['price-xg'])) {
+                        if (doGeneralValidationPriceFormat($_POST['price-xg']) == false) {
+                            $errors[] = "É obrigatório preencher com valores númerico, o campo de valor do tamanho 4.";
+                        }
+                    }
+
+                    $required_price_fields = array_merge($required_price_fields[0], $required_price_fields[1]);
+                }
+
+                if (validateRequiredFields($_POST, $required_price_fields) === false) {
+                    $errors[] = "É obrigatório preencher todos os campos de tamanhos liberado.";
+                }
+
+                // STOCK
+                if (isset($_POST['stock-status'])) {
+                    $required_stock_fields = array('stock-min', 'stock-actual');
+
+                    if (validateRequiredFields($_POST, $required_stock_fields) === false) {
+                        $errors[] = "É obrigatório preencher todos os campos do estoque.";
+                    }
+
+                    if (doGeneralValidationNumberFormat($_POST['stock-min']) == false) {
+                        $errors[] = "Estoque mínimo precisa ser um valor numérico.";
+                    }
+
+                    if (doGeneralValidationNumberFormat($_POST['stock-actual']) == false) {
+                        $errors[] = "Estoque atual precisa ser um valor numérico.";
+                    }
+                }
+
+                // ADDITIONAL
+                if (isset($_POST['additional'])) {
+                    foreach ($_POST['additional'] as $additional) {
+                        if (isDatabaseAdditionalExistID($additional) === false) {
+                            $errors[] = "Um ou mais adicional, não existe.";
+                        }
+                    }
+                }
+
+                // Complemento
+                if (isset($_POST['complements'])) {
+                    foreach ($_POST['complements'] as $complements) {
+                        if (isDatabaseComplementExistID($complements) === false) {
+                            $errors[] = "Um ou mais complemento, não existe.";
+                        }
+                    }
+                }
+
+                // QUESTION
+                if (isset($_POST['questions-status'])) {
+                    $count = 1;
+                    while (isset($_POST['question' . $count])) {
+
+                        if (empty($_POST['question' . $count])) {
+                            $errors[] = "Você habilitou o questionário, é obrigatório o preenchimento de todas as perguntas criadas.";
+                        }
+
+                        if (!isset($_POST['response-free' . $count])) {
+                            if (empty($_POST['response' . $count][0])) {
+                                $errors[] = "Você precisa inserir ao menos uma resposta, para as perguntas.";
+                            }
+                        }
+
                         $count++;
                     }
                 }
@@ -332,6 +335,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST)) {
                 // INFORMAÇÕES
                 $product_add_fields = array(
                     'code' => (!empty($_POST['code']) ? $_POST['code'] : NULL),
+                    'name' => $_POST['name'],
                     'category_id' => $_POST['category'],
                     'description' => $_POST['description'],
                     'photo' => $newName,
@@ -342,7 +346,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST)) {
                     'status' => 2
                 );
 
-                //$product_insert_id = doDatabaseProductInsert($product_add_fields);
+                $product_insert_id = doDatabaseProductInsert($product_add_fields);
 
                 // PREÇO
                 // TAM 1
@@ -389,7 +393,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST)) {
                     );
                 }
 
-                // doDatabaseProductPriceInsertMultipleRow($price_filled_fields);
+                doDatabaseProductPriceInsertMultipleRow($price_filled_fields);
 
                 // STOCK
                 if (isset($_POST['stock-status'])) {
@@ -400,33 +404,64 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST)) {
                     );
                 }
 
-                // doDatabaseStockInsert($product_stock_fields);
+                doDatabaseStockInsert($product_stock_fields);
 
                 // ADDITIONAL
-                if(isset($_POST['additional'])) {
-                    foreach($_POST['additional'] as $additional_id) {
+                if (isset($_POST['additional'])) {
+                    foreach ($_POST['additional'] as $additional_id) {
                         $product_additional_fields[] = array(
                             'product_id' => $product_insert_id,
                             'additional_id' => $additional_id
-                        ); 
+                        );
                     }
 
-                    // doDatabaseProductAdditionalInsertMultipleRow($product_additional_fields);
+                    doDatabaseProductAdditionalInsertMultipleRow($product_additional_fields);
                 }
-                
+
                 // COMPLEMENTS
-                if(isset($_POST['complements'])) {
-                    foreach($_POST['complements'] as $complements_id) {
+                if (isset($_POST['complements'])) {
+                    foreach ($_POST['complements'] as $complement_id) {
                         $product_complements_fields[] = array(
                             'product_id' => $product_insert_id,
-                            'complements_id' => $complements_id
-                        ); 
+                            'complement_id' => $complement_id
+                        );
                     }
 
-                    // doDatabaseProductComplementInsertMultipleRow($product_complements_fields);
+                    doDatabaseProductComplementInsertMultipleRow($product_complements_fields);
+                }
+
+
+                if (isset($_POST['questions-status'])) {
+                    $count = 1;
+                    while (isset($_POST['question' . $count])) {
+                        $questions_fields = array(
+                            'product_id' => $product_insert_id,
+                            'question' => $_POST['question' . $count],
+                            'multiple_response' => (isset($_POST['multiple-response' . $count]) ? 1 : 0),
+                            'response_free' => (isset($_POST['response-free' . $count]) ? 1 : 0)
+                        );
+                        $question_insert_id = doDatabaseProductQuestionInsert($questions_fields);
+
+                        if (!isset($_POST['response-free' . $count])) {
+                            foreach ($_POST['response' . $count] as $response) {
+                                if (!empty($response)) {
+                                    $response_fields[$count][] = array(
+                                        'question_id' => $question_insert_id,
+                                        'response' => $response
+                                    );
+                                }
+                            }
+                            
+                            doDatabaseProductQuestionResponseInsertMultipleRow($response_fields[$count]);
+                        }
+                        $count++;
+                    }
+
                 }
 
                 // QUESTIONS
+
+
 
                 doAlertSuccess("O produto foi adicionado com sucesso.");
             } else {
@@ -533,6 +568,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST)) {
             </section>
 
             <section id="product-left">
+                <div class="form-group">
+                    <label for="name">Nome</label>
+                        <font color="red">*</font>:
+                    <input type="text" name="name" class="form-control" id="name" value="">
+                </div>
                 <div class="form-group">
                     <label for="description">Descrição
                         <font color="red">*</font>:
@@ -1040,25 +1080,26 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST)) {
 
         // QUESTIONARIO
         let currentIndex = 1; // índice do campo atual
+        $('body').on('input', 'input[name^="response"]:last', function () {
+            // Verifica se o campo atual está preenchido
+            if ($(this).val().trim() !== '') {
+                // Obtém o nome do último campo existente
+                let currentName = $(this).attr('name');
 
-        $('body').on('input', 'input[name^="response"]', function () {
-            let currentValue = $(this).val().trim();
-            let $nextInput = $(this).closest('.card-body').next().find('input[name^="response"]');
-
-            // Verifica se o campo está preenchido
-            if (currentValue !== '' && $nextInput.length === 0) {
-                // Cria um novo campo de entrada
+                // Cria um novo campo de entrada com o mesmo nome
                 let newInput = $('<input>').attr({
                     type: 'text',
-                    name: 'response' + (++currentIndex) + '[]',
+                    name: currentName,
                     class: 'form-control w-100',
                     value: ''
                 });
 
-                // Adiciona o novo campo de entrada após o campo atual
+                // Adiciona o novo campo de entrada após o último campo atual
                 $(this).closest('.card-body').after($('<div class="card-body"></div>').append(newInput));
             }
         });
+
+
 
         var contador = 2;
 
@@ -1066,6 +1107,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST)) {
         $('#addCampo').click(function () {
             // Criar uma cópia do modelo de campo
             var novoCampo = $('.card').first().clone();
+
+            // Definir valores vazios para os campos de entrada
+            novoCampo.find('input').val('');
 
             // Atribuir IDs únicos aos elementos clonados
             var headingId = 'headingOne' + contador;
