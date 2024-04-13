@@ -50,10 +50,12 @@ function isDatabaseProductComplementExistID($id)
     return ($query !== false) ? true : false;
 }
 
-function doDatabaseProductsComplementsList($status = false)
+
+function doDatabaseProductsComplementsListByProductID($product_id, $status = false)
 {
-    
-    return doSelectMultiDB("SELECT `id` FROM `products_complements`");
+    $sanitize_product_id = sanitize($product_id);
+
+    return doSelectMultiDB("SELECT `id` FROM `products_complements` where `product_id` = '".$sanitize_product_id."'");
 }
 
 function doDatabaseProductComplementInsert($import_data_query)

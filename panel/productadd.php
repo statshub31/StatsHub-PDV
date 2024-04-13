@@ -12,7 +12,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST)) {
     // ADD PRODUCT
     // if (getGeneralSecurityToken('tokenAddProduct')) {
     if (1 == 1) {
-        // data_dump($_POST);
+        data_dump($_POST);
         if (empty($_POST) === false) {
             $required_fields_status = true;
             $required_fields = array('category', 'name', 'description', 'size-p', 'size-p-description', 'size-p-price');

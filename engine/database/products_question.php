@@ -31,13 +31,31 @@ function getDatabaseProductQuestionProductID($id)
 }
 
 
-function getDatabaseProductQuestionQuestionID($id)
+function getDatabaseProductQuestionText($id)
 {
     
     $id_sanitize = sanitize($id);
 
-    $query = getDatabaseProductsQuestionsData($id_sanitize, 'Question_id');
-    return ($query !== false) ? $query['Question_id'] : false;
+    $query = getDatabaseProductsQuestionsData($id_sanitize, 'question');
+    return ($query !== false) ? $query['question'] : false;
+}
+
+function getDatabaseProductQuestionMultipleResponse($id)
+{
+    
+    $id_sanitize = sanitize($id);
+
+    $query = getDatabaseProductsQuestionsData($id_sanitize, 'multiple_response');
+    return ($query !== false) ? $query['multiple_response'] : false;
+}
+
+function getDatabaseProductQuestionResponseFree($id)
+{
+    
+    $id_sanitize = sanitize($id);
+
+    $query = getDatabaseProductsQuestionsData($id_sanitize, 'response_free');
+    return ($query !== false) ? $query['response_free'] : false;
 }
 
 
@@ -50,11 +68,14 @@ function isDatabaseProductQuestionExistID($id)
     return ($query !== false) ? true : false;
 }
 
-function doDatabaseProductsQuestionsList($status = false)
+function doDatabaseProductsQuestionsListByProductID($product_id, $status = false)
 {
-    
-    return doSelectMultiDB("SELECT `id` FROM `products_question`");
+    $sanitize_product_id = sanitize($product_id);
+
+    return doSelectMultiDB("SELECT `id` FROM `products_question` where `product_id` = '".$sanitize_product_id."'");
 }
+
+
 
 function doDatabaseProductQuestionInsert($import_data_query)
 {

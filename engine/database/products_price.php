@@ -75,10 +75,11 @@ function isDatabaseProductPriceExistID($id)
     return ($query !== false) ? true : false;
 }
 
-function doDatabaseProductPricesPriceList($status = false)
+function doDatabaseProductPricesPriceListByProductID($product_id, $status = false)
 {
+    $product_id_sanitize = sanitize($product_id);
     
-    return doSelectMultiDB("SELECT `id` FROM `products_price`");
+    return doSelectMultiDB("SELECT `id` FROM `products_price` where `product_id` = '".$product_id_sanitize."' ");
 }
 
 function doDatabaseProductPriceInsert($import_data_query)

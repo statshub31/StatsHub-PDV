@@ -49,11 +49,14 @@ function isDatabaseProductQuestionResponseExistID($id)
     return ($query !== false) ? true : false;
 }
 
-function doDatabaseProductsQuestionResponsesList($status = false)
+function ddoDatabaseProductsQuestionResponsesListByQuestionID($question_id, $status = false)
 {
-    
-    return doSelectMultiDB("SELECT `id` FROM `products_question_reponse`");
+    $sanitize_question_id = sanitize($question_id);
+
+    return doSelectMultiDB("SELECT `id` FROM `products_question_reponse` where `question_id` = '".$sanitize_question_id."'");
 }
+
+
 
 function doDatabaseProductQuestionResponseInsert($import_data_query)
 {

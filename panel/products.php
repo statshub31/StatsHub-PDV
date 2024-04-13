@@ -2,6 +2,180 @@
 include_once (realpath(__DIR__ . "/layout/php/header.php"));
 
 ?>
+
+
+
+
+<?php
+// <!-- INICIO DA VALIDAÇÃO PHP -->
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST)) {
+
+    // ATIVAR/DESATIVAR SWITCH
+    if (getGeneralSecurityToken('tokenStock')) {
+
+        if (empty($_POST) === false) {
+            $required_fields_status = true;
+            $required_fields = array('product_select_id', 'amount', 'reason');
+
+            if (validateRequiredFields($_POST, $required_fields) === false) {
+                $errors[] = "Obrigatório o preenchimento de todos os campos.";
+                $required_fields_status = false;
+            }
+
+            if($_POST['action'] < 1 || $_POST['action'] > 3) {
+                $errors[] = "Selecione uma ação.";
+            }
+
+            if ($required_fields_status) {
+                if (isDatabaseProductExistID($_POST['product_select_id']) === false) {
+                    $errors[] = "Houve um erro ao processar solicitação, complemento é inexistente.";
+                }
+
+                if (doGeneralValidationNumberFormat($_POST['amount']) == false) {
+                    $errors[] = "É necessário preencher com um valor numérico o campo de quantidade.";
+                }
+
+                if (isGeneralSecurityManagerAccess() === false) {
+                    $errors[] = "É obrigatório ter um cargo igual ou superior ao de gestor, para executar está ação.";
+                }
+            }
+
+        }
+
+
+        if (empty($errors)) {
+            $stock_total = getDatabaseStockActual(getDatabaseStockIDByProductID($_POST['product_select_id']));
+
+            if($_POST['action'] == 1 || $_POST['action'] == 3) {
+                $stock_total += $_POST['amount'];
+            }
+
+            if($_POST['action'] == 2) {
+                $stock_total -= $_POST['amount'];
+            }
+
+            if($stock_total < 0) 
+                $stock_total = 0;
+
+            $stock_update_fields = array(
+                'actual' => $stock_total
+            );
+
+
+            doDatabaseStockUpdate($_POST['product_select_id'], $stock_update_fields);
+
+            doAlertSuccess("O estoque foi ajustado com sucesso.");
+
+        }
+    }
+
+
+    // REMOVER COMPLEMENTO
+    if (getGeneralSecurityToken('tokenRemoveComplement')) {
+
+        if (empty($_POST) === false) {
+            $required_fields_status = true;
+            $required_fields = array('complement_select_id');
+
+            if (validateRequiredFields($_POST, $required_fields) === false) {
+                $errors[] = "Obrigatório o preenchimento de todos os campos.";
+                $required_fields_status = false;
+            }
+
+            if ($required_fields_status) {
+                if (isDatabaseComplementExistID($_POST['complement_select_id']) === false) {
+                    $errors[] = "Houve um erro ao processar solicitação, complemento é inexistente.";
+                }
+
+                if (isGeneralSecurityManagerAccess() === false) {
+                    $errors[] = "É obrigatório ter um cargo igual ou superior ao de gestor, para executar está ação.";
+                }
+            }
+
+        }
+
+
+        if (empty($errors)) {
+            doDatabaseComplementDelete($_POST['complement_select_id']);
+            doAlertSuccess("O complemento foi removido com sucesso.");
+        }
+    }
+
+
+    // EDITAR COMPLEMENTO
+    if (getGeneralSecurityToken('tokenEditComplement')) {
+
+        if (empty($_POST) === false) {
+            $required_fields_status = true;
+            $required_fields = array('complement_select_id', 'category', 'description');
+
+            if (validateRequiredFields($_POST, $required_fields) === false) {
+                $errors[] = "Obrigatório o preenchimento de todos os campos.";
+                $required_fields_status = false;
+            }
+
+            if ($required_fields_status) {
+                if (isDatabaseComplementExistID($_POST['complement_select_id']) === false) {
+                    $errors[] = "Houve um erro ao processar solicitação, complemento é inexistente.";
+                }
+
+
+                if (isDatabaseCategoryExistID($_POST['category']) === false) {
+                    $errors[] = "Houve um erro ao processar solicitação, categoria é inexistente.";
+                }
+
+                if (!empty($_POST['code'])) {
+                    if (isDatabaseComplementEnabledByCode($_POST['code'])) {
+                        if (isDatabaseComplementValidationCode($_POST['code'], $_POST['complement_select_id']) === false) {
+                            $errors[] = "O codigo é existente, preencha com outro ou deixe em branco.";
+                        }
+                    }
+                }
+
+                if (isGeneralSecurityManagerAccess() === false) {
+                    $errors[] = "É obrigatório ter um cargo igual ou superior ao de gestor, para executar está ação.";
+                }
+            }
+
+        }
+
+
+        if (empty($errors)) {
+            $complement_update_fields = array(
+                'code' => (!empty($_POST['code']) ? $_POST['code'] : NULL),
+                'category_id' => $_POST['category'],
+                'description' => $_POST['description']
+            );
+
+            doDatabaseComplementUpdate($_POST['complement_select_id'], $complement_update_fields);
+
+            doAlertSuccess("As informações do complemento foram alteradas!");
+
+        }
+    }
+
+
+    if (empty($errors) === false) {
+        header("HTTP/1.1 401 Not Found");
+        echo doAlertError($errors);
+    }
+}
+
+
+// <!-- FINAL DA VALIDAÇÃO PHP -->
+?>
+
+
+
+
+
+
+
+
+
+
+
+
 <h1 class="h3 mb-0 text-gray-800">Produtos</h1>
 <a href="/panel/productadd">
     <button type="submit" class="btn btn-primary">Novo Produto</button>
@@ -87,126 +261,308 @@ include_once (realpath(__DIR__ . "/layout/php/header.php"));
     </tbody>
 </table>
 
-<!-- Modal View -->
-<div class="modal fade" id="exampleModalLong" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle"
-    aria-hidden="true">
-    <div class="modal-dialog" style="max-width: 800px" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="exampleModalLongTitle">Modal title</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
+
+
+
+
+<?php
+if (isCampanhaInURL("product")) {
+
+    // <!-- Modal REMOVE -->
+    if (isCampanhaInURL("view")) {
+        $product_select_id = getURLLastParam();
+        if (isDatabaseProductExistID($product_select_id)) {
+            $product_select_stock_id = getDatabaseStockIDByProductID($product_select_id);
+            ?>
+
+            <div class="modal fade show" style="padding-right: 19px; display: block;" id="viewProductModal" tabindex="-1"
+                role="dialog" aria-labelledby="viewProductModalLabel" aria-hidden="true">
+                <div class="modal-dialog" style="max-width: 800px" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="viewProductModalTitle">Visualização</h5>
+                            <a href="/panel/complements">
+                                <button type="button" class="close" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </a>
+                        </div>
+                        <div class="modal-body">
+
+                            <div id="user_panel">
+                                <section class="product-photo-circle">
+                                    <img src="<?php echo getPathProductImage(getDatabaseProductPhotoName($product_list_id)); ?>">
+                                </section>
+                                <section style="width: 40%">
+                                    <b><label>Cod:</label></b>
+                                    <span><?php echo getDatabaseProductCode($product_select_id) ?></span><br>
+                                    <b><label>Medida:</label></b>
+                                    <span><?php echo getDatabaseMeasureTitle(getDatabaseProductSizeMeasureID($product_select_id)) ?></span><br>
+                                    <b><label>Categoria:</label></b>
+                                    <span><?php echo getDatabaseCategoryTitle(getDatabaseProductCategoryID($product_select_id)) ?></span><br>
+                                </section>
+                                <section style="width: 40%">
+                                    <b><label>Estoque Atual:</label></b>
+                                    <span><?php echo getDatabaseStockActual($product_select_stock_id); ?></span><br>
+                                    <b><label>Estoque Minimo:</label></b>
+                                    <span><?php echo getDatabaseStockMin($product_select_stock_id); ?></span><br>
+                                </section>
+                                <section style="width: 100%">
+                                    <b><label>Descrição:</label></b>
+                                    <span><?php echo getDatabaseProductDescription($product_select_id) ?></span><br>
+                                </section>
+
+                                <a href="/panel/products/view/product/stock/<?php echo $product_select_id ?>">
+                                    <button type="submit" class="btn btn-primary">Ajustar
+                                        Estoque</button>
+                                </a>
+                            </div>
+                            <br>
+
+                            <div>
+                                <table border="1" width="100%">
+                                    <tr>
+                                        <th>#</th>
+                                        <th>Tamanho</th>
+                                        <th>Descrição</th>
+                                        <th>Preço(Un)</th>
+                                    </tr>
+                                    <!-- LISTA TAMANHOS START -->
+                                    <?php
+                                    $product_measure_list = doDatabaseProductPricesPriceListByProductID($product_select_id);
+                                    if ($product_measure_list) {
+                                        $count_measure_list = 0;
+                                        foreach ($product_measure_list as $data) {
+                                            ++$count_measure_list;
+                                            $product_measure_list_id = $data['id'];
+                                            ?>
+                                            <tr>
+                                                <td>#<?php echo $count_measure_list ?></td>
+                                                <td><?php echo getDatabaseProductPriceSize($product_measure_list_id) ?>
+                                                    <?php echo getDatabaseMeasureTitle(getDatabaseProductSizeMeasureID($product_measure_list_id)) ?>
+                                                </td>
+                                                <td><?php echo getDatabaseProductPriceDescription($product_measure_list_id) ?></td>
+                                                <td>R$ <?php echo getDatabaseProductPrice($product_measure_list_id) ?></td>
+                                            </tr>
+                                            <?php
+                                        }
+                                    }
+                                    ?>
+                                    <!-- LISTA TAMANHOS END -->
+                                </table>
+                            </div>
+                            <br>
+
+                            <div>
+                                <table border="1" width="100%">
+                                    <tr>
+                                        <th>#</th>
+                                        <th>Adicional</th>
+                                        <th>Preço</th>
+                                        <th>Desconto</th>
+                                        <th>Total</th>
+                                    </tr>
+
+                                    <!-- LISTA ADICIONAIS START -->
+                                    <?php
+                                    $product_additional_list = doDatabaseProductsAdditionalListByProductID($product_select_id);
+                                    if ($product_additional_list) {
+                                        $count_additional_list = 0;
+                                        foreach ($product_additional_list as $data) {
+                                            ++$count_additional_list;
+                                            $product_additional_list_id = $data['id'];
+                                            ?>
+                                            <tr>
+                                                <td>#<?php echo $count_additional_list ?></td>
+                                                <td><?php echo getDatabaseAdditionalDescription(getDatabaseProductAdditionalAdditionalID($product_additional_list_id)) ?>
+                                                </td>
+                                                <td>R$
+                                                    <?php echo getDatabaseAdditionalCostPrice(getDatabaseProductAdditionalAdditionalID($product_additional_list_id)) ?>
+                                                </td>
+                                                <td>R$
+                                                    <?php echo getDatabaseAdditionalSalePrice(getDatabaseProductAdditionalAdditionalID($product_additional_list_id)) ?>
+                                                </td>
+                                                <td>R$
+                                                    <?php echo getDatabaseAdditionalTotalPrice(getDatabaseProductAdditionalAdditionalID($product_additional_list_id)) ?>
+                                                </td>
+                                            </tr>
+                                            <?php
+                                        }
+                                    }
+                                    ?>
+                                    <!-- LISTA ADICIONAIS END -->
+                                </table>
+                            </div>
+                            <br>
+
+                            <div>
+                                <table border="1" width="100%">
+                                    <tr>
+                                        <th>#</th>
+                                        <th>Descrição</th>
+                                    </tr>
+
+                                    <!-- LISTA ADICIONAIS START -->
+                                    <?php
+                                    $product_complements_list = doDatabaseProductsComplementsListByProductID($product_select_id);
+                                    if ($product_complements_list) {
+                                        $count_complements_list = 0;
+                                        foreach ($product_complements_list as $data) {
+                                            ++$count_complements_list;
+                                            $product_complements_list_id = $data['id'];
+                                            ?>
+                                            <tr>
+                                                <td>#<?php echo $count_complements_list ?></td>
+                                                <td><?php echo getDatabaseComplementDescription(getDatabaseProductComplementComplementID($product_complements_list_id)) ?>
+                                                </td>
+                                            </tr>
+                                            <?php
+                                        }
+                                    }
+                                    ?>
+                                    <!-- LISTA ADICIONAIS END -->
+                                </table>
+                            </div>
+                            <br>
+
+                            <div>
+                                <table border="1" width="100%">
+                                    <tr>
+                                        <th>#</th>
+                                        <th>Pergunta</th>
+                                        <th>Multipla Resposta</th>
+                                        <th>Resposta Livre</th>
+                                        <th>Respostas</th>
+                                    </tr>
+                                    <?php
+                                    $product_questions_list = doDatabaseProductsQuestionsListByProductID($product_select_id);
+                                    if ($product_questions_list) {
+                                        $count_product_question_list = 0;
+                                        foreach ($product_questions_list as $data) {
+                                            $responses = array();
+                                            ++$count_product_question_list;
+                                            $product_question_list_id = $data['id'];
+                                            ?>
+                                            <tr>
+                                                <td>#<?php echo $count_product_question_list ?></td>
+                                                <td><?php echo getDatabaseProductQuestionText($product_question_list_id) ?></td>
+                                                <td><?php echo doYN(getDatabaseProductQuestionMultipleResponse($product_question_list_id)) ?>
+                                                </td>
+                                                <td><?php echo doYN(getDatabaseProductQuestionResponseFree($product_question_list_id)) ?>
+                                                </td>
+                                                <td>
+                                                    <!-- RESPOSTAS LISTA START -->
+                                                    <?php
+                                                    $responses_question_list = ddoDatabaseProductsQuestionResponsesListByQuestionID($product_question_list_id);
+                                                    if ($responses_question_list) {
+                                                        foreach ($responses_question_list as $dataResponse) {
+                                                            $response_question_list_id = $dataResponse['id'];
+                                                            $responses[] = getDatabaseProductQuestionResponseResponse($response_question_list_id);
+                                                        }
+
+
+                                                        if (!empty($responses)) {
+                                                            $resp_exceto_ultima = array_slice($responses, 0, -1);
+                                                            $response_all = implode(", ", $resp_exceto_ultima);
+                                                            $response_all .= " e " . end($responses) . ".";
+
+                                                            echo $response_all;
+                                                        } else {
+                                                            echo "Nenhuma resposta cadastrada.";
+                                                        }
+                                                    }
+                                                    ?>
+                                                    <!-- RESPOSTAS LISTA FIM -->
+                                                </td>
+                                            </tr>
+                                            <?php
+                                        }
+                                    }
+                                    ?>
+                                </table>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+
             </div>
-            <div class="modal-body">
+            <!-- STOCK START -->
+            <?php
+            if (isCampanhaInURL("stock")) {
+                ?>
 
-                <div id="user_panel">
-                    <section class="product-photo-circle">
-                        <img src="/layout/images/products/1.jpeg">
-                    </section>
-                    <section style="width: 40%">
-                        <b><label>Cod:</label></b>
-                        <span>X5A25</span><br>
-                        <b><label>Medida:</label></b>
-                        <span>KG</span><br>
-                        <b><label>Categoria:</label></b>
-                        <span>Comida</span><br>
-                    </section>
-                    <section style="width: 40%">
-                        <b><label>Estoque Atual:</label></b>
-                        <span>20</span><br>
-                        <b><label>Estoque Minimo:</label></b>
-                        <span>20</span><br>
-                    </section>
-                    <section style="width: 100%">
-                        <b><label>Descrição:</label></b>
-                        <span>20</span><br>
-                    </section>
+                <!-- Modal Stock -->
+                <div class="modal fade show" style="padding-right: 19px; display: block;" id="stockModal" tabindex="-1" role="dialog"
+                    aria-labelledby="exampleModalLabel" aria-hidden="true">
+                    <div class="modal-dialog" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="exampleModalLabel">Ajuste de Estoque</h5>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <form action="/panel/products/view/product/<?php echo $product_select_id ?>" method="post">
+                                <div class="modal-body">
 
-                    <button type="submit" class="btn btn-primary" data-toggle="modal" data-target="#stockModal">Ajustar
-                        Estoque</button>
-                </div>
-                <br>
+                                    <div class="input-group">
+                                        <select class="custom-select" name="action" id="inputGroupSelect04"
+                                            aria-label="Example select with button addon">
+                                            <option selected>Escolha uma Ação...
+                                                <font color="red">*</font>
+                                            </option>
+                                            <option value="1">Entrada</option>
+                                            <option value="2">Saida</option>
+                                            <option value="3">Devolução</option>
+                                        </select>
+                                    </div><br>
 
-                <div>
-                    <table border="1" width="100%">
-                        <tr>
-                            <th>#</th>
-                            <th>Tamanho</th>
-                            <th>Descrição</th>
-                            <th>Preço</th>
-                        </tr>
-                        <tr>
-                            <td>#1</td>
-                            <td>P</td>
-                            <td>Serve 01 pessoa</td>
-                            <td>R$ 20.00</td>
-                        </tr>
-                    </table>
-                </div>
-                <br>
+                                    <div class="input-group">
+                                        <span class="input-group-text">Quantidade
+                                            <font color="red">*</font>
+                                        </span>
+                                        <input type="text" name="amount" class="form-control">
+                                    </div><br>
 
-                <div>
-                    <table border="1" width="100%">
-                        <tr>
-                            <th>#</th>
-                            <th>Adicional</th>
-                            <th>Descrição</th>
-                            <th>Preço</th>
-                            <th>Desconto</th>
-                            <th>Total</th>
-                        </tr>
-                        <tr>
-                            <td>#1</td>
-                            <td>Tomate</td>
-                            <td>Tomate e Cebola</td>
-                            <td>R$ 20.00</td>
-                            <td>R$ 5.00</td>
-                            <td>R$ 15.00</td>
-                        </tr>
-                    </table>
-                </div>
-                <br>
+                                    <div class="input-group">
+                                        <span class="input-group-text">Motivo:
+                                            <font color="red">*</font>
+                                        </span>
+                                        <input type="text" name="reason" class="form-control">
+                                    </div>
 
-                <div>
-                    <table border="1" width="100%">
-                        <tr>
-                            <th>#</th>
-                            <th>Complemento</th>
-                            <th>Descrição</th>
-                        </tr>
-                        <tr>
-                            <td>#1</td>
-                            <td>Tomate</td>
-                            <td>Tomate e Cebola</td>
-                        </tr>
-                    </table>
-                </div>
-                <br>
-
-                <div>
-                    <table border="1" width="100%">
-                        <tr>
-                            <th>#</th>
-                            <th>Pergunta</th>
-                            <th>Multipla Resposta</th>
-                            <th>Resposta Livre</th>
-                            <th>Respostas</th>
-                        </tr>
-                        <tr>
-                            <td>#1</td>
-                            <td>O que é o que é, clara e salgada?</td>
-                            <td>Sim</td>
-                            <td>Não</td>
-                            <td>Clara oxente, salgada oxente, clararasdad</td>
-                        </tr>
-                    </table>
+                                </div>
+                                <div class="modal-footer">
+                                    
+                                <input name="product_select_id" type="text"
+                                        value="<?php echo $product_select_id ?>" hidden>
+                                <input name="token" type="text"
+                                        value="<?php echo addGeneralSecurityToken('tokenStock') ?>" hidden>
+                                    <a href="/panel/products/view/product/<?php echo $product_select_id ?>">
+                                        <button type="button" class="btn btn-danger" data-dismiss="modal">Cancelar</button>
+                                    </a>
+                                    <button type="submit" class="btn btn-success">Confirmar</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
                 </div>
 
-            </div>
-        </div>
-    </div>
-</div>
+                <?php
+            } ?>
+            <!-- STOCK FIM -->
+
+            <div class="modal-backdrop fade show"></div>
+            <?php
+        } else {
+            header('Location: /myaccount');
+        }
+    }
+
+
+}
+?>
 
 <!-- Modal Remove -->
 <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
@@ -241,53 +597,6 @@ include_once (realpath(__DIR__ . "/layout/php/header.php"));
     </div>
 </div>
 
-
-<!-- Modal Stock -->
-<div class="modal fade" id="stockModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
-    aria-hidden="true">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-            <div class="modal-body">
-
-                <div class="input-group">
-                    <select class="custom-select" id="inputGroupSelect04" aria-label="Example select with button addon">
-                        <option selected>Escolha uma Ação...
-                            <font color="red">*</font>
-                        </option>
-                        <option value="1">Entrada</option>
-                        <option value="2">Saida</option>
-                        <option value="3">Devolução</option>
-                    </select>
-                </div><br>
-
-                <div class="input-group">
-                    <span class="input-group-text">Quantidade
-                        <font color="red">*</font>
-                    </span>
-                    <input type="text" class="form-control">
-                </div><br>
-
-                <div class="input-group">
-                    <span class="input-group-text">Motivo:
-                        <font color="red">*</font>
-                    </span>
-                    <input type="text" class="form-control">
-                </div>
-
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-danger" data-dismiss="modal">Cancelar</button>
-                <button type="button" class="btn btn-success">Confirmar</button>
-            </div>
-        </div>
-    </div>
-</div>
 
 <script>
     $(document).ready(function () {

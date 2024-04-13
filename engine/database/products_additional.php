@@ -50,10 +50,11 @@ function isDatabaseProductAdditionalExistID($id)
     return ($query !== false) ? true : false;
 }
 
-function doDatabaseProductsAdditionalList($status = false)
+function doDatabaseProductsAdditionalListByProductID($product_id, $status = false)
 {
-    
-    return doSelectMultiDB("SELECT `id` FROM `products_additional`");
+    $sanitize_product_id = sanitize($product_id);
+
+    return doSelectMultiDB("SELECT `id` FROM `products_additional` where `product_id` = '".$sanitize_product_id."'");
 }
 
 function doDatabaseProductAdditionalInsert($import_data_query)
