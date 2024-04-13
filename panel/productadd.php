@@ -399,8 +399,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST)) {
                 if (isset($_POST['stock-status'])) {
                     $product_stock_fields = array(
                         'product_id' => $product_insert_id,
-                        'min' => $_POST['category'],
-                        'actual' => $_POST['description']
+                        'min' => $_POST['stock-min'],
+                        'actual' => $_POST['stock-actual']
                     );
                 }
 

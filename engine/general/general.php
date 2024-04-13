@@ -124,6 +124,20 @@ function getPathAvatarImage($img)
     }
 }
 
+function getPathProductImage($img)
+{
+    global $image_product_dir;
+    global $image_model_dir;
+
+    $format = getPathImageFormat($image_product_dir, $img);
+
+    if ($format !== false) {
+        return $image_product_dir . $img . '.' . $format;
+    } else {
+        return $image_model_dir . 'product.jpeg';
+    }
+}
+
 
 
 

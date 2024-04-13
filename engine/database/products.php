@@ -39,6 +39,15 @@ function getDatabaseProductCategoryID($id)
     return ($query !== false) ? $query['category_id'] : false;
 }
 
+function getDatabaseProductName($id)
+{
+    
+    $id_sanitize = sanitize($id);
+
+    $query = getDatabaseProductsData($id_sanitize, 'name');
+    return ($query !== false) ? $query['name'] : false;
+}
+
 function getDatabaseProductDescription($id)
 {
     

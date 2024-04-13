@@ -30,7 +30,7 @@ function getDatabaseStockProductID($id)
     return ($query !== false) ? $query['product_id'] : false;
 }
 
-function getDatabaseStockCategoryMin($id)
+function getDatabaseStockMin($id)
 {
     
     $id_sanitize = sanitize($id);
@@ -121,5 +121,15 @@ function doDatabaseStockUpdate($id, $import_data_query, $empty = true)
 // 
 // 
 // 
+
+function getDatabaseStockIDByProductID($id)
+{
+    
+    $id_sanitize = sanitize($id);
+
+    $query = doSelectSingleDB("SELECT `id` FROM `stock` WHERE `product_id`='".$id_sanitize."';");
+    return ($query !== false) ? $query['id'] : false;
+}
+
 
 ?>

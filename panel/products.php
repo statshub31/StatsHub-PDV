@@ -32,8 +32,7 @@ include_once (realpath(__DIR__ . "/layout/php/header.php"));
             <th>Marcar</th>
             <th>Produto</th>
             <th>Descrição</th>
-            <th>Preço</th>
-            <th>Estoque</th>
+            <th>Estoque(Min/Actual)</th>
             <th>Opções</th>
         </tr>
     </thead>
@@ -42,34 +41,49 @@ include_once (realpath(__DIR__ . "/layout/php/header.php"));
             <th>Marcar</th>
             <th>Produto</th>
             <th>Descrição</th>
-            <th>Preço</th>
-            <th>Estoque</th>
+            <th>Estoque(Min/Actual)</th>
             <th>Opções</th>
         </tr>
     </tfoot>
     <tbody>
-        <tr>
-            <td>
-                <input type="checkbox">
-            </td>
-            <td>
-                <section class="product_photo">
-                    <img src="/../../../layout/images/products/1.jpeg"></img>
-                </section>
-                <label>Pizza 1</label>
-            </td>
-            <td>
-                Sabor Calabresa
-            </td>
-            <td>R$ 20.00</td>
-            <td>50
-            </td>
-            <td>
-                <i class="fa fa-edit" aria-hidden="true"></i>
-                <i class="fa fa-trash" aria-hidden="true" data-toggle="modal" data-target="#exampleModal"></i>
-                <i class="fa fa-eye" aria-hidden="true" data-toggle="modal" data-target="#exampleModalLong"></i>
-            </td>
-        </tr>
+        <!-- PRODUTOS LISTA START -->
+        <?php
+        $product_list = doDatabaseProductsList();
+        if ($product_list) {
+            foreach ($product_list as $data) {
+                $product_list_id = $data['id'];
+                $product_list_stock_id = getDatabaseStockIDByProductID($product_list_id);
+                ?>
+                <tr>
+                    <td>
+                        <input type="checkbox" name="products" value="<?php echo $product_list_id ?>">
+                    </td>
+                    <td>
+                        <section class="product_photo">
+                            <img src="<?php echo getPathProductImage(getDatabaseProductPhotoName($product_list_id)); ?>"></img>
+                        </section>
+                        <label><?php echo getDatabaseProductName($product_list_id); ?></label>
+                    </td>
+                    <td><?php echo getDatabaseProductDescription($product_list_id); ?></td>
+                    <td><?php echo getDatabaseStockActual($product_list_stock_id); ?>/<?php echo getDatabaseStockMin($product_list_stock_id); ?>
+                    </td>
+                    <td>
+                        <i class="fa fa-edit" aria-hidden="true"></i>
+                        <i class="fa fa-trash" aria-hidden="true" data-toggle="modal" data-target="#exampleModal"></i>
+                        <i class="fa fa-eye" aria-hidden="true" data-toggle="modal" data-target="#exampleModalLong"></i>
+                    </td>
+                </tr>
+                <?php
+            }
+        } else { ?>
+
+            <tr>
+                <td colspan="6">Nenhum produto cadastrado ainda.</td>
+            </tr>
+            <?php
+        }
+        ?>
+        <!-- PRODUTOS LISTA END -->
     </tbody>
 </table>
 
@@ -109,7 +123,8 @@ include_once (realpath(__DIR__ . "/layout/php/header.php"));
                         <span>20</span><br>
                     </section>
 
-                    <button type="submit" class="btn btn-primary" data-toggle="modal" data-target="#stockModal">Ajustar Estoque</button>
+                    <button type="submit" class="btn btn-primary" data-toggle="modal" data-target="#stockModal">Ajustar
+                        Estoque</button>
                 </div>
                 <br>
 
