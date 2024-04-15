@@ -360,13 +360,13 @@ if (isCampanhaInURL("product")) {
                             );
 
                             if (isset($newName)) {
-                                $product_update_fields[] = $newName;
+                                $product_update_fields['photo'] = $newName;
                             }
 
-                            // doDatabaseProductUpdate($_POST['product_select_id'], $product_update_fields);
+                            doDatabaseProductUpdate($_POST['product_select_id'], $product_update_fields);
 
                             // PREÇO
-                            // doDatabaseProductPriceTruncateByProductID($_POST['product_select_id']);
+                            doDatabaseProductPriceTruncateByProductID($_POST['product_select_id']);
 
                             // TAM 1
                             if ((!empty($_POST['size-p'])) && (!empty($_POST['price-p']))) {
@@ -412,20 +412,20 @@ if (isCampanhaInURL("product")) {
                                 );
                             }
 
-                            // doDatabaseProductPriceInsertMultipleRow($price_filled_fields);
+                            doDatabaseProductPriceInsertMultipleRow($price_filled_fields);
 
                             // STOCK
                             if (isset($_POST['stock-status'])) {
                                 $product_stock_update_fields = array(
                                     'min' => $_POST['stock-min']
                                 );
-                                // doDatabaseStockUpdate(getDatabaseStockIDByProductID($_POST['product_select_id']), $product_stock_update_fields);
+                                doDatabaseStockUpdate(getDatabaseStockIDByProductID($_POST['product_select_id']), $product_stock_update_fields);
                             }
 
 
                             // ADDITIONAL
 
-                            // doDatabaseProductAdditionalTruncateByProductID($_POST['product_select_id']);
+                            doDatabaseProductAdditionalTruncateByProductID($_POST['product_select_id']);
                             if (isset($_POST['additional'])) {
                                 foreach ($_POST['additional'] as $additional_id) {
                                     $product_additional_fields[] = array(
@@ -434,11 +434,11 @@ if (isCampanhaInURL("product")) {
                                     );
                                 }
 
-                                // doDatabaseProductAdditionalInsertMultipleRow($product_additional_fields);
+                                doDatabaseProductAdditionalInsertMultipleRow($product_additional_fields);
                             }
 
                             // COMPLEMENTS
-                            // doDatabaseProductComplementTruncateByProductID($_POST['product_select_id']);
+                            doDatabaseProductComplementTruncateByProductID($_POST['product_select_id']);
                             if (isset($_POST['complements'])) {
                                 foreach ($_POST['complements'] as $complement_id) {
                                     $product_complements_fields[] = array(
@@ -447,155 +447,15 @@ if (isCampanhaInURL("product")) {
                                     );
                                 }
 
-                                // doDatabaseProductComplementInsertMultipleRow($product_complements_fields);
+                                doDatabaseProductComplementInsertMultipleRow($product_complements_fields);
                             }
 
 
-                            // QUESTIONS
-                            // Questão habilitada?
+                            // QUESTIONS                            
                             if (isset($_POST['questions-status'])) {
                                 $count = 1;
-                                
                                 while (isset($_POST['question' . $count])) {
-                                    $newQuestion = true;
-
-                                    // VALIDO SE É UMA PERGUNTA A SER ALTERADA
-                                    if(isset($_POST['old_question'. $count])) {
-                                        $newQuestion = false;
-                                    }
-
-                                    if($newQuestion) {
-                                        $questions_fields = array(
-                                            'product_id' => $_POST['product_select_id'],
-                                            'question' => $_POST['question' . $count],
-                                            'multiple_response' => (isset($_POST['multiple-response' . $count]) ? 1 : 0),
-                                            'response_free' => (isset($_POST['response-free' . $count]) ? 1 : 0)
-                                        );
-                                        $question_insert_id = doDatabaseProductQuestionInsert($questions_fields);
-                
-                                        if (!isset($_POST['response-free' . $count])) {
-                                            foreach ($_POST['response' . $count] as $response) {
-                                                if (!empty($response)) {
-                                                    $response_fields[$count][] = array(
-                                                        'question_id' => $question_insert_id,
-                                                        'response' => $response
-                                                    );
-                                                }
-                                            }
-                
-                                            doDatabaseProductQuestionResponseInsertMultipleRow($response_fields[$count]);
-                                        }
-                                    }
-                                    else {
-                                        // VERIFICO SE A PERGUNTA DE INICIO, É DIFERENTE DA FINAL
-                                        if($_POST['old_question'. $count] !== $_POST['question'. $count]) {
-
-                                            if(empty($_POST['question'. $count])) {
-                                                // DESATIVO A PERGUNTA ANTERIOR
-                                                $question_update_id = getDatabaseProductQuestionExistByQuestion($_POST['old_question'. $count]);
-                                                    
-                                                $question_update_fields = array(
-                                                    'deleted' => 1
-                                                );
-
-                                                doDatabaseProductQuestionUpdate($question_update_id, $question_update_fields); // DESABILITO A PERGUNTA
-                                                doDatabaseProductQuestionResponseUpdateByQuestionID($question_update_id, $question_update_fields);  // DESABILITO AS RESPOSTAS 
-                                                
-                                            } 
-                                            else 
-                                                {
-                                                // DESATIVO A PERGUNTA ANTERIOR
-                                                $question_update_id = getDatabaseProductQuestionExistByQuestion($_POST['old_question'. $count]);
-                                                    
-                                                $question_update_fields = array(
-                                                    'deleted' => 1
-                                                );
-
-                                                doDatabaseProductQuestionUpdate($question_update_id, $question_update_fields); // DESABILITO A PERGUNTA
-                                                doDatabaseProductQuestionResponseUpdateByQuestionID($question_update_id, $question_update_fields);  // DESABILITO AS RESPOSTAS 
-                                                
-
-                                                // CRIO A NOVA PERGUNTA E RESPOSTAS
-                                                    
-                                                $questions_fields = array(
-                                                    'product_id' => $_POST['product_select_id'],
-                                                    'question' => $_POST['question' . $count],
-                                                    'multiple_response' => (isset($_POST['multiple-response' . $count]) ? 1 : 0),
-                                                    'response_free' => (isset($_POST['response-free' . $count]) ? 1 : 0)
-                                                );
-                                                $question_insert_id = doDatabaseProductQuestionInsert($questions_fields);
-
-                                                    
-                                                if (!isset($_POST['response-free' . $count])) {
-                                                    foreach ($_POST['response' . $count] as $response) {
-                                                        if (!empty($response)) {
-                                                            $response_fields[$count][] = array(
-                                                                'question_id' => $question_insert_id,
-                                                                'response' => $response
-                                                            );
-                                                        }
-                                                    }
-
-                                                    doDatabaseProductQuestionResponseInsertMultipleRow($response_fields[$count]);
-                                                }
-                                            }
-                                        } 
-                                        // SE A PERGUNTAS FOREM IGUAIS 
-                                        else {
-                                            // ALTERO SOMENTE OS CAMPOS MULTIPLE E FREE
-                                            $question_update_id = getDatabaseProductQuestionExistByQuestion($_POST['question'. $count]);
-                                            $response_enabled = false;
-
-
-                                            // SE A RESPOSTA LIVRE ESTAVA DESABILITADA E AGORA FOI HABILITADA
-                                            if((getDatabaseProductQuestionResponseFree($question_update_id) == 0) && (isset($_POST['response-free' . $count]))) {
-                                                $question_update_fields = array(
-                                                    'deleted' => 1
-                                                );
-                                                doDatabaseProductQuestionResponseUpdateByQuestionID($question_update_id, $question_update_fields);  // DESABILITO AS RESPOSTAS 
-                                                $response_enabled = true;
-                                            }
-                                            
-                                            $question_update_fields = array(
-                                                'multiple_response' => (isset($_POST['multiple-response' . $count]) ? 1 : 0),
-                                                'response_free' => (isset($_POST['response-free' . $count]) ? 1 : 0)
-                                            );
-
-                                            doDatabaseProductQuestionUpdate($question_update_id, $question_update_fields); // DESABILITO A PERGUNTA
-
-                                            // SE RESPOSTA LIVRE ESTÁ HABILITADA
-                                            if($response_enabled === false) {
-                                                $count_response = 0;
-
-                                                // PERCORRO NAS RESPOSTAS                                           
-                                                foreach ($_POST['response' . $count] as $response) {
-                                                    $newResponse = true;
-                                                    // VERIFICO SE A RESPOSTA DE INICIO É DIFERENTE DA FINAL
-                                                                    
-                                                    // VALIDO SE É UMA PERGUNTA A SER ALTERADA
-                                                    if(isset($_POST['old_response'. $count])) {
-                                                        $newResponse = false;
-                                                    }
-
-                                                    if($newResponse) {
-                                                        if(!empty($response)) {
-                                                            $response_fields[$count] = array(
-                                                                'question_id' => $question_update_id,
-                                                                'response' => $response
-                                                            );
-                            
-                                                            doDatabaseProductQuestionResponseInsert($response_fields[$count]);
-                                                        }
-                                                    } 
-                                                    else {
-                                                        data_dump($_POST['response' . $count]);
-                                                    }
-                                                    ++$count_response;
-                                                }
-                                            }
-                                        }
-                                    }
-                                    
+                                    doProcessProductEdit($count);
                                     $count++;
                                 }
                             }
@@ -1154,7 +1014,7 @@ if (isCampanhaInURL("product")) {
                                                         <input name="response<?php echo $count_question ?>[]" type="text"
                                                             class="form-control w-100 response"
                                                             value="<?php echo getDatabaseProductQuestionResponseResponse($response_question_list_id) ?>">
-                                                            <input name="old_response<?php echo $count_question ?>[]" type="text"
+                                                        <input name="old_response<?php echo $count_question ?>[]" type="text"
                                                             class="form-control w-100 response"
                                                             value="<?php echo getDatabaseProductQuestionResponseResponse($response_question_list_id) ?>" hidden>
 

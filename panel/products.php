@@ -218,7 +218,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST)) {
                     <td><?php echo getDatabaseStockActual($product_list_stock_id); ?>/<?php echo getDatabaseStockMin($product_list_stock_id); ?>
                     </td>
                     <td>
-                        <i class="fa fa-edit" aria-hidden="true"></i>
+                        <a href="/panel/productedit/edit/product/<?php echo $product_list_id ?>">
+                            <i class="fa fa-edit" aria-hidden="true"></i>
+                        </a>
                         <a href="/panel/products/remove/product/<?php echo $product_list_id ?>">
                             <i class="fa fa-trash" aria-hidden="true"></i>
                         </a>

@@ -171,6 +171,9 @@ function doGeneralRemoveArchive($caminho_pasta, $nome_arquivo) {
     $format = getPathImageFormat($caminho_pasta, $nome_arquivo);
     $caminho_arquivo = $_SERVER['DOCUMENT_ROOT'] . $caminho_pasta . $nome_arquivo.'.'.$format;
 
+    if($format == false)
+        return false;
+     
     // Verifica se o arquivo existe
     if (file_exists($caminho_arquivo)) {
         // Tenta remover o arquivo
