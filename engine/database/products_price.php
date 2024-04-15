@@ -172,4 +172,15 @@ function doDatabaseProductPriceTruncateByProductID($product_id)
     doDeleteDB("DELETE FROM `products_price` WHERE `product_id`='".$product_id_sanitize."';");
 }
 
+
+function getDatabaseProductPriceByProductID($product_id)
+{
+    
+    $product_id_sanitize = sanitize($product_id);
+
+    $query = doSelectSingleDB("SELECT `id` FROM `products_price` WHERE `product_id`='".$product_id_sanitize."';");
+    return ($query !== false) ? $query['id'] : false;
+}
+
+
 ?>

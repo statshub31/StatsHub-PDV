@@ -72,7 +72,7 @@ function doDatabaseProductsQuestionsListByProductID($product_id)
 {
     $sanitize_product_id = sanitize($product_id);
 
-    return doSelectMultiDB("SELECT `id` FROM `products_question` where `product_id` = '".$sanitize_product_id."'");
+    return doSelectMultiDB("SELECT `id` FROM `products_question` where `product_id` = '".$sanitize_product_id."' and `deleted`=0");
 }
 
 
@@ -188,6 +188,24 @@ function getDatabaseProductQuestionRowCountByProductID($product_id)
 
 function isDatabaseProductQuestionExistQuestion($product_id) {
     return (getDatabaseProductQuestionRowCountByProductID($product_id) > 0) ? true : false;
+}
+
+function isDatabaseProductQuestionExistByQuestion($text)
+{
+    
+    $text_sanitize = sanitize($text);
+
+    $query = doSelectSingleDB("SELECT `id` FROM `products_question` WHERE `question`='".$text_sanitize."';");
+    return ($query !== false) ? true : false;
+}
+
+function getDatabaseProductQuestionExistByQuestion($text)
+{
+    
+    $text_sanitize = sanitize($text);
+
+    $query = doSelectSingleDB("SELECT `id` FROM `products_question` WHERE `question`='".$text_sanitize."';");
+    return ($query !== false) ? $query['id'] : false;
 }
 
 ?>

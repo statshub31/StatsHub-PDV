@@ -222,14 +222,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST)) {
 
                 $required_price_fields[] = array(
                     'size-p',
-                    'size-p-description',
                     'price-p',
                 );
 
                 if (isset($_POST['price-size-status'])) {
                     $required_price_fields[] = array(
                         'size-m',
-                        'size-m-description',
                         'price-m'
                     );
 
@@ -250,6 +248,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST)) {
                     }
 
                     $required_price_fields = array_merge($required_price_fields[0], $required_price_fields[1]);
+                } else {
+                    $required_price_fields = array_merge($required_price_fields[0]);
                 }
 
                 if (validateRequiredFields($_POST, $required_price_fields) === false) {

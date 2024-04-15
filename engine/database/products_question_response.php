@@ -53,7 +53,7 @@ function ddoDatabaseProductsQuestionResponsesListByQuestionID($question_id, $sta
 {
     $sanitize_question_id = sanitize($question_id);
 
-    return doSelectMultiDB("SELECT `id` FROM `products_question_reponse` where `question_id` = '".$sanitize_question_id."'");
+    return doSelectMultiDB("SELECT `id` FROM `products_question_reponse` where `question_id` = '".$sanitize_question_id."' and `deleted`=0");
 }
 
 
@@ -146,6 +146,41 @@ function doDatabaseProductQuestionResponseTruncateByProductID($product_id)
     $product_id_sanitize = sanitize($product_id);
 
     doDeleteDB("DELETE FROM `products_question_reponse` WHERE `question_id`='".$product_id_sanitize."';");
+}
+
+
+function getDatabaseProductQuestionResponseExistByQuestionIDAndResponse($question_id, $text)
+{
+    data_dump($question_id);
+    data_dump($text);
+    $text_sanitize = sanitize($text);
+    $question_sanitize = sanitize($question_id);
+
+    $query = doSelectSingleDB("SELECT `id` FROM `products_question_reponse` WHERE `question_id`='".$question_sanitize."' and `response`='".$text_sanitize."';");
+    return ($query !== false) ? $query['id'] : false;
+}
+
+
+function doDatabaseProductQuestionResponseUpdateByQuestionID($question_id, $import_data_query, $empty = true)
+{
+
+    
+    $question_id_sanitize = sanitize($question_id);
+    
+    if ($empty) {
+        // Remove todos os campos vazios
+        removeEmptyValues($import_data_query);
+    }
+
+    // transforma as chaves em um único array
+    $keyArray = doGeneralCreateArrayFromKeys($import_data_query);
+
+    // transforma os valores em um único array
+    $valueArray = doGeneralCreateArrayFromValues($import_data_query);
+
+    // Converte para o formato Mysql
+    $query_sql = doMysqlConvertUpdateArray($keyArray, $valueArray);
+    doUpdateDB("UPDATE `products_question_reponse` SET $query_sql WHERE `question_id`='" . $question_id_sanitize . "';");
 }
 
 ?>

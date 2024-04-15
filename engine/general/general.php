@@ -344,6 +344,6 @@ function doYN($f) {
     return ($f == 1) ? 'Sim' : 'Não';
 }
 
-function getReturnProductPrice($table, $n) {
+function isGeneralExistProduct($table, $n) {
     return isset($table[$n]);
 }

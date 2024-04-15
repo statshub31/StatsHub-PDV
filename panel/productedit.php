@@ -20,9 +20,9 @@ if (isCampanhaInURL("product")) {
 
 
                 // ADD PRODUCT
-                // if (getGeneralSecurityToken('tokenAddProduct')) {
+                // if (getGeneralSecurityToken('tokenEditProduct')) {
                 if (1 == 1) {
-                    data_dump($_POST);
+                    // data_dump($_POST);
                     if (empty($_POST) === false) {
                         $required_fields_status = true;
                         $required_fields = array('category', 'name', 'description', 'size-p', 'size-p-description', 'size-p-price');
@@ -50,15 +50,22 @@ if (isCampanhaInURL("product")) {
                                 }
                             }
 
+                            if (isDatabaseProductExistID($_POST['product_select_id']) === false) {
+                                $errors[] = "Houve um erro ao processar a solicitação, tente novamente.";
+                            }
+
                             if (isDatabaseCategoryExistID($_POST['category']) === false) {
                                 $errors[] = "Houve um erro ao processar solicitação, categoria é inexistente.";
                             }
 
                             if (!empty($_POST['code'])) {
-                                if (isDatabaseProductEnabledByCode($_POST['code'])) {
-                                    $errors[] = "O codigo é existente, preencha com outro ou deixe em branco.";
+                                if (isDatabaseProductComplementExistID($_POST['product_select_id'])) {
+                                    if (isDatabaseProductValidationCode($_POST['code'], $_POST['product_select_id']) === false) {
+                                        $errors[] = "O codigo é existente, preencha com outro ou deixe em branco.";
+                                    }
                                 }
                             }
+
                             if (doGeneralValidationProductNameFormat($_POST['name']) == false) {
                                 $errors[] = "Escolha outro nome, somente é aceito caracteres alfanumérico.";
                             }
@@ -232,14 +239,12 @@ if (isCampanhaInURL("product")) {
 
                             $required_price_fields[] = array(
                                 'size-p',
-                                'size-p-description',
                                 'price-p',
                             );
 
                             if (isset($_POST['price-size-status'])) {
                                 $required_price_fields[] = array(
                                     'size-m',
-                                    'size-m-description',
                                     'price-m'
                                 );
 
@@ -260,6 +265,8 @@ if (isCampanhaInURL("product")) {
                                 }
 
                                 $required_price_fields = array_merge($required_price_fields[0], $required_price_fields[1]);
+                            } else {
+                                $required_price_fields = array_merge($required_price_fields[0]);
                             }
 
                             if (validateRequiredFields($_POST, $required_price_fields) === false) {
@@ -268,7 +275,7 @@ if (isCampanhaInURL("product")) {
 
                             // STOCK
                             if (isset($_POST['stock-status'])) {
-                                $required_stock_fields = array('stock-min', 'stock-actual');
+                                $required_stock_fields = array('stock-min');
 
                                 if (validateRequiredFields($_POST, $required_stock_fields) === false) {
                                     $errors[] = "É obrigatório preencher todos os campos do estoque.";
@@ -276,10 +283,6 @@ if (isCampanhaInURL("product")) {
 
                                 if (doGeneralValidationNumberFormat($_POST['stock-min']) == false) {
                                     $errors[] = "Estoque mínimo precisa ser um valor numérico.";
-                                }
-
-                                if (doGeneralValidationNumberFormat($_POST['stock-actual']) == false) {
-                                    $errors[] = "Estoque atual precisa ser um valor numérico.";
                                 }
                             }
 
@@ -304,15 +307,17 @@ if (isCampanhaInURL("product")) {
                             // QUESTION
                             if (isset($_POST['questions-status'])) {
                                 $count = 1;
+                                
+                                if (empty($_POST['question1'])) {
+                                    $errors[] = "Você habilitou o questionário, é obrigatório o preenchimento de ao menos uma pergunta.";
+                                }
+
                                 while (isset($_POST['question' . $count])) {
-
-                                    if (empty($_POST['question' . $count])) {
-                                        $errors[] = "Você habilitou o questionário, é obrigatório o preenchimento de todas as perguntas criadas.";
-                                    }
-
-                                    if (!isset($_POST['response-free' . $count])) {
-                                        if (empty($_POST['response' . $count][0])) {
-                                            $errors[] = "Você precisa inserir ao menos uma resposta, para as perguntas.";
+                                    if (!empty($_POST['question' . $count])) {
+                                        if (!isset($_POST['response-free' . $count])) {
+                                            if (empty($_POST['response' . $count][0])) {
+                                                $errors[] = "Você precisa inserir ao menos uma resposta, para as perguntas.";
+                                            }
                                         }
                                     }
 
@@ -327,8 +332,10 @@ if (isCampanhaInURL("product")) {
                     if (empty($errors)) {
 
                         $image = True;
+                        $oldName = getDatabaseProductPhotoName($_POST['product_select_id']);
 
                         if (isset($_FILES['productImage']) && $_FILES['productImage']['size'] > 0) {
+                            doGeneralRemoveArchive($image_product_dir, $oldName);
                             $newName = md5(date("Y_m_d_H:i:s"));
                             $fileInfo = pathinfo($_FILES['productImage']['name']);
                             $fileExtension = $fileInfo['extension'];
@@ -343,26 +350,28 @@ if (isCampanhaInURL("product")) {
                         if ($image) {
 
                             // INFORMAÇÕES
-                            $product_add_fields = array(
+                            $product_update_fields = array(
                                 'code' => (!empty($_POST['code']) ? $_POST['code'] : NULL),
                                 'name' => $_POST['name'],
                                 'category_id' => $_POST['category'],
                                 'description' => $_POST['description'],
-                                'photo' => $newName,
-                                'created' => date('Y-m-d'),
                                 'stock_status' => (isset($_POST['stock-status']) ? 1 : 0),
                                 'price_distinct' => (isset($_POST['price-size-status']) ? 1 : 0),
-                                'created_by' => $in_user_id,
-                                'status' => 2
                             );
 
-                            $product_insert_id = doDatabaseProductInsert($product_add_fields);
+                            if (isset($newName)) {
+                                $product_update_fields[] = $newName;
+                            }
+
+                            // doDatabaseProductUpdate($_POST['product_select_id'], $product_update_fields);
 
                             // PREÇO
+                            // doDatabaseProductPriceTruncateByProductID($_POST['product_select_id']);
+
                             // TAM 1
                             if ((!empty($_POST['size-p'])) && (!empty($_POST['price-p']))) {
                                 $price_filled_fields[] = array(
-                                    'product_id' => $product_insert_id,
+                                    'product_id' => $_POST['product_select_id'],
                                     'size_measure_id' => $_POST['measure'],
                                     'size' => $_POST['size-p'],
                                     'description' => (!empty($_POST['size-p-description']) ? $_POST['size-p-description'] : NULL),
@@ -373,7 +382,7 @@ if (isCampanhaInURL("product")) {
                             // TAM 2
                             if ((!empty($_POST['size-m'])) && (!empty($_POST['price-m']))) {
                                 $price_filled_fields[] = array(
-                                    'product_id' => $product_insert_id,
+                                    'product_id' => $_POST['product_select_id'],
                                     'size_measure_id' => $_POST['measure'],
                                     'size' => $_POST['size-m'],
                                     'description' => (!empty($_POST['size-m-description']) ? $_POST['size-m-description'] : NULL),
@@ -384,7 +393,7 @@ if (isCampanhaInURL("product")) {
                             // TAM 3
                             if ((!empty($_POST['size-g'])) && (!empty($_POST['price-g']))) {
                                 $price_filled_fields[] = array(
-                                    'product_id' => $product_insert_id,
+                                    'product_id' => $_POST['product_select_id'],
                                     'size_measure_id' => $_POST['measure'],
                                     'size' => $_POST['size-g'],
                                     'description' => (!empty($_POST['size-g-description']) ? $_POST['size-g-description'] : NULL),
@@ -395,7 +404,7 @@ if (isCampanhaInURL("product")) {
                             // TAM 4
                             if ((!empty($_POST['size-xg'])) && (!empty($_POST['price-xg']))) {
                                 $price_filled_fields[] = array(
-                                    'product_id' => $product_insert_id,
+                                    'product_id' => $_POST['product_select_id'],
                                     'size_measure_id' => $_POST['measure'],
                                     'size' => $_POST['size-p'],
                                     'description' => (!empty($_POST['size-xg-description']) ? $_POST['size-xg-description'] : NULL),
@@ -403,77 +412,196 @@ if (isCampanhaInURL("product")) {
                                 );
                             }
 
-                            doDatabaseProductPriceInsertMultipleRow($price_filled_fields);
+                            // doDatabaseProductPriceInsertMultipleRow($price_filled_fields);
 
                             // STOCK
                             if (isset($_POST['stock-status'])) {
-                                $product_stock_fields = array(
-                                    'product_id' => $product_insert_id,
-                                    'min' => $_POST['stock-min'],
-                                    'actual' => $_POST['stock-actual']
+                                $product_stock_update_fields = array(
+                                    'min' => $_POST['stock-min']
                                 );
-                                doDatabaseStockInsert($product_stock_fields);
+                                // doDatabaseStockUpdate(getDatabaseStockIDByProductID($_POST['product_select_id']), $product_stock_update_fields);
                             }
 
 
                             // ADDITIONAL
+
+                            // doDatabaseProductAdditionalTruncateByProductID($_POST['product_select_id']);
                             if (isset($_POST['additional'])) {
                                 foreach ($_POST['additional'] as $additional_id) {
                                     $product_additional_fields[] = array(
-                                        'product_id' => $product_insert_id,
+                                        'product_id' => $_POST['product_select_id'],
                                         'additional_id' => $additional_id
                                     );
                                 }
 
-                                doDatabaseProductAdditionalInsertMultipleRow($product_additional_fields);
+                                // doDatabaseProductAdditionalInsertMultipleRow($product_additional_fields);
                             }
 
                             // COMPLEMENTS
+                            // doDatabaseProductComplementTruncateByProductID($_POST['product_select_id']);
                             if (isset($_POST['complements'])) {
                                 foreach ($_POST['complements'] as $complement_id) {
                                     $product_complements_fields[] = array(
-                                        'product_id' => $product_insert_id,
+                                        'product_id' => $_POST['product_select_id'],
                                         'complement_id' => $complement_id
                                     );
                                 }
 
-                                doDatabaseProductComplementInsertMultipleRow($product_complements_fields);
+                                // doDatabaseProductComplementInsertMultipleRow($product_complements_fields);
                             }
 
-
-                            if (isset($_POST['questions-status'])) {
-                                $count = 1;
-                                while (isset($_POST['question' . $count])) {
-                                    $questions_fields = array(
-                                        'product_id' => $product_insert_id,
-                                        'question' => $_POST['question' . $count],
-                                        'multiple_response' => (isset($_POST['multiple-response' . $count]) ? 1 : 0),
-                                        'response_free' => (isset($_POST['response-free' . $count]) ? 1 : 0)
-                                    );
-                                    $question_insert_id = doDatabaseProductQuestionInsert($questions_fields);
-
-                                    if (!isset($_POST['response-free' . $count])) {
-                                        foreach ($_POST['response' . $count] as $response) {
-                                            if (!empty($response)) {
-                                                $response_fields[$count][] = array(
-                                                    'question_id' => $question_insert_id,
-                                                    'response' => $response
-                                                );
-                                            }
-                                        }
-
-                                        doDatabaseProductQuestionResponseInsertMultipleRow($response_fields[$count]);
-                                    }
-                                    $count++;
-                                }
-
-                            }
 
                             // QUESTIONS
+                            // Questão habilitada?
+                            if (isset($_POST['questions-status'])) {
+                                $count = 1;
+                                
+                                while (isset($_POST['question' . $count])) {
+                                    $newQuestion = true;
+
+                                    // VALIDO SE É UMA PERGUNTA A SER ALTERADA
+                                    if(isset($_POST['old_question'. $count])) {
+                                        $newQuestion = false;
+                                    }
+
+                                    if($newQuestion) {
+                                        $questions_fields = array(
+                                            'product_id' => $_POST['product_select_id'],
+                                            'question' => $_POST['question' . $count],
+                                            'multiple_response' => (isset($_POST['multiple-response' . $count]) ? 1 : 0),
+                                            'response_free' => (isset($_POST['response-free' . $count]) ? 1 : 0)
+                                        );
+                                        $question_insert_id = doDatabaseProductQuestionInsert($questions_fields);
+                
+                                        if (!isset($_POST['response-free' . $count])) {
+                                            foreach ($_POST['response' . $count] as $response) {
+                                                if (!empty($response)) {
+                                                    $response_fields[$count][] = array(
+                                                        'question_id' => $question_insert_id,
+                                                        'response' => $response
+                                                    );
+                                                }
+                                            }
+                
+                                            doDatabaseProductQuestionResponseInsertMultipleRow($response_fields[$count]);
+                                        }
+                                    }
+                                    else {
+                                        // VERIFICO SE A PERGUNTA DE INICIO, É DIFERENTE DA FINAL
+                                        if($_POST['old_question'. $count] !== $_POST['question'. $count]) {
+
+                                            if(empty($_POST['question'. $count])) {
+                                                // DESATIVO A PERGUNTA ANTERIOR
+                                                $question_update_id = getDatabaseProductQuestionExistByQuestion($_POST['old_question'. $count]);
+                                                    
+                                                $question_update_fields = array(
+                                                    'deleted' => 1
+                                                );
+
+                                                doDatabaseProductQuestionUpdate($question_update_id, $question_update_fields); // DESABILITO A PERGUNTA
+                                                doDatabaseProductQuestionResponseUpdateByQuestionID($question_update_id, $question_update_fields);  // DESABILITO AS RESPOSTAS 
+                                                
+                                            } 
+                                            else 
+                                                {
+                                                // DESATIVO A PERGUNTA ANTERIOR
+                                                $question_update_id = getDatabaseProductQuestionExistByQuestion($_POST['old_question'. $count]);
+                                                    
+                                                $question_update_fields = array(
+                                                    'deleted' => 1
+                                                );
+
+                                                doDatabaseProductQuestionUpdate($question_update_id, $question_update_fields); // DESABILITO A PERGUNTA
+                                                doDatabaseProductQuestionResponseUpdateByQuestionID($question_update_id, $question_update_fields);  // DESABILITO AS RESPOSTAS 
+                                                
+
+                                                // CRIO A NOVA PERGUNTA E RESPOSTAS
+                                                    
+                                                $questions_fields = array(
+                                                    'product_id' => $_POST['product_select_id'],
+                                                    'question' => $_POST['question' . $count],
+                                                    'multiple_response' => (isset($_POST['multiple-response' . $count]) ? 1 : 0),
+                                                    'response_free' => (isset($_POST['response-free' . $count]) ? 1 : 0)
+                                                );
+                                                $question_insert_id = doDatabaseProductQuestionInsert($questions_fields);
+
+                                                    
+                                                if (!isset($_POST['response-free' . $count])) {
+                                                    foreach ($_POST['response' . $count] as $response) {
+                                                        if (!empty($response)) {
+                                                            $response_fields[$count][] = array(
+                                                                'question_id' => $question_insert_id,
+                                                                'response' => $response
+                                                            );
+                                                        }
+                                                    }
+
+                                                    doDatabaseProductQuestionResponseInsertMultipleRow($response_fields[$count]);
+                                                }
+                                            }
+                                        } 
+                                        // SE A PERGUNTAS FOREM IGUAIS 
+                                        else {
+                                            // ALTERO SOMENTE OS CAMPOS MULTIPLE E FREE
+                                            $question_update_id = getDatabaseProductQuestionExistByQuestion($_POST['question'. $count]);
+                                            $response_enabled = false;
 
 
+                                            // SE A RESPOSTA LIVRE ESTAVA DESABILITADA E AGORA FOI HABILITADA
+                                            if((getDatabaseProductQuestionResponseFree($question_update_id) == 0) && (isset($_POST['response-free' . $count]))) {
+                                                $question_update_fields = array(
+                                                    'deleted' => 1
+                                                );
+                                                doDatabaseProductQuestionResponseUpdateByQuestionID($question_update_id, $question_update_fields);  // DESABILITO AS RESPOSTAS 
+                                                $response_enabled = true;
+                                            }
+                                            
+                                            $question_update_fields = array(
+                                                'multiple_response' => (isset($_POST['multiple-response' . $count]) ? 1 : 0),
+                                                'response_free' => (isset($_POST['response-free' . $count]) ? 1 : 0)
+                                            );
 
-                            doAlertSuccess("O produto foi adicionado com sucesso.");
+                                            doDatabaseProductQuestionUpdate($question_update_id, $question_update_fields); // DESABILITO A PERGUNTA
+
+                                            // SE RESPOSTA LIVRE ESTÁ HABILITADA
+                                            if($response_enabled === false) {
+                                                $count_response = 0;
+
+                                                // PERCORRO NAS RESPOSTAS                                           
+                                                foreach ($_POST['response' . $count] as $response) {
+                                                    $newResponse = true;
+                                                    // VERIFICO SE A RESPOSTA DE INICIO É DIFERENTE DA FINAL
+                                                                    
+                                                    // VALIDO SE É UMA PERGUNTA A SER ALTERADA
+                                                    if(isset($_POST['old_response'. $count])) {
+                                                        $newResponse = false;
+                                                    }
+
+                                                    if($newResponse) {
+                                                        if(!empty($response)) {
+                                                            $response_fields[$count] = array(
+                                                                'question_id' => $question_update_id,
+                                                                'response' => $response
+                                                            );
+                            
+                                                            doDatabaseProductQuestionResponseInsert($response_fields[$count]);
+                                                        }
+                                                    } 
+                                                    else {
+                                                        data_dump($_POST['response' . $count]);
+                                                    }
+                                                    ++$count_response;
+                                                }
+                                            }
+                                        }
+                                    }
+                                    
+                                    $count++;
+                                }
+                            }
+
+
+                            doAlertSuccess("O produto foi alterado com sucesso.");
                         } else {
                             $errors[] = "Houve um erro ao encaminhar a imagem para o servidor, tente novamente.";
                         }
@@ -523,7 +651,8 @@ if (isCampanhaInURL("product")) {
             </div>
 
 
-            <form action="/panel/productadd" method="post" enctype="multipart/form-data">
+            <form action="/panel/productedit/edit/product/<?php echo $product_select_id ?>" method="post"
+                enctype="multipart/form-data">
 
                 <div id="product-add-info" class="content">
                     <div class="form-imgs-container">
@@ -645,8 +774,7 @@ if (isCampanhaInURL("product")) {
                                 foreach ($list_measure as $data) {
                                     $measure_list_id = $data['id'];
                                     ?>
-                                    <option <?php echo doSelect(getDatabaseProductSizeMeasureID($product_select_id), $measure_list_id) ?>
-                                        value="<?php echo $measure_list_id ?>">
+                                    <option <?php echo doSelect(getDatabaseProductSizeMeasureID(getDatabaseProductPriceByProductID($product_select_id)), $measure_list_id) ?> value="<?php echo $measure_list_id ?>">
                                         <?php echo getDatabaseMeasureTitle($measure_list_id) ?>
                                     </option>
                                     <?php
@@ -720,7 +848,7 @@ if (isCampanhaInURL("product")) {
                                             title="Somente será aceito caracteres alfanúmericos, por exemplo: P, M, G, 200g, 400g, 1kg..."></i></small>
                                 </label>
                                 <input name="size-m" type="text" class="form-control w-50" id="size-m"
-                                    value="<?php (getReturnProductPrice($size_price_list, 1)) ? getDatabaseProductPrice($size_price_list[1]['id']) : NULL ?>">
+                                    value="<?php echo (isGeneralExistProduct($size_price_list, 1)) ? getDatabaseProductPriceSize($size_price_list[1]['id']) : NULL ?>">
                             </div>
                             <div class="form-group" style="width: 100%">
                                 <label for="size-m-description">Descrição:
@@ -729,7 +857,7 @@ if (isCampanhaInURL("product")) {
                                             title="Descrição sobre o tamanho, caso for diferenciado por P, M, G, você poderá inserir a descrição em gramagem."></i></small>
                                 </label>
                                 <input name="size-m-description" type="text" class="form-control w-50" id="size-m-description"
-                                    value="<?php echo (getReturnProductPrice($size_price_list, 1)) ? getDatabaseProductPrice($size_price_list[1]['id']) : NULL ?>">
+                                    value="<?php echo (isGeneralExistProduct($size_price_list, 1)) ? getDatabaseProductPriceDescription($size_price_list[1]['id']) : NULL ?>">
                             </div>
                             <div class="form-group">
                                 <label for="price-m">Valor
@@ -739,7 +867,7 @@ if (isCampanhaInURL("product")) {
                                             title="Somente será aceito caracteres númerico e virgula, por exemplo: 20,00 | 30,00..."></i></small>
                                 </label>
                                 <input name="price-m" type="text" class="form-control w-50" id="price-m"
-                                    value="<?php echo (getReturnProductPrice($size_price_list, 1)) ? getDatabaseProductPrice($size_price_list[1]['id']) : NULL ?>">
+                                    value="<?php echo (isGeneralExistProduct($size_price_list, 1)) ? getDatabaseProductPrice($size_price_list[1]['id']) : NULL ?>">
                             </div>
                         </fieldset>
                         <fieldset style="display: flex;">
@@ -751,7 +879,7 @@ if (isCampanhaInURL("product")) {
                                             title="Somente será aceito caracteres alfanúmericos, por exemplo: P, M, G, 200g, 400g, 1kg..."></i></small>
                                 </label>
                                 <input name="size-g" type="text" class="form-control w-50" id="size-g"
-                                    value="<?php echo (getReturnProductPrice($size_price_list, 2)) ? getDatabaseProductPrice($size_price_list[2]['id']) : NULL ?>">
+                                    value="<?php echo (isGeneralExistProduct($size_price_list, 2)) ? getDatabaseProductPriceSize($size_price_list[2]['id']) : NULL ?>">
                             </div>
                             <div class="form-group" style="width: 100%">
                                 <label for="size-g-description">Descrição:
@@ -760,7 +888,7 @@ if (isCampanhaInURL("product")) {
                                             title="Descrição sobre o tamanho, caso for diferenciado por P, M, G, você poderá inserir a descrição em gramagem."></i></small>
                                 </label>
                                 <input name="size-g-description" type="text" class="form-control w-50" id="size-g-description"
-                                    value="<?php echo (getReturnProductPrice($size_price_list, 2)) ? getDatabaseProductPrice($size_price_list[2]['id']) : NULL ?>">
+                                    value="<?php echo (isGeneralExistProduct($size_price_list, 2)) ? getDatabaseProductPriceDescription($size_price_list[2]['id']) : NULL ?>">
                             </div>
                             <div class="form-group">
                                 <label for="price-g">Valor:
@@ -769,7 +897,7 @@ if (isCampanhaInURL("product")) {
                                             title="Somente será aceito caracteres númerico e virgula, por exemplo: 20,00 | 30,00..."></i></small>
                                 </label>
                                 <input name="price-g" type="text" class="form-control w-50" id="price-g"
-                                    value="<?php echo (getReturnProductPrice($size_price_list, 2)) ? getDatabaseProductPrice($size_price_list[2]['id']) : NULL ?>">
+                                    value="<?php echo (isGeneralExistProduct($size_price_list, 2)) ? getDatabaseProductPrice($size_price_list[2]['id']) : NULL ?>">
                             </div>
                         </fieldset>
                         <fieldset style="display: flex;">
@@ -781,7 +909,7 @@ if (isCampanhaInURL("product")) {
                                             title="Somente será aceito caracteres alfanúmericos, por exemplo: P, M, G, 200g, 400g, 1kg..."></i></small>
                                 </label>
                                 <input name="size-xg" type="text" class="form-control w-50" id="size-xg"
-                                    value="<?php echo (getReturnProductPrice($size_price_list, 3)) ? getDatabaseProductPrice($size_price_list[3]['id']) : NULL ?>">
+                                    value="<?php echo (isGeneralExistProduct($size_price_list, 3)) ? getDatabaseProductPriceSize($size_price_list[3]['id']) : NULL ?>">
                             </div>
                             <div class="form-group" style="width: 100%">
                                 <label for="size-xg-description">Descrição:
@@ -790,7 +918,7 @@ if (isCampanhaInURL("product")) {
                                             title="Descrição sobre o tamanho, caso for diferenciado por P, M, G, você poderá inserir a descrição em gramagem."></i></small>
                                 </label>
                                 <input name="size-xg-description" type="text" class="form-control w-50" id="size-xg-description"
-                                    value="<?php echo (getReturnProductPrice($size_price_list, 3)) ? getDatabaseProductPrice($size_price_list[3]['id']) : NULL ?>">
+                                    value="<?php echo (isGeneralExistProduct($size_price_list, 3)) ? getDatabaseProductPriceDescription($size_price_list[3]['id']) : NULL ?>">
                             </div>
                             <div class="form-group">
                                 <label for="price-xg">Valor:
@@ -799,7 +927,7 @@ if (isCampanhaInURL("product")) {
                                             title="Somente será aceito caracteres númerico e virgula, por exemplo: 20,00 | 30,00..."></i></small>
                                 </label>
                                 <input name="price-xg" type="text" class="form-control w-50" id="price-xg"
-                                    value="<?php echo (getReturnProductPrice($size_price_list, 3)) ? getDatabaseProductPrice($size_price_list[3]['id']) : NULL ?>">
+                                    value="<?php echo (isGeneralExistProduct($size_price_list, 3)) ? getDatabaseProductPrice($size_price_list[3]['id']) : NULL ?>">
                             </div>
                         </fieldset>
                     </div>
@@ -963,6 +1091,9 @@ if (isCampanhaInURL("product")) {
                                                     <input name="question<?php echo $count_question ?>" type="text"
                                                         class="form-control w-100"
                                                         value="<?php echo getDatabaseProductQuestionText($question_product_select_list_id); ?>">
+                                                        <input name="old_question<?php echo $count_question ?>" type="text"
+                                                        class="form-control w-100"
+                                                        value="<?php echo getDatabaseProductQuestionText($question_product_select_list_id); ?>" hidden>
                                                 </a>
                                             </h5>
                                         </div>
@@ -1011,8 +1142,8 @@ if (isCampanhaInURL("product")) {
                                                     </label>
                                                 </div>
                                             </div>
-                                            <div
-                                            <?php echo (getDatabaseProductQuestionResponseFree($question_product_select_list_id) ? 'style="display: none;"' : NULL) ?> class="card-body" id="response<?php echo $count_question ?>">
+                                            <div <?php echo (getDatabaseProductQuestionResponseFree($question_product_select_list_id) ? 'style="display: none;"' : NULL) ?> class="card-body"
+                                                id="response<?php echo $count_question ?>">
 
                                                 <?php
                                                 $response_question_list = ddoDatabaseProductsQuestionResponsesListByQuestionID($question_product_select_list_id);
@@ -1023,17 +1154,16 @@ if (isCampanhaInURL("product")) {
                                                         <input name="response<?php echo $count_question ?>[]" type="text"
                                                             class="form-control w-100 response"
                                                             value="<?php echo getDatabaseProductQuestionResponseResponse($response_question_list_id) ?>">
+                                                            <input name="old_response<?php echo $count_question ?>[]" type="text"
+                                                            class="form-control w-100 response"
+                                                            value="<?php echo getDatabaseProductQuestionResponseResponse($response_question_list_id) ?>" hidden>
+
                                                         <?php
                                                     }
-                                                } else {
-?>
-                                                        <input name="response<?php echo $count_question ?>[]" type="text"
-                                                            class="form-control w-100 response"
-                                                            value="">
-
-<?php
                                                 }
-                                                ?>
+                                                    ?>
+                                                    <input name="response<?php echo $count_question ?>[]" type="text"
+                                                        class="form-control w-100 response" value="">
                                             </div>
                                         </div>
                                     </div>
@@ -1043,45 +1173,58 @@ if (isCampanhaInURL("product")) {
                             } else {
                                 $count_question = 1;
                                 ?>
-                                <div id="collapseOne1" class="collapse show" aria-labelledby="headingOne1" data-parent="#accordion">
-                                    <div class="form-group">
-                                        <label for="multiple-response1">Multipla resposta</label>
-                                        <small>
-                                            <i class="fa fa-question-circle" aria-hidden="true" data-toggle="tooltip"
-                                                data-placement="top"
-                                                title="Caso habilite está função,  usuário poderá escolher +1 resposta.">
-                                            </i>
-                                        </small>
-                                        <div class="vc-toggle-container">
-                                            <label class="vc-switch">
-                                                <input type="checkbox" name="multiple-response1" id="multiple-response1"
-                                                    class="vc-switch-input checkbox-toggle1"
-                                                    onclick="checkboxToggle('#multiple-response1', '#response1', '.checkbox-toggle1');">
-                                                <span data-on="Sim" data-off="Não" class="vc-switch-label"></span>
-                                                <span class="vc-handle"></span>
-                                            </label>
-                                        </div>
+
+                                <div class="card" style="margin-bottom: 10px;">
+                                    <div class="card-header" id="headingOne<?php echo $count_question ?>">
+                                        <h5 class="mb-0">
+                                            <a class="btn btn-link" data-toggle="collapse"
+                                                data-target="#collapseOne<?php echo $count_question ?>" aria-expanded="true"
+                                                aria-controls="collapseOne<?php echo $count_question ?>">
+                                                <input name="question<?php echo $count_question ?>" type="text"
+                                                    class="form-control w-100" value="">
+                                            </a>
+                                        </h5>
                                     </div>
-                                    <div class="form-group">
-                                        <label for="response-free1">Resposta Livre</label>
-                                        <small>
-                                            <i class="fa fa-question-circle" aria-hidden="true" data-toggle="tooltip"
-                                                data-placement="top"
-                                                title="Caso habilite está função,  usuário poderá responder o que quiser.">
-                                            </i>
-                                        </small>
-                                        <div class="vc-toggle-container">
-                                            <label class="vc-switch">
-                                                <input type="checkbox" name="response-free1" id="response-free1"
-                                                    class="vc-switch-input checkbox-toggle1"
-                                                    onclick="checkboxToggle('#multiple-response1', '#response1', '.checkbox-toggle1');">
-                                                <span data-on="Sim" data-off="Não" class="vc-switch-label"></span>
-                                                <span class="vc-handle"></span>
-                                            </label>
+                                    <div id="collapseOne1" class="collapse" aria-labelledby="headingOne1" data-parent="#accordion">
+                                        <div class="form-group">
+                                            <label for="multiple-response1">Multipla resposta</label>
+                                            <small>
+                                                <i class="fa fa-question-circle" aria-hidden="true" data-toggle="tooltip"
+                                                    data-placement="top"
+                                                    title="Caso habilite está função,  usuário poderá escolher +1 resposta.">
+                                                </i>
+                                            </small>
+                                            <div class="vc-toggle-container">
+                                                <label class="vc-switch">
+                                                    <input type="checkbox" name="multiple-response1" id="multiple-response1"
+                                                        class="vc-switch-input checkbox-toggle1"
+                                                        onclick="checkboxToggle('#multiple-response1', '#response1', '.checkbox-toggle1');">
+                                                    <span data-on="Sim" data-off="Não" class="vc-switch-label"></span>
+                                                    <span class="vc-handle"></span>
+                                                </label>
+                                            </div>
                                         </div>
-                                    </div>
-                                    <div class="card-body" id="response1">
-                                        <input name="response1[]" type="text" class="form-control w-100" value="">
+                                        <div class="form-group">
+                                            <label for="response-free1">Resposta Livre</label>
+                                            <small>
+                                                <i class="fa fa-question-circle" aria-hidden="true" data-toggle="tooltip"
+                                                    data-placement="top"
+                                                    title="Caso habilite está função,  usuário poderá responder o que quiser.">
+                                                </i>
+                                            </small>
+                                            <div class="vc-toggle-container">
+                                                <label class="vc-switch">
+                                                    <input type="checkbox" name="response-free1" id="response-free1"
+                                                        class="vc-switch-input checkbox-toggle1"
+                                                        onclick="checkboxToggle('#multiple-response1', '#response1', '.checkbox-toggle1');">
+                                                    <span data-on="Sim" data-off="Não" class="vc-switch-label"></span>
+                                                    <span class="vc-handle"></span>
+                                                </label>
+                                            </div>
+                                        </div>
+                                        <div class="card-body" id="response1">
+                                            <input name="response1[]" type="text" class="form-control w-100 response" value="">
+                                        </div>
                                     </div>
                                 </div>
                                 <?php
@@ -1103,11 +1246,12 @@ if (isCampanhaInURL("product")) {
 
 
                 <br>
-                <input name="token" type="text" value="<?php echo addGeneralSecurityToken('tokenAddProduct') ?>" hidden>
+                <input name="product_select_id" type="text" value="<?php echo $product_select_id ?>" hidden>
+                <input name="token" type="text" value="<?php echo addGeneralSecurityToken('tokenEditProduct') ?>" hidden>
                 <a href="/panel/products">
                     <button type="button" class="btn btn-secondary">Voltar</button>
                 </a>
-                <button type="submit" class="btn btn-primary">Adicionar</button>
+                <button type="submit" class="btn btn-primary">Salvar</button>
             </form>
 
 
@@ -1225,6 +1369,9 @@ if (isCampanhaInURL("product")) {
                         var novoCampo = $('.card').first().clone();
 
                         // Definir valores vazios para os campos de entrada
+                        
+                        novoCampo.find('input[name="old_question'+ contador +'"]').remove();
+                        novoCampo.find('input[name="old_response'+ contador +'[]"]').remove();
                         novoCampo.find('input').val('');
 
                         // Incrementar o contador para o próximo campo

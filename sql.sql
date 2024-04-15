@@ -181,6 +181,7 @@ create table products_question (
     `question` varchar(255) not null,
     `multiple_response` boolean not null default 1,
     `response_free` boolean not null default 0,
+    `deleted` int not null default 0,
     FOREIGN KEY (`product_id`) REFERENCES `products`(`id`)
 );
 
@@ -188,6 +189,7 @@ create table products_question_reponse (
     `id` int PRIMARY KEY AUTO_INCREMENT,
     `question_id` int not null,
     `response` text null,
+    `deleted` int not null default 0,
     FOREIGN KEY (`question_id`) REFERENCES `products_question`(`id`)
 );
 
