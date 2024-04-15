@@ -219,7 +219,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST)) {
                     </td>
                     <td>
                         <i class="fa fa-edit" aria-hidden="true"></i>
-                        <a href="/panel/products/view/product/<?php echo $product_list_id ?>">
+                        <a href="/panel/products/remove/product/<?php echo $product_list_id ?>">
                             <i class="fa fa-trash" aria-hidden="true"></i>
                         </a>
                         <a href="/panel/products/view/product/<?php echo $product_list_id ?>">

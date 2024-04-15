@@ -68,7 +68,7 @@ function isDatabaseProductQuestionExistID($id)
     return ($query !== false) ? true : false;
 }
 
-function doDatabaseProductsQuestionsListByProductID($product_id, $status = false)
+function doDatabaseProductsQuestionsListByProductID($product_id)
 {
     $sanitize_product_id = sanitize($product_id);
 
@@ -177,5 +177,17 @@ function getDatabaseProductQuestionIDByProductID($product_id)
     return ($query !== false) ? $query['id'] : false;
 }
 
+function getDatabaseProductQuestionRowCountByProductID($product_id)
+{
+    $product_id_sanitize = sanitize($product_id);
+
+    $result = doSelectSingleDB("SELECT COUNT(*) AS rowCount FROM `products_question` where `product_id` = '".$product_id_sanitize."';");
+
+    return ($result !== false) ? $result['rowCount'] : 0;
+}
+
+function isDatabaseProductQuestionExistQuestion($product_id) {
+    return (getDatabaseProductQuestionRowCountByProductID($product_id) > 0) ? true : false;
+}
 
 ?>

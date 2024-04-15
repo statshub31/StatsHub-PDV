@@ -49,7 +49,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST)) {
                         $errors[] = "O codigo é existente, preencha com outro ou deixe em branco.";
                     }
                 }
-                if(doGeneralValidationProductNameFormat($_POST['name']) == false) {
+                if (doGeneralValidationProductNameFormat($_POST['name']) == false) {
                     $errors[] = "Escolha outro nome, somente é aceito caracteres alfanumérico.";
                 }
 
@@ -451,7 +451,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST)) {
                                     );
                                 }
                             }
-                            
+
                             doDatabaseProductQuestionResponseInsertMultipleRow($response_fields[$count]);
                         }
                         $count++;
@@ -570,7 +570,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST)) {
             <section id="product-left">
                 <div class="form-group">
                     <label for="name">Nome</label>
-                        <font color="red">*</font>:
+                    <font color="red">*</font>:
                     <input type="text" name="name" class="form-control" id="name" value="">
                 </div>
                 <div class="form-group">
@@ -932,7 +932,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST)) {
                         </h5>
                     </div>
 
-                    <div id="collapseOne1" class="collapse show" aria-labelledby="headingOne1" data-parent="#accordion">
+                    <div id="collapseOne1" class="collapse" aria-labelledby="headingOne1" data-parent="#accordion">
                         <div class="form-group">
                             <label for="multiple-response1">Multipla resposta</label>
                             <small>
@@ -970,7 +970,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST)) {
                             </div>
                         </div>
                         <div class="card-body" id="response1">
-                            <input name="response1[]" type="text" class="form-control w-100" value="">
+                            <input name="response1[]" type="text" class="form-control w-100 response" value="">
                         </div>
                     </div>
                 </div>
@@ -1079,37 +1079,66 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST)) {
         });
 
         // QUESTIONARIO
-        let currentIndex = 1; // índice do campo atual
-        $('body').on('input', 'input[name^="response"]:last', function () {
-            // Verifica se o campo atual está preenchido
-            if ($(this).val().trim() !== '') {
-                // Obtém o nome do último campo existente
-                let currentName = $(this).attr('name');
+        // let currentIndex = 1; // índice do campo atual
+        // $('body').on('input', 'input[name^="response"]:last', function () {
+        //     // Verifica se o campo atual está preenchido
+        //     if ($(this).val().trim() !== '') {
+        //         // Obtém o nome do último campo existente
+        //         let currentName = $(this).attr('name');
 
-                // Cria um novo campo de entrada com o mesmo nome
-                let newInput = $('<input>').attr({
-                    type: 'text',
-                    name: currentName,
-                    class: 'form-control w-100',
-                    value: ''
-                });
+        //         // Cria um novo campo de entrada com o mesmo nome
+        //         let newInput = $('<input>').attr({
+        //             type: 'text',
+        //             name: currentName,
+        //             class: 'form-control w-100',
+        //             value: ''
+        //         });
 
-                // Adiciona o novo campo de entrada após o último campo atual
-                $(this).closest('.card-body').after($('<div class="card-body"></div>').append(newInput));
-            }
-        });
+        //         // Adiciona o novo campo de entrada após o último campo atual
+        //         $(this).closest('.card-body').after($('<div class="card-body"></div>').append(newInput));
+        //     }
+        // });
 
 
+        // Função para adicionar um novo input quando o atual for preenchido
+        function adicionarNovoInput(idDoCard) {
+            $('#' + idDoCard).on('input', 'input[name^="response"]:last', function () {
+                // Verifica se o campo atual está preenchido
+                if ($(this).val().trim() !== '') {
+                    // Verifica se o próximo input já existe
+                    if ($(this).next().length === 0) {
+                        // Obtém o nome do próximo campo
+                        let currentName = $(this).attr('name');
+                        let nextIndex = parseInt(currentName.match(/\d+/)[0]) + 1;
+                        let nextName = currentName;
 
-        var contador = 2;
+                        // Cria um novo campo de entrada com o próximo nome
+                        let newInput = $('<input>').attr({
+                            type: 'text',
+                            name: nextName,
+                            class: 'form-control w-100 response',
+                            value: ''
+                        });
 
-        // Função para adicionar um novo campo
+                        // Adiciona o novo campo de entrada após o atual
+                        $(this).after(newInput);
+                    }
+                }
+            });
+        }
+
+
+        var contador = 1;
+        // Função para adicionar um novo campo quando o botão #addCampo for clicado
         $('#addCampo').click(function () {
             // Criar uma cópia do modelo de campo
             var novoCampo = $('.card').first().clone();
 
             // Definir valores vazios para os campos de entrada
             novoCampo.find('input').val('');
+
+            // Incrementar o contador para o próximo campo
+            contador++;
 
             // Atribuir IDs únicos aos elementos clonados
             var headingId = 'headingOne' + contador;
@@ -1131,7 +1160,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST)) {
                 });
             };
 
-            // Atribuir IDs únicos aos novos elementos clonados
+            // Atualizar os atributos dos elementos clonados com os novos IDs
             novoCampo.find('.card-header').attr('id', headingId);
             novoCampo.find('.card-header a').attr({
                 'data-toggle': 'collapse',
@@ -1169,8 +1198,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST)) {
             // Adicionar o novo campo ao final do accordion
             $('#accordion').append(novoCampo);
 
-            // Incrementar o contador para o próximo campo
-            contador++;
+            // Chamar adicionarNovoInput para o novo campo
+            adicionarNovoInput(responseId);
+        });
+
+        // Chamar adicionarNovoInput para cada card existente
+        $('[id^="response"]').each(function () {
+            adicionarNovoInput($(this).attr('id'));
         });
 
 

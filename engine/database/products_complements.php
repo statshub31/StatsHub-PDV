@@ -148,4 +148,14 @@ function doDatabaseProductComplementTruncateByProductID($product_id)
     doDeleteDB("DELETE FROM `products_complements` WHERE `product_id`='".$product_id_sanitize."';");
 }
 
+
+function isDatabaseProductComplementValidation($product_id, $complement_id) {
+	$product_sanitize = sanitize($product_id);
+	$complement_sanitize = sanitize($complement_id);
+	
+	$data = doSelectSingleDB("SELECT `id` FROM `products_complements` WHERE `product_id`='".$product_sanitize."' AND `complement_id`='".$complement_sanitize."';");
+	
+	return ($data !== false) ? true : false;
+}
+
 ?>

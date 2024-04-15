@@ -340,7 +340,10 @@ function doCheck($f, $d) {
     return ($f == $d) ? 'checked' : '';
 }
 
-
 function doYN($f) {
     return ($f == 1) ? 'Sim' : 'Não';
+}
+
+function getReturnProductPrice($table, $n) {
+    return isset($table[$n]);
 }

@@ -148,4 +148,12 @@ function doDatabaseProductAdditionalTruncateByProductID($product_id)
 }
 
 
+function isDatabaseProductAdditionalValidation($product_id, $additional_id) {
+	$product_sanitize = sanitize($product_id);
+	$additional_sanitize = sanitize($additional_id);
+	
+	$data = doSelectSingleDB("SELECT `id` FROM `products_additional` WHERE `product_id`='".$product_sanitize."' AND `additional_id`='".$additional_sanitize."';");
+	
+	return ($data !== false) ? true : false;
+}
 ?>
