@@ -38,6 +38,25 @@ function getDatabaseProductPromotionCumulative($id)
     return ($query !== false) ? $query['cumulative'] : false;
 }
 
+function getDatabaseProductPromotionType($id)
+{
+    
+    $id_sanitize = sanitize($id);
+
+    $query = getDatabaseProductPromotionsData($id_sanitize, 'promotion_id');
+    return ($query !== false) ? $query['promotion_id'] : false;
+}
+
+function getDatabaseProductPromotionValue($id)
+{
+    
+    $id_sanitize = sanitize($id);
+
+    $query = getDatabaseProductPromotionsData($id_sanitize, 'value');
+    return ($query !== false) ? $query['value'] : false;
+}
+
+
 function getDatabaseProductPromotionCreated($id)
 {
     
@@ -103,6 +122,15 @@ function isDatabaseProductPromotionExistID($id)
 
     $query = doSelectSingleDB("SELECT `id` FROM `product_promotion` WHERE `id`='".$id_sanitize."';");
     return ($query !== false) ? true : false;
+}
+
+function getDatabaseProductPromotionByProductID($product_id)
+{
+    
+    $product_id_sanitize = sanitize($product_id);
+
+    $query = doSelectSingleDB("SELECT `id` FROM `product_promotion` WHERE `product_id`='".$product_id_sanitize."' and `status`=2;");
+    return ($query !== false) ? $query['id'] : false;
 }
 
 function isDatabaseProductPromotionEnabledByProductID($product_id)

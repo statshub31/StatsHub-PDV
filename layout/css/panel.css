@@ -13051,3 +13051,9 @@ table {
 .response {
     margin-bottom: 20px !important;
 }
+
+.label {
+    border: 1px solid;
+    border-radius: 5px;
+    padding: 2px;
+}

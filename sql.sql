@@ -89,7 +89,9 @@ INSERT INTO `measure`(`title`) VALUES ('Kilograma'), ('Grama'), ('Porção'), ('
 
 create table categorys (
     `id` int PRIMARY KEY AUTO_INCREMENT,
-    `title` varchar(50) NOT NULL UNIQUE
+    `title` varchar(50) NOT NULL UNIQUE,
+    `icon_id` int,
+    FOREIGN KEY (`icon_id`) REFERENCES `icons`(`id`)
 );
 
 INSERT INTO `categorys`(`title`) VALUES ('Comida'), ('Bebida');
@@ -229,6 +231,7 @@ create table product_promotion (
     `cumulative` boolean default 0,
     `created` datetime NOT NULL,
     `created_by` int NOT NULL,
+    `value` int NOT NULL,
     `status` int NOT NULL default 2,
     `expiration` datetime NULL,
     `end` datetime NULL,

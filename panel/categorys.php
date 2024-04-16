@@ -29,8 +29,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST)) {
                     $errors[] = "Está categoria já é existente, crie outra.";
                 }
 
-                if(strlen($_POST['category']) > 50) {
+                if (strlen($_POST['category']) > 50) {
                     $errors[] = "Tamanho máximo para nome é de 50 caracteres";
+                }
+
+                if(isDatabaseIconExistID($_POST['icon']) === false) {
+                    $errors[] = "Houve um erro no icone selecionado, tente novamente.";
                 }
 
                 if (isGeneralSecurityManagerAccess() === false) {
@@ -44,7 +48,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST)) {
         if (empty($errors)) {
 
             $category_add_field = array(
-                'title' => $_POST['category']
+                'title' => $_POST['category'],
+                'icon_id' => $_POST['icon']
             );
 
             doDatabaseCategoryInsert($category_add_field);
@@ -107,11 +112,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST)) {
                 }
 
                 if (isDatabaseCategoryExistTitle($_POST['category'])) {
-                    $errors[] = "Escolha outro nome para a categoria, pois este já é existente.";
+                    if(isDatabaseCategoryTitleValidation($_POST['category'], $_POST['category_select_id']) === false) {
+                        $errors[] = "Escolha outro nome para a categoria, pois este já é existente.";
+                    }
                 }
 
-                if(strlen($_POST['category']) > 50) {
+                if (strlen($_POST['category']) > 50) {
                     $errors[] = "Tamanho máximo para nome é de 50 caracteres";
+                }
+
+                if(isDatabaseIconExistID($_POST['icon']) === false) {
+                    $errors[] = "Houve um erro no icone selecionado, tente novamente.";
                 }
 
                 if (isGeneralSecurityManagerAccess() === false) {
@@ -125,7 +136,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST)) {
         if (empty($errors)) {
 
             $category_update_field = array(
-                'title' => $_POST['category']
+                'title' => $_POST['category'],
+                'icon_id' => $_POST['icon']
             );
 
             doDatabaseCategoryUpdate($_POST['category_select_id'], $category_update_field);
@@ -155,7 +167,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST)) {
 <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
     <thead>
         <tr>
-            <th>Produto</th>
+            <th>Categoria</th>
+            <th>Icone</th>
             <th>Quantidade de Produtos</th>
             <th>Opções</th>
         </tr>
@@ -163,6 +176,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST)) {
     <tfoot>
         <tr>
             <th>Categoria</th>
+            <th>Icone</th>
             <th>Quantidade de Produtos</th>
             <th>Opções</th>
         </tr>
@@ -178,6 +192,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST)) {
                 <tr>
                     <td>
                         <?php echo getDatabaseCategoryTitle($category_list_id); ?>
+                    </td>
+                    <td>
+                        <i class="fa-solid <?php echo getDatabaseIconTitle(getDatabaseCategoryIconID($category_list_id)); ?>"></i>
                     </td>
                     <td>50</td>
                     <td>
@@ -219,6 +236,46 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST)) {
             <form action="/panel/categorys" method="POST">
                 <div class="modal-body">
 
+                    <div class="input-group">
+                        <select class="custom-select" name="icon" id="icon"
+                            aria-label="Example select with button addon">
+                            <option selected>Icone...
+                                <font color="red">*</font>
+                            </option>
+                            <!-- Icon ACTION LIST START -->
+                            <?PHP
+                            $icon_action_list = doDatabaseIconList();
+                            if ($icon_action_list) {
+                                foreach ($icon_action_list as $dataIconAction) {
+                                    $icon_action_list_id = $dataIconAction['id'];
+                                    ?>
+                                    <option value="<?php echo $icon_action_list_id ?>"
+                                        data-icon="fa-solid <?php echo getDatabaseIconTitle($icon_action_list_id) ?>">
+                                        <?php echo getDatabaseIconTitle($icon_action_list_id) ?>
+                                    </option>
+                                    <?php
+                                }
+                            }
+                            ?>
+                            <!-- Icon ACTION LIST END -->
+                        </select>
+                        <script>
+                            $(document).ready(function () {
+
+                                $('#icon').each(function () {
+                                    var iconClass = $(this).find(':selected').data('icon');
+                                    $(this).siblings('.select-icon1').remove();
+                                    $(this).after('<i class="' + iconClass + ' select-icon1"></i>');
+                                });
+
+                                $('#icon').change(function () {
+                                    var iconClass = $(this).find(':selected').data('icon');
+                                    $(this).siblings('.select-icon1').remove();
+                                    $(this).after('<i class="' + iconClass + ' select-icon1"></i>');
+                                });
+                            });
+                        </script>
+                    </div><br>
                     <div class="form-group">
                         <label for="category">Categoria:
                             <small><i class="fa fa-question-circle" aria-hidden="true" data-toggle="tooltip"
@@ -322,6 +379,49 @@ if (isCampanhaInURL("category")) {
                         <div class="modal-body">
                             <form action="/panel/categorys" method="post">
 
+
+                                <div class="input-group">
+                                    <select class="custom-select" name="icon" id="icon-edit"
+                                        aria-label="Example select with button addon">
+                                        <option selected>Icone...
+                                            <font color="red">*</font>
+                                        </option>
+                                        <!-- Icon ACTION LIST START -->
+                                        <?PHP
+                                        $icon_action_list = doDatabaseIconList();
+                                        if ($icon_action_list) {
+                                            foreach ($icon_action_list as $dataIconAction) {
+                                                $icon_action_list_id = $dataIconAction['id'];
+                                                ?>
+                                                <option
+                                                <?php echo doSelect(getDatabaseCategoryIconID($category_select_id), $icon_action_list_id) ?>
+                                                value="<?php echo $icon_action_list_id ?>"
+                                                    data-icon="fa-solid <?php echo getDatabaseIconTitle($icon_action_list_id) ?>">
+                                                    <?php echo getDatabaseIconTitle($icon_action_list_id) ?>
+                                                </option>
+                                                <?php
+                                            }
+                                        }
+                                        ?>
+                                        <!-- Icon ACTION LIST END -->
+                                    </select>
+                                    <script>
+                                        $(document).ready(function () {
+
+                                            $('#icon-edit').each(function () {
+                                                var iconClass = $(this).find(':selected').data('icon');
+                                                $(this).siblings('.select-icon1').remove();
+                                                $(this).after('<i class="' + iconClass + ' select-icon1"></i>');
+                                            });
+
+                                            $('#icon-edit').change(function () {
+                                                var iconClass = $(this).find(':selected').data('icon');
+                                                $(this).siblings('.select-icon1').remove();
+                                                $(this).after('<i class="' + iconClass + ' select-icon1"></i>');
+                                            });
+                                        });
+                                    </script>
+                                </div><br>
                                 <div class="form-group">
                                     <label for="category">Categoria:
                                         <small><i class="fa fa-question-circle" aria-hidden="true" data-toggle="tooltip"
@@ -329,7 +429,7 @@ if (isCampanhaInURL("category")) {
                                     </label>
                                     <font color="red">*</font>
                                     <input type="text" name="category" class="form-control" id="category"
-                                        value="<?php echo getDatabaseCategoryTitle($category_list_id) ?>">
+                                        value="<?php echo getDatabaseCategoryTitle($category_select_id) ?>">
                                 </div>
                                 <br>
 

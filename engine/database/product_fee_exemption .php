@@ -64,6 +64,16 @@ function isDatabaseProductFeeExemptionEnabledByProductID($product_id)
     return ($query !== false) ? true : false;
 }
 
+function getDatabaseProductFeeExemptionByProductID($product_id)
+{
+    
+    $product_id_sanitize = sanitize($product_id);
+
+    $query = doSelectSingleDB("SELECT `id` FROM `product_fee_exemption` WHERE `product_id`='".$product_id_sanitize."';");
+    return ($query !== false) ? $query['id'] : false;
+}
+
+
 function doDatabaseProductFeeExemptionList($status = false)
 {
     

@@ -30,6 +30,15 @@ function getDatabaseCategoryTitle($id)
     return ($query !== false) ? $query['title'] : false;
 }
 
+function getDatabaseCategoryIconID($id)
+{
+    
+    $id_sanitize = sanitize($id);
+
+    $query = getDatabaseCategorysData($id_sanitize, 'icon_id');
+    return ($query !== false) ? $query['icon_id'] : false;
+}
+
 function isDatabaseCategoryExistID($id)
 {
     
@@ -113,4 +122,12 @@ function isDatabaseCategoryExistTitle($title)
     return ($query !== false) ? true : false;
 }
 
+function isDatabaseCategoryTitleValidation($title, $id) {
+	$title_sanitize = sanitize($title);
+	$id_sanitize = $id;
+	
+	$data = doSelectSingleDB("SELECT `id` FROM `categorys` WHERE `title`='".$title_sanitize."' AND `id`='".$id_sanitize."';");
+	
+	return ($data !== false) ? true : false;
+}
 ?>
