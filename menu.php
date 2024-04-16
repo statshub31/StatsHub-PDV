@@ -26,38 +26,49 @@ include_once __DIR__ . '/layout/php/header.php';
     </div>
 </div>
 
-<div id="menu-list">
-    <div class="card" style="width: 15rem">
-        <img class="card-img-top" style="height: 10rem" src="/layout/images/model/no-image.png" alt="Card image cap">
-        <div class="card-body">
-            <h5 class="card-title">Produto 1Produto 1</h5>
-            <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's
-                content.</p>
-        </div>
-        <ul class="list-group list-group-flush">
-            <li class="list-group-item">R$ 15.00</li>
-        </ul>
-        <div class="card-body">
-            <a href="/complement/1" class="card-link"><i class="fa-solid fa-cart-shopping"></i></a>
-            <a href="#" class="card-link"><i class="fa-solid fa-star"></i></a>
-        </div>
-    </div>
-    <div class="card" style="width: 15rem">
-        <img class="card-img-top" style="height: 10rem" src="/layout/images/model/no-image.png" alt="Card image cap">
-        <div class="card-body">
-            <h5 class="card-title">Produto 2Produto 2</h5>
-            <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's
-                content.</p>
-        </div>
-        <ul class="list-group list-group-flush">
-            <li class="list-group-item">R$ 15.00</li>
-        </ul>
-        <div class="card-body">
-            <a href="/menu/complement" class="card-link"><i class="fa-solid fa-cart-shopping"></i></a>
-            <a href="#" class="card-link"><i class="fa-solid fa-star"></i></a>
-        </div>
-    </div>
 
+<div id="menu-list">
+    <?php 
+    $product_list = doDatabaseProductsList();
+
+    if($product_list) {
+        foreach($product_list as $data) {
+            $product_list_id = $data['id'];
+            ?>
+
+    <div class="card" style="width: 15rem">
+        <img class="card-img-top" style="height: 10rem" src="<?php echo getPathProductImage(getDatabaseProductPhotoName($product_list_id)); ?>" alt="Card image cap">
+        <div class="card-body">
+            <h5 class="card-title"><?php echo getDatabaseProductName($product_list_id) ?></h5>
+            <p class="card-text"><?php echo getDatabaseProductDescription($product_list_id) ?></p>
+        </div>
+        <ul class="list-group list-group-flush">
+            <?php 
+            $price_list = doDatabaseProductPricesPriceListByProductID($product_list_id);
+            if($price_list) {
+            foreach($price_list as $dataPrice) {
+                $price_list_id = $dataPrice['id'];
+                ?>
+                <li class="list-group-item">R$ <?php echo getDatabaseProductPrice($price_list_id) ?>
+                <br>
+                <small>(<?php echo getDatabaseProductPriceDescription($price_list_id) ?>)</small>
+                </li>
+                <?php
+                }
+            }
+            ?>
+        </ul>
+        <div class="card-body">
+            <a href="/complement/product/<?php echo $product_list_id ?>" class="card-link"><i class="fa-solid fa-cart-shopping"></i></a>
+            <a href="#" class="card-link"><i class="fa-solid fa-star"></i></a>
+        </div>
+    </div>
+    <?php 
+        }
+    } else {
+        echo "Nenhum produto cadastrado.";
+    }
+    ?>
 </div>
 
 <script>
