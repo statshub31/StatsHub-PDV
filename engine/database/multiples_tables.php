@@ -20,9 +20,79 @@ function doDatabaseRemoveProduct($product_id)
     doDatabaseProductAdditionalTruncateByProductID($product_id_sanitize);
     doDatabaseProductDelete($product_id_sanitize);
 
-
 }
 
+function doDatabaseRemoveProducts($products)
+{
+    global $image_product_dir;
+
+    foreach ($products as $product_id) {
+        $product_id_sanitize = sanitize($product_id);
+
+        $photo_name = getDatabaseProductPhotoName($product_id_sanitize);
+        $question_id = getDatabaseProductQuestionIDByProductID($product_id_sanitize);
+
+        doGeneralRemoveArchive($image_product_dir, $photo_name);
+        doDatabaseLogsStockTruncateByProductID($product_id_sanitize);
+        doDatabaseStockTruncateByProductID($product_id_sanitize);
+        doDatabaseProductQuestionResponseTruncateByProductID($question_id);
+        doDatabaseProductQuestionTruncateByProductID($product_id_sanitize);
+        doDatabaseProductPriceTruncateByProductID($product_id_sanitize);
+        doDatabaseProductComplementTruncateByProductID($product_id_sanitize);
+        doDatabaseProductAdditionalTruncateByProductID($product_id_sanitize);
+        doDatabaseProductDelete($product_id_sanitize);
+    }
+}
+
+function doDatabaseBlockProducts($products) {
+    $update_field = array('status' => 3);
+
+    foreach($products as $product_id) {
+        doDatabaseProductUpdate($product_id, $update_field);
+    }
+}
+
+function doDatabaseUnblockProducts($products) {
+    $update_field = array('status' => 2);
+
+    foreach($products as $product_id) {
+        doDatabaseProductUpdate($product_id, $update_field);
+    }
+}
+
+function doDatabaseDepromotionProducts($products, $user_id) {
+    $update_field = array(
+        'end' => date("Y-m-d H:i:s"),
+        'finished_by' => $user_id,
+        'status' => 3,
+    );
+
+    foreach($products as $product_id) {
+        doDatabaseProductPromotionUpdateByProductID($product_id, $update_field);
+    }
+}
+
+function doDatabaseExceptionProducts($products, $user_id) {
+    $promotion = false;
+    
+    foreach($products as $product_promotion_id) {
+
+        if(isDatabaseProductFeeExemptionEnabledByProductID($product_promotion_id)) {
+            doDatabaseProductFeeExemptionDeleteByProductID($product_promotion_id);
+        } else {
+            $promotion_products_fields[] = array(
+                'product_id' => $product_promotion_id,
+                'created' => date("Y-m-d H:i:s"),
+                'created_by' => $user_id
+            );
+            $promotion = true;
+        }
+    }
+
+    if($promotion) 
+        doDatabaseProductFeeExemptionInsertMultipleRow($promotion_products_fields);
+
+}
 
 function doProcessNewQuestion($count)
 {
@@ -71,7 +141,8 @@ function doDisabledResponsesQuestion($count)
     doDatabaseProductQuestionResponseUpdateByQuestionID($question_update_id, $question_update_fields);  // DESABILITO AS RESPOSTAS 
 }
 
-function doProcessUpdateResponse($response_id, $text) {
+function doProcessUpdateResponse($response_id, $text)
+{
     $response_fields = array(
         'response' => $text
     );
@@ -79,7 +150,8 @@ function doProcessUpdateResponse($response_id, $text) {
     doDatabaseProductQuestionResponseUpdate($response_id, $response_fields);
 }
 
-function doProcessNewResponse($question_id, $response) {
+function doProcessNewResponse($question_id, $response)
+{
 
     $response_fields = array(
         'question_id' => $question_id,
@@ -90,7 +162,8 @@ function doProcessNewResponse($question_id, $response) {
 }
 
 
-function doProcessDisabledResponse($response_id) {
+function doProcessDisabledResponse($response_id)
+{
 
     $response_fields = array(
         'deleted' => 1
@@ -100,28 +173,29 @@ function doProcessDisabledResponse($response_id) {
 }
 
 
-function doProcessResponseQuestion($count, $question_id) {
+function doProcessResponseQuestion($count, $question_id)
+{
     $count_response = 0;
     // VARREDURA EM TODAS AS RESPOSTA
-    while(isset($_POST['response'. $count][$count_response])) {
-        $response_old = isset($_POST['old_response'. $count][$count_response]);
+    while (isset($_POST['response' . $count][$count_response])) {
+        $response_old = isset($_POST['old_response' . $count][$count_response]);
         // VERIFICA SE É UMA RESPOSTA ALTERADA
-        if($response_old) {
-            $empty_response = (empty($_POST['response'. $count][$count_response]));
-            $response_id = getDatabaseProductQuestionResponseExistByQuestionIDAndResponse($question_id, $_POST['old_response'. $count][$count_response]);                
+        if ($response_old) {
+            $empty_response = (empty($_POST['response' . $count][$count_response]));
+            $response_id = getDatabaseProductQuestionResponseExistByQuestionIDAndResponse($question_id, $_POST['old_response' . $count][$count_response]);
 
             // ELA ESTÁ VAZIA
-            if($empty_response === false) {
-                doProcessUpdateResponse($response_id, $_POST['response'. $count][$count_response]);
+            if ($empty_response === false) {
+                doProcessUpdateResponse($response_id, $_POST['response' . $count][$count_response]);
             } else {
                 // data_dump('Q'.$count.'=R'.$count_response);
                 doProcessDisabledResponse($response_id);
             }
         } else {
-            $empty_response = (empty($_POST['response'. $count][$count_response]));
-            
-            if($empty_response === false) {
-                doProcessNewResponse($question_id, $_POST['response'. $count][$count_response]);
+            $empty_response = (empty($_POST['response' . $count][$count_response]));
+
+            if ($empty_response === false) {
+                doProcessNewResponse($question_id, $_POST['response' . $count][$count_response]);
             }
         }
 
@@ -153,7 +227,7 @@ function doProcessUpdateQuestion($count)
         );
 
         doDatabaseProductQuestionUpdate($question_update_id, $question_update_fields);
-        
+
         if ($response_free_enabled) {
             doDisabledResponsesQuestion($count);
         } else {

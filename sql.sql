@@ -215,9 +215,57 @@ create table logs_stock (
 );
 
 
+create table `promotions` (
+    `id` int PRIMARY KEY AUTO_INCREMENT,
+    `title` varchar(20)
+);
+
+insert into `promotions` (`title`) VALUES ('Percentual'), ('Reais');
+
+create table product_promotion (
+    `id` int PRIMARY KEY AUTO_INCREMENT,
+    `product_id` int not null,
+    `promotion_id` int not null default 0,
+    `cumulative` boolean default 0,
+    `created` datetime NOT NULL,
+    `created_by` int NOT NULL,
+    `status` int NOT NULL default 2,
+    `expiration` datetime NULL,
+    `end` datetime NULL,
+    `finished_by` int NULL,
+    FOREIGN KEY (`product_id`) REFERENCES `products`(`id`),
+    FOREIGN KEY (`promotion_id`) REFERENCES `products_question`(`id`),
+    FOREIGN KEY (`created_by`) REFERENCES `users`(`id`),
+    FOREIGN KEY (`finished_by`) REFERENCES `users`(`id`),
+    FOREIGN KEY (`status`) REFERENCES `status`(`id`)
+);
 
 
+create table product_fee_exemption (
+    `id` int PRIMARY KEY AUTO_INCREMENT,
+    `product_id` int not null,
+    `created` datetime NOT NULL,
+    `created_by` int NOT NULL,
+    FOREIGN KEY (`product_id`) REFERENCES `products`(`id`),
+    FOREIGN KEY (`created_by`) REFERENCES `users`(`id`)
+);
 
+
+create table icons (
+    `id` int PRIMARY KEY AUTO_INCREMENT,
+    `title` varchar(100) not null
+);
+
+INSERT INTO icons (`title`) VALUES 
+('fa-cart-shopping'),
+('fa-car'),
+('fa-magnifying-glass'),
+('fa-user'),
+('fa-star'),
+('fa-heart'),
+('fa-gift'),
+('fa-briefcase'),
+('fa-shirt')
 
 
 

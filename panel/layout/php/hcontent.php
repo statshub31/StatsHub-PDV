@@ -74,6 +74,10 @@
             <i class="fa-solid fa-dollar-sign"></i>
             <span>Financeiro</span></a> -->
 
+            <a class="nav-link" href="/panel/categorys">
+            <i class="fa-solid fa-chart-line"></i>
+            <span>Categorias</span></a>
+
         <a class="nav-link" href="/panel/reports">
             <i class="fa-solid fa-chart-line"></i>
             <span>Relatórios</span></a>

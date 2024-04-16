@@ -416,10 +416,21 @@ if (isCampanhaInURL("product")) {
 
                             // STOCK
                             if (isset($_POST['stock-status'])) {
+
+                                if(isDatabaseProductStockEnabled(getDatabaseStockIDByProductID($_POST['product_select_id'])) === false) {
+                                    $product_stock_update_fields = array(
+                                        'min' => $_POST['stock-min'],
+                                        'actual' => $_POST['stock-min']
+                                    );
+                                        doDatabaseStockInsert($product_stock_update_fields);
+                                } else {
+
+                                    
                                 $product_stock_update_fields = array(
                                     'min' => $_POST['stock-min']
                                 );
-                                doDatabaseStockUpdate(getDatabaseStockIDByProductID($_POST['product_select_id']), $product_stock_update_fields);
+                                    doDatabaseStockUpdate(getDatabaseStockIDByProductID($_POST['product_select_id']), $product_stock_update_fields);
+                                }
                             }
 
 

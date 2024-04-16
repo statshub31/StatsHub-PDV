@@ -28,7 +28,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST)) {
 
             if ($required_fields_status) {
                 if (isDatabaseProductExistID($_POST['product_select_id']) === false) {
-                    $errors[] = "Houve um erro ao processar solicitação, complemento é inexistente.";
+                    $errors[] = "Houve um erro ao processar solicitação, produto é inexistente.";
                 }
 
                 if (doGeneralValidationNumberFormat($_POST['amount']) == false) {
@@ -44,7 +44,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST)) {
 
 
         if (empty($errors)) {
-            $stock_total = getDatabaseStockActual(getDatabaseStockIDByProductID($_POST['product_select_id']));
+            $stock_edit_id = getDatabaseStockIDByProductID($_POST['product_select_id']);
+            $stock_total = getDatabaseStockActual($stock_edit_id);
 
             if ($_POST['action'] == 1 || $_POST['action'] == 3) {
                 $stock_total += $_POST['amount'];
@@ -57,26 +58,28 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST)) {
             if ($stock_total < 0)
                 $stock_total = 0;
 
-            $stock_update_fields = array(
-                'actual' => $stock_total
-            );
 
 
-            if (isDatabaseProductStockEnabled($_POST['product_select_id'])) {
-                doDatabaseStockUpdate($_POST['product_select_id'], $stock_update_fields);
+            if (isDatabaseProductStockEnabled($stock_edit_id)) {
+
+                $stock_update_fields = array(
+                    'actual' => $stock_total
+                );
+                doDatabaseStockUpdate($stock_edit_id, $stock_update_fields);
             } else {
                 $product_stock_insert_fields = array(
                     'product_id' => $_POST['product_select_id'],
                     'min' => $_POST['amount'],
                     'actual' => $_POST['amount']
                 );
+
                 doDatabaseStockInsert($product_stock_insert_fields);
 
                 $product_update_fields = array(
                     'stock_status' => 1
                 );
 
-                doDatabaseProductUpdate($_POST['product_select_id'], $product_update_fields);
+                doDatabaseProductUpdate($stock_edit_id, $product_update_fields);
             }
 
 
@@ -111,7 +114,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST)) {
 
             if ($required_fields_status) {
                 if (isDatabaseProductExistID($_POST['product_select_id']) === false) {
-                    $errors[] = "Houve um erro ao processar solicitação, complemento é inexistente.";
+                    $errors[] = "Houve um erro ao processar solicitação, produto é inexistente.";
                 }
 
                 if (isGeneralSecurityManagerAccess() === false) {
@@ -127,6 +130,243 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST)) {
             doDatabaseRemoveProduct($_POST['product_select_id']);
             doAlertSuccess("Foram removido todas as informações vinculado a este produto.");
 
+        }
+    }
+
+
+    // TOKEN REMOVE SELECT PRODUCTS
+    if (getGeneralSecurityToken('tokenActionRemoveProducts')) {
+
+        if (empty($_POST) === false) {
+            $required_fields_status = true;
+            $required_fields = array('products');
+            data_dump($_POST);
+            if (validateRequiredFields($_POST, $required_fields) === false) {
+                $errors[] = "Obrigatório o preenchimento de todos os campos.";
+                $required_fields_status = false;
+            }
+
+            if ($required_fields_status) {
+                foreach ($_POST['products'] as $product_remove_id) {
+                    if (isDatabaseProductExistID($product_remove_id) === false) {
+                        $errors[] = "Houve um erro ao processar solicitação, um ou mais dos produtos é inexistente.";
+                    }
+                }
+
+                if (isGeneralSecurityManagerAccess() === false) {
+                    $errors[] = "É obrigatório ter um cargo igual ou superior ao de gestor, para executar está ação.";
+                }
+            }
+
+        }
+
+
+        if (empty($errors)) {
+
+            doDatabaseRemoveProducts($_POST['products']);
+            doAlertSuccess("Foram removido todas as informações vinculado aos produtos selecionados.");
+
+        }
+    }
+
+
+
+    // TOKEN BLOCK SELECT PRODUCTS
+    if (getGeneralSecurityToken('tokenActionBlockProducts')) {
+
+        if (empty($_POST) === false) {
+            $required_fields_status = true;
+            $required_fields = array('products');
+            if (validateRequiredFields($_POST, $required_fields) === false) {
+                $errors[] = "Obrigatório o preenchimento de todos os campos.";
+                $required_fields_status = false;
+            }
+
+            if ($required_fields_status) {
+                foreach ($_POST['products'] as $product_remove_id) {
+                    if (isDatabaseProductExistID($product_remove_id) === false) {
+                        $errors[] = "Houve um erro ao processar solicitação, um ou mais dos produtos é inexistente.";
+                    }
+                }
+
+                if (isGeneralSecurityManagerAccess() === false) {
+                    $errors[] = "É obrigatório ter um cargo igual ou superior ao de gestor, para executar está ação.";
+                }
+            }
+
+        }
+
+
+        if (empty($errors)) {
+            doDatabaseBlockProducts($_POST['products']);
+            doAlertSuccess("Foram bloqueado todos os produtos selecionados.");
+
+        }
+    }
+
+
+    // TOKEN UNBLOCK SELECT PRODUCTS
+    if (getGeneralSecurityToken('tokenActionUnblockProducts')) {
+
+        if (empty($_POST) === false) {
+            $required_fields_status = true;
+            $required_fields = array('products');
+            if (validateRequiredFields($_POST, $required_fields) === false) {
+                $errors[] = "Obrigatório o preenchimento de todos os campos.";
+                $required_fields_status = false;
+            }
+
+            if ($required_fields_status) {
+                foreach ($_POST['products'] as $product_remove_id) {
+                    if (isDatabaseProductExistID($product_remove_id) === false) {
+                        $errors[] = "Houve um erro ao processar solicitação, um ou mais dos produtos é inexistente.";
+                    }
+                }
+
+                if (isGeneralSecurityManagerAccess() === false) {
+                    $errors[] = "É obrigatório ter um cargo igual ou superior ao de gestor, para executar está ação.";
+                }
+            }
+
+        }
+
+
+        if (empty($errors)) {
+            doDatabaseUnblockProducts($_POST['products']);
+            doAlertSuccess("Foram bloqueado todos os produtos selecionados.");
+
+        }
+    }
+
+
+    // TOKEN PROMOTION SELECT PRODUCTS
+    if (getGeneralSecurityToken('tokenActionPromotionProducts')) {
+
+        if (empty($_POST) === false) {
+            $required_fields_status = true;
+            $required_fields = array('products', 'type', 'value');
+            if (validateRequiredFields($_POST, $required_fields) === false) {
+                $errors[] = "Obrigatório o preenchimento de todos os campos.";
+                $required_fields_status = false;
+            }
+
+            if ($required_fields_status) {
+                foreach ($_POST['products'] as $product_remove_id) {
+                    if (isDatabaseProductExistID($product_remove_id) === false) {
+                        $errors[] = "Houve um erro ao processar solicitação, um ou mais dos produtos é inexistente.";
+                    }
+                }
+
+                if(isDatabasePromotionExistID($_POST['type']) === false) {
+                    $errors[] = "Houve um erro ao processar o tipo de promoção, tente novamente.";
+                }
+
+                if(doGeneralValidationNumberFormat($_POST['value']) == false) {
+                    $errors[] = "É obrigatório o preenchimento de um valor numérico no campo de desconto.";
+                }
+
+                if (isGeneralSecurityManagerAccess() === false) {
+                    $errors[] = "É obrigatório ter um cargo igual ou superior ao de gestor, para executar está ação.";
+                }
+                
+                foreach($_POST['products'] as $product_promotion_id) {
+                    if(isDatabaseProductPromotionEnabledByProductID($product_promotion_id)) {
+                        $errors[] = "O produto [".getDatabaseProductName($product_promotion_id)."] já tem uma promoção em andamento, desabilite ela para criar outra.";
+                    }
+                }
+
+                if(!empty($_POST['expiration'])){
+                    if(date("Y-m-d H:i:s") > $_POST['expiration']) {
+                        $errors[] = "Data de expiração, é obrigatório ser maior que a atual";
+                    }
+                }
+            }
+
+        }
+
+
+        if (empty($errors)) {
+            foreach($_POST['products'] as $product_promotion_id) {
+                $promotion_products_fields[] = array(
+                    'product_id' => $product_promotion_id,
+                    'promotion_id' => $_POST['type'],
+                    'cumulative' => (isset($_POST['cumulative']) ? 1 : 0),
+                    'created' => date("Y-m-d H:i:s"),
+                    'created_by' => $in_user_id,
+                    'expiration' => (!empty($_POST['expiration']) ? $_POST['expiration'] : NULL)
+                );
+            }
+
+            doDatabaseProductPromotionInsertMultipleRow($promotion_products_fields);
+            doAlertSuccess("Promoção iniciada com sucesso para todos os produtos selecionados.");
+
+        }
+    }
+
+
+    // TOKEN PROMOTION SELECT PRODUCTS
+    if (getGeneralSecurityToken('tokenActionRemovePromotionProducts')) {
+
+        if (empty($_POST) === false) {
+            $required_fields_status = true;
+            $required_fields = array('products');
+            if (validateRequiredFields($_POST, $required_fields) === false) {
+                $errors[] = "Obrigatório o preenchimento de todos os campos.";
+                $required_fields_status = false;
+            }
+
+            if ($required_fields_status) {
+                foreach ($_POST['products'] as $product_remove_id) {
+                    if (isDatabaseProductExistID($product_remove_id) === false) {
+                        $errors[] = "Houve um erro ao processar solicitação, um ou mais dos produtos é inexistente.";
+                    }
+                }
+
+                if (isGeneralSecurityManagerAccess() === false) {
+                    $errors[] = "É obrigatório ter um cargo igual ou superior ao de gestor, para executar está ação.";
+                }
+                
+            }
+
+        }
+
+
+        if (empty($errors)) {
+            doDatabaseDepromotionProducts($_POST['products'], $in_user_id);
+            doAlertSuccess("Promoção desativada com sucesso para todos os produtos selecionados.");
+        }
+    }
+    
+    // TOKEN EXCEPTION SELECT PRODUCTS
+    if (getGeneralSecurityToken('tokenActionExemptionProducts')) {
+
+        if (empty($_POST) === false) {
+            $required_fields_status = true;
+            $required_fields = array('products');
+            if (validateRequiredFields($_POST, $required_fields) === false) {
+                $errors[] = "Obrigatório o preenchimento de todos os campos.";
+                $required_fields_status = false;
+            }
+
+            if ($required_fields_status) {
+                foreach ($_POST['products'] as $product_remove_id) {
+                    if (isDatabaseProductExistID($product_remove_id) === false) {
+                        $errors[] = "Houve um erro ao processar solicitação, um ou mais dos produtos é inexistente.";
+                    }
+                }
+
+                if (isGeneralSecurityManagerAccess() === false) {
+                    $errors[] = "É obrigatório ter um cargo igual ou superior ao de gestor, para executar está ação.";
+                }
+                
+            }
+
+        }
+
+
+        if (empty($errors)) {
+            doDatabaseExceptionProducts($_POST['products'], $in_user_id);
+            doAlertSuccess("Aplicado a alteração com sucesso para todos os produtos selecionados.");
         }
     }
 
@@ -160,93 +400,95 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST)) {
     <button type="submit" class="btn btn-primary">Novo Complemento</button>
 </a>
 <hr>
-<div class="input-group">
-    <select class="custom-select" id="inputGroupSelect04">
-        <option selected>-- Ação --</option>
-        <option value="1">Remover</option>
-        <option value="2">Promocionar</option>
-        <option value="3">Montar Kit</option>
-        <option value="3">Isentar de Taxa</option>
-        <option value="3">Bloquear</option>
-        <option value="3">Desbloquear</option>
-    </select>
-    <div class="input-group-append">
-        <button class="btn btn-outline-secondary" type="button">Executar</button>
+<form action="/panel/products/action" method="post">
+    <div class="input-group">
+        <select class="custom-select" id="action-products" name="action-products">
+            <option selected>-- Ação --</option>
+            <option value="1">Remover</option>
+            <option value="2">Depromocionar</option>
+            <option value="3">Promocionar</option>
+            <option value="4">Des/Isentar de Taxa</option>
+            <option value="5">Bloquear</option>
+            <option value="6">Desbloquear</option>
+        </select>
+        <div class="input-group-append">
+            <button class="btn btn-outline-secondary" type="submit">Executar</button>
+        </div>
     </div>
-</div>
-<hr>
-<link href="/layout/vendor/datatables/dataTables.bootstrap4.min.css" rel="stylesheet">
-<table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
-    <thead>
-        <tr>
-            <th>Marcar</th>
-            <th>Produto</th>
-            <th>Descrição</th>
-            <th>Estoque(Min/Actual)</th>
-            <th>Opções</th>
-        </tr>
-    </thead>
-    <tfoot>
-        <tr>
-            <th>Marcar</th>
-            <th>Produto</th>
-            <th>Descrição</th>
-            <th>Estoque(Min/Actual)</th>
-            <th>Opções</th>
-        </tr>
-    </tfoot>
-    <tbody>
-        <!-- PRODUTOS LISTA START -->
-        <?php
-        $product_list = doDatabaseProductsList();
-        if ($product_list) {
-            foreach ($product_list as $data) {
-                $product_list_id = $data['id'];
-                $product_list_stock_id = getDatabaseStockIDByProductID($product_list_id);
-                ?>
+    <hr>
+    <link href="/layout/vendor/datatables/dataTables.bootstrap4.min.css" rel="stylesheet">
+    <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+        <thead>
+            <tr>
+                <th>Marcar</th>
+                <th>Produto</th>
+                <th>Descrição</th>
+                <th>Estoque(Min/Actual)</th>
+                <th>Opções</th>
+            </tr>
+        </thead>
+        <tfoot>
+            <tr>
+                <th>Marcar</th>
+                <th>Produto</th>
+                <th>Descrição</th>
+                <th>Estoque(Min/Actual)</th>
+                <th>Opções</th>
+            </tr>
+        </tfoot>
+        <tbody>
+            <!-- PRODUTOS LISTA START -->
+            <?php
+            $product_list = doDatabaseProductsList();
+            if ($product_list) {
+                foreach ($product_list as $data) {
+                    $product_list_id = $data['id'];
+                    $product_list_stock_id = getDatabaseStockIDByProductID($product_list_id);
+                    ?>
+                    <tr>
+                        <td>
+                            <input type="checkbox" name="products[]" value="<?php echo $product_list_id ?>">
+                        </td>
+                        <td>
+                            <section class="product_photo">
+                                <img
+                                    src="<?php echo getPathProductImage(getDatabaseProductPhotoName($product_list_id)); ?>"></img>
+                            </section>
+                            <label><?php echo getDatabaseProductName($product_list_id); ?></label>
+                        </td>
+                        <td><?php echo getDatabaseProductDescription($product_list_id); ?></td>
+                        <td><?php echo getDatabaseStockActual($product_list_stock_id); ?>/<?php echo getDatabaseStockMin($product_list_stock_id); ?>
+                        </td>
+                        <td>
+                            <a href="/panel/productedit/edit/product/<?php echo $product_list_id ?>">
+                                <i class="fa fa-edit" aria-hidden="true"></i>
+                            </a>
+                            <a href="/panel/products/remove/product/<?php echo $product_list_id ?>">
+                                <i class="fa fa-trash" aria-hidden="true"></i>
+                            </a>
+                            <a href="/panel/products/view/product/<?php echo $product_list_id ?>">
+                                <i class="fa fa-eye" aria-hidden="true"></i>
+                            </a>
+                        </td>
+                    </tr>
+                    <?php
+                }
+            } else { ?>
+
                 <tr>
-                    <td>
-                        <input type="checkbox" name="products" value="<?php echo $product_list_id ?>">
-                    </td>
-                    <td>
-                        <section class="product_photo">
-                            <img src="<?php echo getPathProductImage(getDatabaseProductPhotoName($product_list_id)); ?>"></img>
-                        </section>
-                        <label><?php echo getDatabaseProductName($product_list_id); ?></label>
-                    </td>
-                    <td><?php echo getDatabaseProductDescription($product_list_id); ?></td>
-                    <td><?php echo getDatabaseStockActual($product_list_stock_id); ?>/<?php echo getDatabaseStockMin($product_list_stock_id); ?>
-                    </td>
-                    <td>
-                        <a href="/panel/productedit/edit/product/<?php echo $product_list_id ?>">
-                            <i class="fa fa-edit" aria-hidden="true"></i>
-                        </a>
-                        <a href="/panel/products/remove/product/<?php echo $product_list_id ?>">
-                            <i class="fa fa-trash" aria-hidden="true"></i>
-                        </a>
-                        <a href="/panel/products/view/product/<?php echo $product_list_id ?>">
-                            <i class="fa fa-eye" aria-hidden="true"></i>
-                        </a>
-                    </td>
+                    <td colspan="6">Nenhum produto cadastrado ainda.</td>
                 </tr>
                 <?php
             }
-        } else { ?>
-
-            <tr>
-                <td colspan="6">Nenhum produto cadastrado ainda.</td>
-            </tr>
-            <?php
-        }
-        ?>
-        <!-- PRODUTOS LISTA END -->
-    </tbody>
-</table>
+            ?>
+            <!-- PRODUTOS LISTA END -->
+        </tbody>
+    </table>
+</form>
 
 
 
-
-
+<!-- AÇÃO UNITARIA PRODUTO -->
 <?php
 if (isCampanhaInURL("product")) {
 
@@ -500,7 +742,7 @@ if (isCampanhaInURL("product")) {
                                     }
                                     ?>
                                     <div class="input-group">
-                                        <select class="custom-select" name="action" id="inputGroupSelect04"
+                                        <select class="custom-select" name="action" id="action"
                                             aria-label="Example select with button addon">
                                             <option selected>Escolha uma Ação...
                                                 <font color="red">*</font>
@@ -617,40 +859,451 @@ if (isCampanhaInURL("product")) {
 
 }
 ?>
+<!-- AÇÃO UNITARIA PRODUTO END -->
 
-<!-- Modal Remove -->
-<div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
-    aria-hidden="true">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
-                <button type="button" class="close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-            <div class="modal-body">
-                Você está prestes a desativar o usuário <b>[Thiago de Oliveira Lima]</b>, você tem certeza disso?
 
-                <div class="alert alert-danger" role="alert">
-                    Confirmando está ação, o usuário não poderá fazer login ou executar qualquer tarefa.
+<!-- AÇÃO DE EXECUÇÃO TODOS -->
+
+<?php
+if (isCampanhaInURL("products")) {
+
+    if (isCampanhaInURL("action")) {
+        if(empty($_POST['products'])) {
+            echo doAlertWarning("Você precisa selecionar ao menos um item.");
+        }
+        else {
+            // <!-- Modal REMOVE -->
+
+            if($_POST['action-products'] == 1) {
+            ?>
+
+                <div class="modal fade show" style="padding-right: 19px; display: block;" id="viewProductModal" tabindex="-1"
+                    role="dialog" aria-labelledby="viewProductModalLabel" aria-hidden="true">
+                    <div class="modal-dialog" style="max-width: 800px" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="viewProductModalTitle">Confirmação de Ação</h5>
+                                <a href="/panel/products">
+                                    <button type="button" class="close" aria-label="Close">
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
+                                </a>
+                            </div>
+                            <form action="/panel/products" method="post">
+                                <div class="modal-body">
+                                    Você está prestes a remover os produtos abaixo, você tem certeza disso?<br>
+                                    <table class="table">
+                                        <tr>
+                                            <th>#Produto</th>
+                                        </tr>
+                                        <?php
+                                        foreach ($_POST['products'] as $product_remove_id) {
+                                            ?>
+                                            <tr>
+                                                <td><?php echo getDatabaseProductName($product_remove_id); ?>
+                                                    <input type="text" value="<?php echo $product_remove_id; ?>" name="products[]" hidden />
+                                                </td>
+                                            </tr>
+                                            <?php
+                                        }
+
+                                        ?>
+                                    </table>
+
+                                    <div class="alert alert-danger" role="alert">
+                                        Confirmando está ação, você afirma que poderá remover do histórico do banco de dados, toda e
+                                        qualquer informação, vinculada ao mesmo.
+                                    </div>
+
+                                    <div class="modal-footer">
+                                        <input name="token" type="text"
+                                            value="<?php echo addGeneralSecurityToken('tokenActionRemoveProducts') ?>" hidden>
+                                        <a href="/panel/products">
+                                            <button type="button" class="btn btn-danger">Cancelar</button>
+                                        </a>
+                                        <button type="submit" class="btn btn-success">Confirmar</button>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+
+                </div>
+                <div class="modal-backdrop fade show"></div>
+            <?php
+            }
+
+
+        // <!-- Modal BLOCK -->
+            
+            if($_POST['action-products'] == 5) {
+            ?>
+
+            <div class="modal fade show" style="padding-right: 19px; display: block;" id="viewProductModal" tabindex="-1"
+                role="dialog" aria-labelledby="viewProductModalLabel" aria-hidden="true">
+                <div class="modal-dialog" style="max-width: 800px" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="viewProductModalTitle">Confirmação de Ação</h5>
+                            <a href="/panel/products">
+                                <button type="button" class="close" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </a>
+                        </div>
+                        <form action="/panel/products" method="post">
+                            <div class="modal-body">
+                                Você está prestes a bloquear os produtos abaixo, você tem certeza disso?<br>
+                                <table class="table">
+                                    <tr>
+                                        <th>#Produto</th>
+                                    </tr>
+                                    <?php
+                                    foreach ($_POST['products'] as $product_remove_id) {
+                                        ?>
+                                        <tr>
+                                            <td><?php echo getDatabaseProductName($product_remove_id); ?>
+                                                <input type="text" value="<?php echo $product_remove_id; ?>" name="products[]" hidden />
+                                            </td>
+                                        </tr>
+                                        <?php
+                                    }
+
+                                    ?>
+                                </table>
+
+                                <div class="alert alert-warning" role="alert">
+                                    Confirmando está ação, o produto não ficará mais visivel para os clientes.
+                                </div>
+
+                                <div class="modal-footer">
+                                    <input name="token" type="text"
+                                        value="<?php echo addGeneralSecurityToken('tokenActionBlockProducts') ?>" hidden>
+                                    <a href="/panel/products">
+                                        <button type="button" class="btn btn-danger">Cancelar</button>
+                                    </a>
+                                    <button type="submit" class="btn btn-success">Confirmar</button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
                 </div>
 
+            </div>
+            <div class="modal-backdrop fade show"></div>
+            <?php
+            }
 
-                Você está prestes a ativar o usuário <b>[Thiago de Oliveira Lima]</b>, você tem certeza disso?
 
-                <div class="alert alert-warning" role="alert">
-                    Confirmando está ação, o usuário voltará a fazer login e executar tarefas de sua função.
+        // <!-- Modal UNBLOCK -->
+            
+            if($_POST['action-products'] == 6) {
+            ?>
+
+            <div class="modal fade show" style="padding-right: 19px; display: block;" id="viewProductModal" tabindex="-1"
+                role="dialog" aria-labelledby="viewProductModalLabel" aria-hidden="true">
+                <div class="modal-dialog" style="max-width: 800px" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="viewProductModalTitle">Confirmação de Ação</h5>
+                            <a href="/panel/products">
+                                <button type="button" class="close" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </a>
+                        </div>
+                        <form action="/panel/products" method="post">
+                            <div class="modal-body">
+                                Você está prestes a desbloquear os produtos abaixo, você tem certeza disso?<br>
+                                <table class="table">
+                                    <tr>
+                                        <th>#Produto</th>
+                                    </tr>
+                                    <?php
+                                    foreach ($_POST['products'] as $product_remove_id) {
+                                        ?>
+                                        <tr>
+                                            <td><?php echo getDatabaseProductName($product_remove_id); ?>
+                                                <input type="text" value="<?php echo $product_remove_id; ?>" name="products[]" hidden />
+                                            </td>
+                                        </tr>
+                                        <?php
+                                    }
+
+                                    ?>
+                                </table>
+
+                                <div class="alert alert-warning" role="alert">
+                                    Confirmando está ação, o produto voltará a ficar visivel para os clientes.
+                                </div>
+
+                                <div class="modal-footer">
+                                    <input name="token" type="text"
+                                        value="<?php echo addGeneralSecurityToken('tokenActionUnblockProducts') ?>" hidden>
+                                    <a href="/panel/products">
+                                        <button type="button" class="btn btn-danger">Cancelar</button>
+                                    </a>
+                                    <button type="submit" class="btn btn-success">Confirmar</button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
                 </div>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-danger" data-dismiss="modal">Cancelar</button>
-                <button type="button" class="btn btn-success">Confirmar</button>
-            </div>
-        </div>
-    </div>
-</div>
 
+            </div>
+            <div class="modal-backdrop fade show"></div>
+            <?php
+            }
+
+
+
+        // <!-- Modal PROMOTION -->
+            
+            if($_POST['action-products'] == 3) {
+            ?>
+
+            <div class="modal fade show" style="padding-right: 19px; display: block;" id="viewProductModal" tabindex="-1"
+                role="dialog" aria-labelledby="viewProductModalLabel" aria-hidden="true">
+                <div class="modal-dialog" style="max-width: 800px" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="viewProductModalTitle">Confirmação de Ação</h5>
+                            <a href="/panel/products">
+                                <button type="button" class="close" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </a>
+                        </div>
+                        <form action="/panel/products" method="post">
+                            <div class="modal-body">
+
+                                <div class="input-group">
+                                    <select class="custom-select" name="type" id="type"
+                                        aria-label="Example select with button addon">
+                                        <option selected>Tipo de Desconto...
+                                            <font color="red">*</font>
+                                        </option>
+                                        <!-- promotion ACTION LIST START -->
+                                        <?PHP
+                                        $promotion_action_list = doDatabasePromotionList();
+                                        if ($promotion_action_list) {
+                                            foreach ($promotion_action_list as $dataPromotionAction) {
+                                                $promotion_action_list_id = $dataPromotionAction['id'];
+                                                ?>
+                                                <option value="<?php echo $promotion_action_list_id ?>">
+                                                    <?php echo getDatabasePromotionTitle($promotion_action_list_id) ?>
+                                                </option>
+                                                <?php
+                                            }
+                                        }
+                                        ?>
+                                        <!-- STOCK ACTION LIST END -->
+                                    </select>
+                                </div><br>
+                                <div class="form-group">
+                                    <label for="value">Valor:
+                                            <font color="red">*</font>
+                                        <small><i class="fa fa-question-circle" aria-hidden="true" data-toggle="tooltip"
+                                                data-placement="top"
+                                                title="Caso o tipo seja percentual, o mesmo será deduzido em %, por exemplo: se você inserir 20, e a opção percentual selecionado, a promoção será de 20%, caso for selecionado reais, será de R$ 20.00 o desconto..."></i></small>
+                                    </label>
+                                    <input name="value" type="text" class="form-control" id="value" value="">
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="expiration">Data de Expiração
+                                        <small><i class="fa fa-question-circle" aria-hidden="true" data-toggle="tooltip"
+                                                data-placement="top"
+                                                title="Escolha uma data para expirar a promoção. Caso não queira uma data, deixe em branco."></i></small>
+                                    </label>
+                                    <input name="expiration" type="date" class="form-control" id="expiration" value="">
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="cumulative">Deseja que seja acumulativo a promoção?</label>
+                                    <small><i class="fa fa-question-circle" aria-hidden="true" data-toggle="tooltip"
+                                            data-placement="top"
+                                            title="Caso habilite está função, se o cliente possui um cupom de desconto, o desconto de ambos serão somados."></i></small>
+                                    <div class="vc-toggle-container">
+                                        <label class="vc-switch">
+                                            <input type="checkbox" name="cumulative" id="cumulative" class="vc-switch-input">
+                                            <span data-on="Sim" data-off="Não" class="vc-switch-label"></span>
+                                            <span class="vc-handle"></span>
+                                        </label>
+                                    </div>
+                                </div>
+
+
+                                <table class="table">
+                                    <tr>
+                                        <th>#Produto</th>
+                                    </tr>
+                                    <?php
+                                    foreach ($_POST['products'] as $product_remove_id) {
+                                        ?>
+                                        <tr>
+                                            <td><?php echo getDatabaseProductName($product_remove_id); ?>
+                                                <input type="text" value="<?php echo $product_remove_id; ?>" name="products[]" hidden />
+                                            </td>
+                                        </tr>
+                                        <?php
+                                    }
+
+                                    ?>
+                                </table>
+
+                                <div class="alert alert-warning" role="alert">
+                                    Confirmando está ação, o produto ficará em promoção.
+                                </div>
+
+                                <div class="modal-footer">
+                                    <input name="token" type="text"
+                                        value="<?php echo addGeneralSecurityToken('tokenActionPromotionProducts') ?>" hidden>
+                                    <a href="/panel/products">
+                                        <button type="button" class="btn btn-danger">Cancelar</button>
+                                    </a>
+                                    <button type="submit" class="btn btn-success">Confirmar</button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+            </div>
+            <div class="modal-backdrop fade show"></div>
+            <?php
+            }
+
+        
+        // <!-- Modal DEPROMOTION -->
+            
+            if($_POST['action-products'] == 2) {
+            ?>
+
+            <div class="modal fade show" style="padding-right: 19px; display: block;" id="viewProductModal" tabindex="-1"
+                role="dialog" aria-labelledby="viewProductModalLabel" aria-hidden="true">
+                <div class="modal-dialog" style="max-width: 800px" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="viewProductModalTitle">Confirmação de Ação</h5>
+                            <a href="/panel/products">
+                                <button type="button" class="close" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </a>
+                        </div>
+                        <form action="/panel/products" method="post">
+                            <div class="modal-body">
+                                Você está prestes a desabilitar a promoção para os produtos abaixo, você tem certeza disso?<br>
+                                <table class="table">
+                                    <tr>
+                                        <th>#Produto</th>
+                                    </tr>
+                                    <?php
+                                    foreach ($_POST['products'] as $product_remove_id) {
+                                        ?>
+                                        <tr>
+                                            <td><?php echo getDatabaseProductName($product_remove_id); ?>
+                                                <input type="text" value="<?php echo $product_remove_id; ?>" name="products[]" hidden />
+                                            </td>
+                                        </tr>
+                                        <?php
+                                    }
+
+                                    ?>
+                                </table>
+
+                                <div class="alert alert-warning" role="alert">
+                                    Confirmando está ação, o produto voltará ao preço normal.
+                                </div>
+
+                                <div class="modal-footer">
+                                    <input name="token" type="text"
+                                        value="<?php echo addGeneralSecurityToken('tokenActionRemovePromotionProducts') ?>" hidden>
+                                    <a href="/panel/products">
+                                        <button type="button" class="btn btn-danger">Cancelar</button>
+                                    </a>
+                                    <button type="submit" class="btn btn-success">Confirmar</button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+            </div>
+            <div class="modal-backdrop fade show"></div>
+            <?php
+            }
+
+        
+        
+        // <!-- Modal ISENTAR -->
+            
+            if($_POST['action-products'] == 4) {
+            ?>
+
+            <div class="modal fade show" style="padding-right: 19px; display: block;" id="viewProductModal" tabindex="-1"
+                role="dialog" aria-labelledby="viewProductModalLabel" aria-hidden="true">
+                <div class="modal-dialog" style="max-width: 800px" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="viewProductModalTitle">Confirmação de Ação</h5>
+                            <a href="/panel/products">
+                                <button type="button" class="close" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </a>
+                        </div>
+                        <form action="/panel/products" method="post">
+                            <div class="modal-body">
+                                Você está prestes a isentar a entrega para os produtos abaixo, você tem certeza disso?<br>
+                                <table class="table">
+                                    <tr>
+                                        <th>#Produto</th>
+                                    </tr>
+                                    <?php
+                                    foreach ($_POST['products'] as $product_remove_id) {
+                                        ?>
+                                        <tr>
+                                            <td><?php echo getDatabaseProductName($product_remove_id); ?>
+                                                <input type="text" value="<?php echo $product_remove_id; ?>" name="products[]" hidden />
+                                            </td>
+                                        </tr>
+                                        <?php
+                                    }
+
+                                    ?>
+                                </table>
+
+                                <div class="alert alert-warning" role="alert">
+                                    Confirmando está ação, os produtos selecionados que já estiverem isentos de taxa de entrega, voltaram a ser taxados, e caso não esteja isento, passará a ficar.
+                                </div>
+
+                                <div class="modal-footer">
+                                    <input name="token" type="text"
+                                        value="<?php echo addGeneralSecurityToken('tokenActionExemptionProducts') ?>" hidden>
+                                    <a href="/panel/products">
+                                        <button type="button" class="btn btn-danger">Cancelar</button>
+                                    </a>
+                                    <button type="submit" class="btn btn-success">Confirmar</button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+            </div>
+            <div class="modal-backdrop fade show"></div>
+            <?php
+            }
+        }
+    }
+
+}
+
+?>
+
+<!-- AÇÃO DE EXECUÇÃO TODOS FIM -->
 
 <script>
     $(document).ready(function () {

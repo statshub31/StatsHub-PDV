@@ -44,6 +44,9 @@ require_once(__DIR__ . "/database/products_question.php");
 require_once(__DIR__ . "/database/products_question_response.php");
 require_once(__DIR__ . "/database/stock_actions.php");
 require_once(__DIR__ . "/database/logs_stock.php");
+require_once(__DIR__ . "/database/promotions.php");
+require_once(__DIR__ . "/database/product_promotion.php");
+require_once(__DIR__ . "/database/product_fee_exemption .php");
 require_once(__DIR__ . "/database/multiples_tables.php");
 
 
