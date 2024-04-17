@@ -271,6 +271,145 @@ INSERT INTO icons (`title`) VALUES
 ('fa-shirt')
 
 
+create table carts (
+    `id` int PRIMARY KEY AUTO_INCREMENT,
+    `user_id` int not null,
+    `status` int not null,
+    `created` datetime,
+    FOREIGN KEY (`status`) REFERENCES `status`(`id`)
+);
+
+create table cart_products (
+    `id` int PRIMARY KEY AUTO_INCREMENT,
+    `cart_id` int not null,
+    `product_id` int not null,
+    `amount` int not null,
+    `observation` text,
+    FOREIGN KEY (`cart_id`) REFERENCES `carts`(`id`),
+    FOREIGN KEY (`product_id`) REFERENCES `products`(`id`)
+);
+
+create table cart_product_complements (
+    `id` int PRIMARY KEY AUTO_INCREMENT,
+    `cart_product_id` int not null,
+    `complement_id` int not null,
+    FOREIGN KEY (`cart_product_id`) REFERENCES `cart_products`(`id`),
+    FOREIGN KEY (`complement_id`) REFERENCES `complements`(`id`)
+);
+
+create table cart_product_additional (
+    `id` int PRIMARY KEY AUTO_INCREMENT,
+    `cart_product_id` int not null,
+    `additional_id` int not null,
+    FOREIGN KEY (`cart_product_id`) REFERENCES `cart_products`(`id`),
+    FOREIGN KEY (`additional_id`) REFERENCES `additional`(`id`)
+);
+
+
+
+
+
+
+
+
+
+
+
+create table requests (
+    `id` int PRIMARY KEY AUTO_INCREMENT,
+    `product_id` int not null,
+    `amount` int not null,
+    `user_id` int not null,
+    `observation` text,
+    FOREIGN KEY (`product_id`) REFERENCES `products`(`id`),
+    FOREIGN KEY (`user_id`) REFERENCES `users`(`id`)
+);
+
+create table requests_complements (
+    `id` int PRIMARY KEY AUTO_INCREMENT,
+    `request_id` int not null,
+    `complement_id` int not null,
+    FOREIGN KEY (`request_id`) REFERENCES `requests`(`id`),
+    FOREIGN KEY (`complement_id`) REFERENCES `complements`(`id`)
+);
+
+create table requests_additional (
+    `id` int PRIMARY KEY AUTO_INCREMENT,
+    `request_id` int not null,
+    `additional_id` int not null,
+    FOREIGN KEY (`request_id`) REFERENCES `requests`(`id`),
+    FOREIGN KEY (`additional_id`) REFERENCES `additional`(`id`)
+);
+
+create table status_delivery (
+    `id` int PRIMARY KEY AUTO_INCREMENT,
+    `title` varchar(50)
+);
+
+
+INSERT INTO `status_delivery`(`title`) VALUES ('Aguardando Pagamento'), ('Aguardando Confirmação do Pedido'), ('Pedindo em Preparo'), ('Pedido saiu para entrega'), ('Pedido Cancelado pelo Restaurante'), ('Pedido Cancelado pelo Cliente');
+
+
+create table requests_status (
+    `id` int PRIMARY KEY AUTO_INCREMENT,
+    `request_id` int not null,
+    `status_delivery` int not null,
+    `created` int not null,
+    FOREIGN KEY (`request_id`) REFERENCES `requests`(`id`),
+    FOREIGN KEY (`status_delivery`) REFERENCES `status_delivery`(`id`)
+);
+
+
+create table status_pay (
+    `id` int PRIMARY KEY AUTO_INCREMENT,
+    `title` varchar(50)
+);
+
+
+INSERT INTO `status_pay`(`title`) VALUES ('Pensando ainda');
+
+create table requests_pay (
+    `id` int PRIMARY KEY AUTO_INCREMENT,
+    `request_id` int not null,
+    `value` int not null,
+    `discount` int null,
+    `ticket_id` int null,
+    `status_pay` int null,
+    FOREIGN KEY (`request_id`) REFERENCES `requests`(`id`),
+    FOREIGN KEY (`ticket_id`) REFERENCES `tickets`(`id`),
+    FOREIGN KEY (`status_pay`) REFERENCES `status_pay`(`id`)
+);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

@@ -48,6 +48,13 @@ require_once(__DIR__ . "/database/promotions.php");
 require_once(__DIR__ . "/database/product_promotion.php");
 require_once(__DIR__ . "/database/product_fee_exemption .php");
 require_once(__DIR__ . "/database/icons.php");
+
+
+require_once(__DIR__ . "/database/carts.php");
+require_once(__DIR__ . "/database/cart_products.php");
+require_once(__DIR__ . "/database/cart_product_complements.php");
+require_once(__DIR__ . "/database/cart_product_additional.php");
+
 require_once(__DIR__ . "/database/multiples_tables.php");
 
 
