@@ -2,7 +2,7 @@
 
 # get + Pasta + Arquivo + Função + Dependencia
 
-function getDatabaseCartProductAdditionalData($id)
+function getDatabaseCartProductQuestionResponsesData($id)
 {
     
 
@@ -16,56 +16,56 @@ function getDatabaseCartProductAdditionalData($id)
         unset($func_get_args[0]);
 
         $fields = '`' . implode('`, `', $func_get_args) . '`';
-        return doSelectSingleDB("SELECT $fields FROM `cart_product_additional` WHERE `id` = '" . $id_sanitize . "' LIMIT 1;");
+        return doSelectSingleDB("SELECT $fields FROM `cart_product_question_responses` WHERE `id` = '" . $id_sanitize . "' LIMIT 1;");
     } else
         return false;
 }
 
-function getDatabaseCartProductAdditionalCartID($id)
+function getDatabaseCartProductQuestionResponseCartID($id)
 {
     
     $id_sanitize = sanitize($id);
 
-    $query = getDatabaseCartProductAdditionalData($id_sanitize, 'cart_id');
+    $query = getDatabaseCartProductQuestionResponsesData($id_sanitize, 'cart_id');
     return ($query !== false) ? $query['cart_id'] : false;
 }
 
-function getDatabaseCartProductAdditionalCartProductID($id)
+function getDatabaseCartProductQuestionResponseProductID($id)
 {
     
     $id_sanitize = sanitize($id);
 
-    $query = getDatabaseCartProductAdditionalData($id_sanitize, 'cart_product_id');
-    return ($query !== false) ? $query['cart_product_id'] : false;
+    $query = getDatabaseCartProductQuestionResponsesData($id_sanitize, 'product_id');
+    return ($query !== false) ? $query['product_id'] : false;
 }
 
 
-function getDatabaseCartProductAdditionalAmount($id)
+function getDatabaseCartProductQuestionResponseAmount($id)
 {
     
     $id_sanitize = sanitize($id);
 
-    $query = getDatabaseCartProductAdditionalData($id_sanitize, 'amount');
+    $query = getDatabaseCartProductQuestionResponsesData($id_sanitize, 'amount');
     return ($query !== false) ? $query['amount'] : false;
 }
 
 
-function isDatabaseCartProductAdditionalExistIDByUserID($user_id)
+function isDatabaseCartProductQuestionResponseExistIDByUserID($user_id)
 {
     
     $user_id_sanitize = sanitize($user_id);
 
-    $query = doSelectSingleDB("SELECT `id` FROM `cart_product_additional` WHERE `user_id`='".$user_id_sanitize."';");
+    $query = doSelectSingleDB("SELECT `id` FROM `cart_product_question_responses` WHERE `user_id`='".$user_id_sanitize."';");
     return ($query !== false) ? true : false;
 }
 
-function doDatabaseCartProductAdditionalListByCart($cart_product_id)
+function doDatabaseCartProductQuestionResponsesList($status = false)
 {
-    $cart_product_id_sanitize = $cart_product_id;
-    return doSelectMultiDB("SELECT `id` FROM `cart_product_additional` where `cart_product_id`='".$cart_product_id_sanitize."'");
+    
+    return doSelectMultiDB("SELECT `id` FROM `cart_product_question_responses`");
 }
 
-function doDatabaseCartProductAdditionalInsert($import_data_query)
+function doDatabaseCartProductQuestionResponseInsert($import_data_query)
 {
     
 
@@ -83,18 +83,18 @@ function doDatabaseCartProductAdditionalInsert($import_data_query)
     // Converte para o formato Mysql
     $values = doMysqlConvertArrayValue($valueArray);
 
-    return doInsertDB("INSERT INTO `cart_product_additional` (" . $keys . ") VALUES (" . $values . ")");
+    return doInsertDB("INSERT INTO `cart_product_question_responses` (" . $keys . ") VALUES (" . $values . ")");
 }
 
-function doDatabaseCartProductAdditionalDelete($id)
+function doDatabaseCartProductQuestionResponseDelete($id)
 {
     
     $id_sanitize = sanitize($id);
 
-    doDeleteDB("DELETE FROM `cart_product_additional` WHERE `id`='".$id_sanitize."'limit 1;");
+    doDeleteDB("DELETE FROM `cart_product_question_responses` WHERE `id`='".$id_sanitize."'limit 1;");
 }
 
-function doDatabaseCartProductAdditionalUpdate($id, $import_data_query, $empty = true)
+function doDatabaseCartProductQuestionResponseUpdate($id, $import_data_query, $empty = true)
 {
 
     
@@ -113,7 +113,7 @@ function doDatabaseCartProductAdditionalUpdate($id, $import_data_query, $empty =
 
     // Converte para o formato Mysql
     $query_sql = doMysqlConvertUpdateArray($keyArray, $valueArray);
-    doUpdateDB("UPDATE `cart_product_additional` SET $query_sql WHERE `id`='" . $id_sanitize . "';");
+    doUpdateDB("UPDATE `cart_product_question_responses` SET $query_sql WHERE `id`='" . $id_sanitize . "';");
 }
 
 // 
@@ -125,7 +125,7 @@ function doDatabaseCartProductAdditionalUpdate($id, $import_data_query, $empty =
 // 
 
 
-function doDatabaseCartProductAdditionalInsertMultipleRow($import_data_query)
+function doDatabaseCartProductQuestionResponseInsertMultipleRow($import_data_query)
 {
     // Remove todos os campos vazios
     removeEmptyValues($import_data_query);
@@ -143,7 +143,9 @@ function doDatabaseCartProductAdditionalInsertMultipleRow($import_data_query)
     $values = implode(', ', $values);
 
     // Monta a query de inserção
-    $query = "INSERT INTO `cart_product_additional` ($keys) VALUES $values";
+    $query = "INSERT INTO `cart_product_question_responses` ($keys) VALUES $values";
     doInsertDB($query);
 }
+
+
 ?>

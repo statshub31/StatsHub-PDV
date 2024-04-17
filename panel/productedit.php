@@ -1017,7 +1017,7 @@ if (isCampanhaInURL("product")) {
                                                 id="response<?php echo $count_question ?>">
 
                                                 <?php
-                                                $response_question_list = ddoDatabaseProductsQuestionResponsesListByQuestionID($question_product_select_list_id);
+                                                $response_question_list = doDatabaseProductsQuestionResponsesListByQuestionID($question_product_select_list_id);
                                                 if ($response_question_list) {
                                                     foreach ($response_question_list as $dataResponseQuestion) {
                                                         $response_question_list_id = $dataResponseQuestion['id'];

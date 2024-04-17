@@ -83,6 +83,13 @@ function doDatabaseCartsList($status = false)
     return doSelectMultiDB("SELECT `id` FROM `carts`");
 }
 
+function doDatabaseCartsListByUserID($user_id)
+{
+    $user_id_sanitize = sanitize($user_id);
+    
+    return doSelectMultiDB("SELECT `id` FROM `carts` where `user_id` = '".$user_id."';");
+}
+
 function doDatabaseCartInsert($import_data_query)
 {
     

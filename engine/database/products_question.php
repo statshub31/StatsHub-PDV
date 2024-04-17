@@ -49,6 +49,15 @@ function getDatabaseProductQuestionMultipleResponse($id)
     return ($query !== false) ? $query['multiple_response'] : false;
 }
 
+function isDatabaseProductQuestionMultipleResponse($id)
+{
+    
+    $id_sanitize = sanitize($id);
+
+    $query = getDatabaseProductsQuestionsData($id_sanitize, 'multiple_response');
+    return ($query !== false && $query['multiple_response'] == 1) ? true : false;
+}
+
 function getDatabaseProductQuestionResponseFree($id)
 {
     
@@ -56,6 +65,15 @@ function getDatabaseProductQuestionResponseFree($id)
 
     $query = getDatabaseProductsQuestionsData($id_sanitize, 'response_free');
     return ($query !== false) ? $query['response_free'] : false;
+}
+
+function isDatabaseProductQuestionResponseFree($id)
+{
+    
+    $id_sanitize = sanitize($id);
+
+    $query = getDatabaseProductsQuestionsData($id_sanitize, 'response_free');
+    return ($query !== false && $query['response_free'] == 1) ? true : false;
 }
 
 
@@ -181,7 +199,7 @@ function getDatabaseProductQuestionRowCountByProductID($product_id)
 {
     $product_id_sanitize = sanitize($product_id);
 
-    $result = doSelectSingleDB("SELECT COUNT(*) AS rowCount FROM `products_question` where `product_id` = '".$product_id_sanitize."';");
+    $result = doSelectSingleDB("SELECT COUNT(*) AS rowCount FROM `products_question` where `product_id` = '".$product_id_sanitize."' and `deleted`= 0;");
 
     return ($result !== false) ? $result['rowCount'] : 0;
 }
@@ -208,4 +226,12 @@ function getDatabaseProductQuestionExistByQuestion($text)
     return ($query !== false) ? $query['id'] : false;
 }
 
+function isDatabaseProductQuestionValidationProduct($product_id, $id) {
+	$product_id_sanitize = sanitize($product_id);
+	$id_sanitize = $id;
+	
+	$data = doSelectSingleDB("SELECT `id` FROM `products_question` WHERE `product_id`='".$product_id_sanitize."' AND `id`='".$id_sanitize."';");
+	
+	return ($data !== false) ? true : false;
+}
 ?>

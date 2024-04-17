@@ -707,7 +707,7 @@ if (isCampanhaInURL("product")) {
                                                 <td>
                                                     <!-- RESPOSTAS LISTA START -->
                                                     <?php
-                                                    $responses_question_list = ddoDatabaseProductsQuestionResponsesListByQuestionID($product_question_list_id);
+                                                    $responses_question_list = doDatabaseProductsQuestionResponsesListByQuestionID($product_question_list_id);
                                                     if ($responses_question_list) {
                                                         foreach ($responses_question_list as $dataResponse) {
                                                             $response_question_list_id = $dataResponse['id'];

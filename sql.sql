@@ -284,9 +284,11 @@ create table cart_products (
     `cart_id` int not null,
     `product_id` int not null,
     `amount` int not null,
+    `product_price_id` int not null,
     `observation` text,
     FOREIGN KEY (`cart_id`) REFERENCES `carts`(`id`),
-    FOREIGN KEY (`product_id`) REFERENCES `products`(`id`)
+    FOREIGN KEY (`product_id`) REFERENCES `products`(`id`),
+    FOREIGN KEY (`product_price_id`) REFERENCES `products_price`(`id`)
 );
 
 create table cart_product_complements (
@@ -304,6 +306,33 @@ create table cart_product_additional (
     FOREIGN KEY (`cart_product_id`) REFERENCES `cart_products`(`id`),
     FOREIGN KEY (`additional_id`) REFERENCES `additional`(`id`)
 );
+
+
+create table cart_product_questions (
+    `id` int PRIMARY KEY AUTO_INCREMENT,
+    `cart_product_id` int not null,
+    `question_id` int not null,
+    FOREIGN KEY (`cart_product_id`) REFERENCES `cart_products`(`id`),
+    FOREIGN KEY (`question_id`) REFERENCES `products_question`(`id`)
+);
+
+create table cart_product_question_responses (
+    `id` int PRIMARY KEY AUTO_INCREMENT,
+    `cart_product_question_id` int not null,
+    `response_id` int null,
+    `response_text` varchar(255) null,
+    FOREIGN KEY (`cart_product_question_id`) REFERENCES `cart_product_questions`(`id`)
+);
+
+
+create table address_user_select (
+    `id` int PRIMARY KEY AUTO_INCREMENT,
+    `address_id` int not null,
+    `user_id` int null,
+    FOREIGN KEY (`address_id`) REFERENCES `address`(`id`),
+    FOREIGN KEY (`user_id`) REFERENCES `users`(`id`)
+);
+
 
 
 

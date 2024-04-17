@@ -49,7 +49,7 @@ function isDatabaseProductQuestionResponseExistID($id)
     return ($query !== false) ? true : false;
 }
 
-function ddoDatabaseProductsQuestionResponsesListByQuestionID($question_id, $status = false)
+function doDatabaseProductsQuestionResponsesListByQuestionID($question_id, $status = false)
 {
     $sanitize_question_id = sanitize($question_id);
 
@@ -202,5 +202,15 @@ function doDatabaseProductQuestionResponseUpdateByEnabled($id, $import_data_quer
     // Converte para o formato Mysql
     $query_sql = doMysqlConvertUpdateArray($keyArray, $valueArray);
     doUpdateDB("UPDATE `products_question_reponse` SET $query_sql WHERE `id`='" . $id_sanitize . "' and `deleted` = 0;");
+}
+
+
+function isDatabaseProductQuestionResponseValidation($question_id, $id) {
+	$question_id_sanitize = sanitize($question_id);
+	$id_sanitize = $id;
+	
+	$data = doSelectSingleDB("SELECT `id` FROM `products_question_reponse` WHERE `question_id`='".$question_id_sanitize."' AND `id`='".$id_sanitize."';");
+	
+	return ($data !== false) ? true : false;
 }
 ?>
