@@ -255,8 +255,9 @@ function doCartTotalPriceProduct($cart_product_id) {
     $cart_product_id_sanitize = sanitize($cart_product_id);
     $product_id = getDatabaseCartProductProductID($cart_product_id_sanitize);
     $amount = getDatabaseCartProductAmount($cart_product_id_sanitize);
+    $price_id = getDatabaseCartProductPriceID($cart_product_id_sanitize);
 
-    $total_product_price = (getDatabaseProductPrice(getDatabaseCartProductPriceID($product_id))*$amount);
+    $total_product_price = (getDatabaseProductPrice($price_id)*$amount);
 
     $list_additional = doDatabaseCartProductAdditionalListByCart($cart_product_id);
     $additional_total = 0;

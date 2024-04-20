@@ -53,7 +53,14 @@ function getDatabaseCartProductComplementByCartProductID($cart_product_id)
 {
     
     $cart_product_id_sanitize = sanitize($cart_product_id);
+    $query = doSelectSingleDB("SELECT `id` FROM `cart_product_complements` WHERE `cart_product_id`='".$cart_product_id_sanitize."';");
+    return ($query !== false) ? $query['id'] : false;
+}
 
+function doDatabaseCartProductComplementByCartProductID($cart_product_id)
+{
+    
+    $cart_product_id_sanitize = sanitize($cart_product_id);
     $query = doSelectSingleDB("SELECT `id` FROM `cart_product_complements` WHERE `cart_product_id`='".$cart_product_id_sanitize."';");
     return ($query !== false) ? true : false;
 }
@@ -90,7 +97,7 @@ function doDatabaseCartProductComplementDelete($id)
     
     $id_sanitize = sanitize($id);
 
-    doDeleteDB("DELETE FROM `cart_product_complements` WHERE `id`='".$id_sanitize."'limit 1;");
+    doDeleteDB("DELETE FROM `cart_product_complements` WHERE `id`='".$id_sanitize."' limit 1;");
 }
 
 function doDatabaseCartProductComplementUpdate($id, $import_data_query, $empty = true)

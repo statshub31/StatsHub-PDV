@@ -249,10 +249,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST)) {
                         </small><br>
                         <div class="options">
 
-                            <a href="/cart/product/remove/<?php echo $cart_product_id ?>">
+                            <a href="/cart/product/remove/<?php echo $cart_product_list_id ?>">
                                 <button type="button" class="btn btn-danger">Remover</button>
                             </a>
-                            <a href="/complementedit/product/<?php echo $cart_product_id ?>">
+                            <a href="/complementedit/product/<?php echo $cart_product_list_id ?>">
                                 <button type="button" class="btn btn-primary">Editar</button>
                             </a>
                         </div>

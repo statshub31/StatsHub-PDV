@@ -219,7 +219,7 @@ if (isCampanhaInURL("product")) {
                         </h6>
                     </center>
                     <?php
-                    $price_list = doDatabaseProductPricesPriceListByProductID($product_select_id);
+                    $price_list = doDatabaseProductPricesPriceListByProductID($product_id);
                     if ($price_list) {
                         foreach ($price_list as $dataPrice) {
                             $price_list_id = $dataPrice['id'];
@@ -248,7 +248,7 @@ if (isCampanhaInURL("product")) {
                     </center>
 
                     <?php
-                    $complement_list = doDatabaseProductsComplementsListByProductID($product_select_id);
+                    $complement_list = doDatabaseProductsComplementsListByProductID($product_id);
                     if ($complement_list) {
                         foreach ($complement_list as $dataComplement) {
                             $product_complement_id = $dataComplement['id'];
@@ -272,7 +272,7 @@ if (isCampanhaInURL("product")) {
                     </center>
 
                     <?php
-                    $additional_list = doDatabaseProductsAdditionalListByProductID($product_select_id);
+                    $additional_list = doDatabaseProductsAdditionalListByProductID($product_id);
                     if ($additional_list) {
                         foreach ($additional_list as $dataAdditional) {
                             $product_additional_id = $dataAdditional['id'];
@@ -298,7 +298,7 @@ if (isCampanhaInURL("product")) {
                     </center>
                     <!-- PERGUNTAS START -->
                     <?php
-                    $question_list = doDatabaseProductsQuestionsListByProductID($product_select_id);
+                    $question_list = doDatabaseProductsQuestionsListByProductID($product_id);
 
                     if ($question_list) {
                         $question_count = 1;
