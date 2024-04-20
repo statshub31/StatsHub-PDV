@@ -40,21 +40,21 @@ function getDatabaseCartProductComplementProductID($id)
 }
 
 
-function getDatabaseCartProductComplementAmount($id)
+function getDatabaseCartProductComplementComplementID($id)
 {
     
     $id_sanitize = sanitize($id);
 
-    $query = getDatabaseCartProductComplementsData($id_sanitize, 'amount');
-    return ($query !== false) ? $query['amount'] : false;
+    $query = getDatabaseCartProductComplementsData($id_sanitize, 'complement_id');
+    return ($query !== false) ? $query['complement_id'] : false;
 }
 
-function isDatabaseCartProductComplementExistIDByUserID($user_id)
+function getDatabaseCartProductComplementByCartProductID($cart_product_id)
 {
     
-    $user_id_sanitize = sanitize($user_id);
+    $cart_product_id_sanitize = sanitize($cart_product_id);
 
-    $query = doSelectSingleDB("SELECT `id` FROM `cart_product_complements` WHERE `user_id`='".$user_id_sanitize."';");
+    $query = doSelectSingleDB("SELECT `id` FROM `cart_product_complements` WHERE `cart_product_id`='".$cart_product_id_sanitize."';");
     return ($query !== false) ? true : false;
 }
 

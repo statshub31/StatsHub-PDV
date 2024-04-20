@@ -59,6 +59,17 @@ function isDatabaseCartProductQuestionExistIDByUserID($user_id)
     return ($query !== false) ? true : false;
 }
 
+function getDatabaseCartProductQuestionIDByCartAndQuestID($cart_product_id, $question_id)
+{
+    
+    $cart_product_id_sanitize = sanitize($cart_product_id);
+    $question_id_sanitize = sanitize($question_id);
+
+    $query = doSelectSingleDB("SELECT `id` FROM `cart_product_questions` WHERE `cart_product_id`='".$cart_product_id_sanitize."' and `question_id`='".$question_id_sanitize."';");
+    return ($query !== false) ? $query['id'] : false;
+}
+
+
 function doDatabaseCartProductQuestionsList($status = false)
 {
     
@@ -123,5 +134,21 @@ function doDatabaseCartProductQuestionUpdate($id, $import_data_query, $empty = t
 // 
 // 
 // 
+
+function doDatabaseCartProductQuestionDeleteByCartProductUnlimited($cart_product_id)
+{
+    
+    $cart_product_id_sanitize = sanitize($cart_product_id);
+
+    doDeleteDB("DELETE FROM `cart_product_questions` WHERE `cart_product_id`='".$cart_product_id_sanitize."';");
+}
+
+function doDatabaseCartProductQuestionDeleteUnlimited($id)
+{
+    
+    $id_sanitize = sanitize($id);
+
+    doDeleteDB("DELETE FROM `cart_product_questions` WHERE `id`='".$id_sanitize."'limit 1;");
+}
 
 ?>

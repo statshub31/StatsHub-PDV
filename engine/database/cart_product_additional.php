@@ -40,13 +40,13 @@ function getDatabaseCartProductAdditionalCartProductID($id)
 }
 
 
-function getDatabaseCartProductAdditionalAmount($id)
+function getDatabaseCartProductAdditionalAdditionalID($id)
 {
     
     $id_sanitize = sanitize($id);
 
-    $query = getDatabaseCartProductAdditionalData($id_sanitize, 'amount');
-    return ($query !== false) ? $query['amount'] : false;
+    $query = getDatabaseCartProductAdditionalData($id_sanitize, 'additional_id');
+    return ($query !== false) ? $query['additional_id'] : false;
 }
 
 
@@ -93,6 +93,7 @@ function doDatabaseCartProductAdditionalDelete($id)
 
     doDeleteDB("DELETE FROM `cart_product_additional` WHERE `id`='".$id_sanitize."'limit 1;");
 }
+
 
 function doDatabaseCartProductAdditionalUpdate($id, $import_data_query, $empty = true)
 {
@@ -146,4 +147,35 @@ function doDatabaseCartProductAdditionalInsertMultipleRow($import_data_query)
     $query = "INSERT INTO `cart_product_additional` ($keys) VALUES $values";
     doInsertDB($query);
 }
+
+
+function getDatabaseCartProductAdditionalExistIDByCartAndAdditionalID($cart_product_id, $additional_id)
+{
+    
+    $cart_product_id_sanitize = sanitize($cart_product_id);
+    $additional_id_sanitize = sanitize($additional_id);
+
+    $query = doSelectSingleDB("SELECT `id` FROM `cart_product_additional` WHERE `cart_product_id`='".$cart_product_id_sanitize."' and `additional_id`='".$additional_id_sanitize."';");
+    return ($query !== false) ? $query['id'] : false;
+}
+
+
+function isDatabaseCartProductAdditionalExistIDByCartAndAdditionalID($cart_product_id, $additional_id)
+{
+    
+    $cart_product_id_sanitize = sanitize($cart_product_id);
+    $additional_id_sanitize = sanitize($additional_id);
+
+    $query = doSelectSingleDB("SELECT `id` FROM `cart_product_additional` WHERE `cart_product_id`='".$cart_product_id_sanitize."' and `additional_id`='".$additional_id_sanitize."';");
+    return ($query !== false) ? true : false;
+}
+
+function doDatabaseCartProductAdditionalDeleteByCartProductUnlimited($cart_product_id)
+{
+    
+    $cart_product_id_sanitize = sanitize($cart_product_id);
+
+    doDeleteDB("DELETE FROM `cart_product_additional` WHERE `cart_product_id`='".$cart_product_id_sanitize."';");
+}
+
 ?>

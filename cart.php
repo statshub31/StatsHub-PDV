@@ -6,10 +6,6 @@ include_once __DIR__ . '/layout/php/header.php';
 // <!-- INICIO DA VALIDAÇÃO PHP -->
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST)) {
 
-    // 
-    // ADDRESS
-    // 
-
     // ADD ADDRESS
     if (getGeneralSecurityToken('tokenCartMainAddress')) {
         if (empty($_POST) === false) {
@@ -41,6 +37,45 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST)) {
             // Coloque o código que deve ser executado após as verificações bem-sucedidas aqui
         }
     }
+
+    
+    // REMOVE ADDRESS
+    if (getGeneralSecurityToken('tokenCartRemoveProduct')) {
+
+        if (empty($_POST) === false) {
+            $required_fields_status = true;
+            $required_fields = array('cart_product_id');
+
+            if (validateRequiredFields($_POST, $required_fields) === false) {
+                $errors[] = "Obrigatório o preenchimento de todos os campos.";
+                $required_fields_status = false;
+            }
+
+            if ($required_fields_status) {
+                if (isDatabaseCartProductExistID($_POST['cart_product_id']) === false) {
+                    $errors[] = "Houve um erro ao remover o produto, o mesmo não foi encontrado.";
+                }
+                
+                if (doCartProductIDIsUserID($_POST['cart_product_id'], $in_user_id) === false) {
+                    $errors[] = "Houve um erro ao remover o produto, o mesmo não foi encontrado.";
+                }
+            }
+
+        }
+
+
+        if (empty($errors)) {
+            doRemoveCartProductID($_POST['cart_product_id']);
+            doAlertSuccess("O produto, foi removido do seu cadastro!!");
+            // Coloque o código que deve ser executado após as verificações bem-sucedidas aqui
+        }
+    }
+
+    
+    // 
+    // ADDRESS
+    // 
+
 
 
     // ADD ADDRESS
@@ -212,11 +247,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST)) {
                         <small>Observação:
                             <?php echo ($obs) ? $obs : 'Vazio' ?>
                         </small><br>
-                        <div class="list-quantity">
-                            <button class="btn btn-sm btn-secondary decrease">-</button>
-                            <input type="number" class="form-control quantity" name="quantity"
-                                value="<?php echo getDatabaseCartProductAmount($cart_product_list_id) ?>">
-                            <button class="btn btn-sm btn-secondary increase">+</button>
+                        <div class="options">
+
+                            <a href="/cart/product/remove/<?php echo $cart_product_id ?>">
+                                <button type="button" class="btn btn-danger">Remover</button>
+                            </a>
+                            <a href="/complementedit/product/<?php echo $cart_product_id ?>">
+                                <button type="button" class="btn btn-primary">Editar</button>
+                            </a>
                         </div>
                         <b>
                             <label class="v">R$ <?php echo doCartTotalPriceProduct($cart_product_list_id) ?></label>
@@ -236,14 +274,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST)) {
 
 <div>
     <section id="address">
-        <div><?php 
-        $main_address_id = getDatabaseAddressUserSelectAddressByUserID($in_user_id); 
-        
-        echo getDatabaseAddressPublicPlace($main_address_id).', ';
-        echo getDatabaseAddressNumber($main_address_id).'(';
-        echo getDatabaseAddressComplement($main_address_id).'), ';
-        echo getDatabaseAddressNeighborhood($main_address_id).', ';
-        echo getDatabaseAddressCity($main_address_id).' - ';
+        <div><?php
+        $main_address_id = getDatabaseAddressUserSelectAddressByUserID($in_user_id);
+
+        echo getDatabaseAddressPublicPlace($main_address_id) . ', ';
+        echo getDatabaseAddressNumber($main_address_id) . '(';
+        echo getDatabaseAddressComplement($main_address_id) . '), ';
+        echo getDatabaseAddressNeighborhood($main_address_id) . ', ';
+        echo getDatabaseAddressCity($main_address_id) . ' - ';
         echo getDatabaseAddressState($main_address_id);
         ?></div>
         <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#addressModal">Alterar</button>
@@ -314,7 +352,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST)) {
                                     ++$count;
                                     ?>
                                     <tr>
-                                        <td><input <?php echo doCheck(getDatabaseAddressUserSelectAddressByUserID($in_user_id), $user_address_id) ?> type="radio" name="address" value="<?php echo $user_address_id ?>"></td>
+                                        <td><input <?php echo doCheck(getDatabaseAddressUserSelectAddressByUserID($in_user_id), $user_address_id) ?> type="radio" name="address"
+                                                value="<?php echo $user_address_id ?>"></td>
                                         <td><?php echo getDatabaseAddressPublicPlace($user_address_id) ?>,
                                             <?php echo getDatabaseAddressNumber($user_address_id) ?>,
                                             <?php echo getDatabaseAddressComplement($user_address_id) ?>,
@@ -403,6 +442,62 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST)) {
         </div>
     </div>
 </div>
+
+
+<!--  -->
+<!-- CART -->
+<!--  -->
+
+<!-- Modal Address Edit -->
+<?php
+if (isCampanhaInURL("product")) {
+    if (isCampanhaInURL("remove")) {
+        $cart_product_id = getURLLastParam();
+        if (isDatabaseCartProductExistID($cart_product_id)) {
+            $product_id = getDatabaseCartProductProductID($cart_product_id);
+            ?>
+
+            <div class="modal fade show" style="padding-right: 19px; display: block;" id="removeProductModal" tabindex="-1"
+                role="dialog" aria-labelledby="removeProductModalLabel" aria-hidden="true">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="removeProductModalLabel">Remover Produto</h5>
+                            <a href="/cart">
+                                <button type="button" class="close">&times;</span>
+                                </button>
+                            </a>
+                        </div>
+                        <form action="/cart" method="POST">
+                            <div class="modal-body">
+                                Você está prestes a remover o produto [<?php echo getDatabaseProductName($product_id) ?>],  do carrinho, tem certeza?
+                            </div>
+                            <div class="modal-footer">
+                                <input name="cart_product_id" type="text" value="<?php echo $cart_product_id ?>" hidden>
+                                <input name="token" type="text"
+                                    value="<?php echo addGeneralSecurityToken('tokenCartRemoveProduct') ?>" hidden>
+                                <button type="submit" class="btn btn-success">Confirmar</button>
+                                <a href="/cart">
+                                    <button type="button" class="btn btn-danger" data-dismiss="modal">Cancelar</button>
+                                </a>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-backdrop fade show"></div>
+            <?php
+        } else {
+            header('Location: /cart');
+        }
+    }
+}
+?>
+
+
+<!--  -->
+<!-- ENDEREÇO -->
+<!--  -->
 
 
 <!-- Modal Address Edit -->

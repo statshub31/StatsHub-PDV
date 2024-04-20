@@ -40,14 +40,34 @@ function getDatabaseCartProductQuestionResponseProductID($id)
 }
 
 
-function getDatabaseCartProductQuestionResponseAmount($id)
+function getDatabaseCartProductQuestionResponseResponseID($id)
 {
     
     $id_sanitize = sanitize($id);
 
-    $query = getDatabaseCartProductQuestionResponsesData($id_sanitize, 'amount');
-    return ($query !== false) ? $query['amount'] : false;
+    $query = getDatabaseCartProductQuestionResponsesData($id_sanitize, 'response_id');
+    return ($query !== false) ? $query['response_id'] : false;
 }
+
+function getDatabaseCartProductQuestionResponseText($id)
+{
+    
+    $id_sanitize = sanitize($id);
+
+    $query = getDatabaseCartProductQuestionResponsesData($id_sanitize, 'response_text');
+    return ($query !== false) ? $query['response_text'] : false;
+}
+
+function getDatabaseCartProductQuestionResponseIDByQuestionCartID($question_id)
+{
+    
+    $question_id_sanitize = sanitize($question_id);
+
+    $query = doSelectSingleDB("SELECT `id` FROM `cart_product_question_responses` WHERE `cart_product_question_id`='".$question_id_sanitize."';");
+    return ($query !== false) ? $query['id'] : false;
+}
+
+
 
 
 function isDatabaseCartProductQuestionResponseExistIDByUserID($user_id)
@@ -147,5 +167,22 @@ function doDatabaseCartProductQuestionResponseInsertMultipleRow($import_data_que
     doInsertDB($query);
 }
 
+function doDatabaseCartProductQuestionResponseDeleteByQuestionIDUnlimited($question_product_id)
+{
+    
+    $question_product_id_sanitize = sanitize($question_product_id);
+
+    doDeleteDB("DELETE FROM `cart_product_question_responses` WHERE `cart_product_question_id`='".$question_product_id_sanitize."';");
+}
+
+function doDatabaseCartProductQuestionResponseIDExistByCartAndQuestID($cart_product_question_id, $response_id)
+{
+    
+    $cart_product_question_id_sanitize = sanitize($cart_product_question_id);
+    $response_id_sanitize = sanitize($response_id);
+
+    $query = doSelectSingleDB("SELECT `id` FROM `cart_product_question_responses` WHERE `cart_product_question_id`='".$cart_product_question_id_sanitize."' and `response_id`='".$response_id_sanitize."';");
+    return ($query !== false) ? true : false;
+}
 
 ?>

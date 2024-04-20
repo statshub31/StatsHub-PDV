@@ -263,12 +263,40 @@ function doCartTotalPriceProduct($cart_product_id) {
 
     if($list_additional) {
         foreach($list_additional as $data) {
-            $additional_id = $data['id'];
-
-
-            $additional_total += getDatabaseAdditionalTotalPrice($additional_id);
+            $additional_cart_id = $data['id'];
+            $additional_id = getDatabaseCartProductAdditionalAdditionalID($additional_cart_id);
+            $additional_total += (getDatabaseAdditionalTotalPrice($additional_id)*$amount);
         }
     }
 
     return ($total_product_price + $additional_total);
+}
+
+function doCartProductIDIsUserID($cart_product_id, $user_id) {
+    $cart_id = getDatabaseCartProductCartID($cart_product_id);
+    $user_cart_id = getDatabaseCartUserID($cart_id);
+
+    return ($user_cart_id == $user_id) ? true : false;
+}
+
+
+function doRemoveCartProductID($cart_product_id) {
+    $cart_id = getDatabaseCartProductCartID($cart_product_id);
+    $cart_product_id_sanitize = sanitize($cart_product_id);
+    $cart_product_complement_id = getDatabaseCartProductComplementByCartProductID($cart_product_id_sanitize);
+    // $cart_question = 
+
+    // Lista de todas as perguntas
+    $list_question = doDatabaseProductsQuestionsListByProductID(getDatabaseCartProductProductID($cart_product_id_sanitize));
+
+    foreach($list_question as $data) {
+        $question_id = $data['id'];
+        $question_remove_id = getDatabaseCartProductQuestionIDByCartAndQuestID($cart_product_id_sanitize, $question_id);
+
+        doDatabaseCartProductQuestionResponseDeleteByQuestionIDUnlimited($question_remove_id);
+        doDatabaseCartProductQuestionDeleteUnlimited($question_remove_id);
+    }
+    doDatabaseCartProductComplementDelete($cart_product_complement_id);
+    doDatabaseCartProductAdditionalDeleteByCartProductUnlimited($cart_product_id);
+    doDatabaseCartProductDelete($cart_product_id_sanitize);
 }

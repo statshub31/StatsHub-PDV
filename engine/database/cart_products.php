@@ -79,6 +79,14 @@ function isDatabaseCartProductExistIDByUserID($user_id)
     return ($query !== false) ? true : false;
 }
 
+function isDatabaseCartProductExistID($id)
+{
+    $id_sanitize = sanitize($id);
+
+    $query = doSelectSingleDB("SELECT `id` FROM `cart_products` WHERE `id`='".$id_sanitize."';");
+    return ($query !== false) ? true : false;
+}
+
 function doDatabaseCartProductsListByCartID($cart_id)
 {
     $cart_id_sanitize = $cart_id;
