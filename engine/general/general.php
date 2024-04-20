@@ -46,6 +46,10 @@ function doGeneralCategoryNameFormat($string) {
     return preg_match('/^[a-zA-Z ]*$/', $string);
 }
 
+function doGeneralValidationDescriptionFormat($string) {
+    return preg_match('/^[a-zA-Z.,:^~´`éóíóú #$%]*$/', $string);
+}
+
 function isCampanhaInURL($param)
 {
     // Obtém a parte da URL após o nome do domínio
@@ -294,6 +298,18 @@ function validateRequiredFields($postData, $requiredFields)
         }
     }
     return true; // Todos os campos obrigatórios estão preenchidos
+}
+
+function validateRequiredFilesFields($postData, $requiredFields)
+{
+    
+    foreach($postData as $key => $value) {
+        if(in_array($key, $requiredFields) && $value['size'] <= 0) {
+            return false; // Pelo menos um campo obrigatório não está preenchido
+        }
+    }
+    return true; // Todos os campos obrigatórios estão preenchidos
+
 }
 
 

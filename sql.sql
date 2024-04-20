@@ -333,8 +333,91 @@ create table address_user_select (
     FOREIGN KEY (`user_id`) REFERENCES `users`(`id`)
 );
 
+create table settings_images (
+    `id` int PRIMARY KEY AUTO_INCREMENT,
+    `icon_name` varchar(255) null,
+    `background_name` varchar(255) null,
+    `logo_name` varchar(255) null,
+    `login_name` varchar(255) null
+);
 
 
+
+
+
+
+
+
+
+create table settings_info (
+    `id` int PRIMARY KEY AUTO_INCREMENT,
+    `title` varchar(255) null,
+    `description` varchar(255) null
+);
+
+
+create table settings_delivery (
+    `id` int PRIMARY KEY AUTO_INCREMENT,
+    `order_withdrawal` boolean not null default 0,
+    `address_api` varchar(255) null,
+    `order_min` float(5, 2) not null default 0,
+    `fee` float(5, 2)  not null default 0,
+    `time_min` tinyint not null,
+    `time_max` tinyint not null
+);
+
+
+create table settings_pay (
+    `id` int PRIMARY KEY AUTO_INCREMENT,
+    `money` boolean not null default 0,
+    `credit` boolean  not null default 0,
+    `debit` boolean  not null default 0,
+    `pix` boolean  not null default 0,
+    `pix_key` varchar(255) null
+);
+
+
+create table settings_social (
+    `id` int PRIMARY KEY AUTO_INCREMENT,
+    `whatsapp_status` boolean not null default 0,
+    `whatsapp_contact` varchar(50) null,
+    `instagram_status` boolean not null default 0,
+    `instagram_contact` varchar(50) null,
+    `facebook_status` boolean not null default 0,
+    `facebook_contact` varchar(50) null 
+);
+
+
+create table settings_horary (
+    `id` int PRIMARY KEY AUTO_INCREMENT,
+    `monday_status` boolean not null default 0,
+    `monday_start` time null,
+    `monday_end` time null,
+    
+    `tuesday_status` boolean not null default 0,
+    `tuesday_start` time null,
+    `tuesday_end` time null,
+    
+    `wednesday_status` boolean not null default 0,
+    `wednesday_start` time null,
+    `wednesday_end` time null,
+    
+    `thursday_status` boolean not null default 0,
+    `thursday_start` time null,
+    `thursday_end` time null,
+    
+    `friday_status` boolean not null default 0,
+    `friday_start` time null,
+    `friday_end` time null,
+    
+    `saturday_status` boolean not null default 0,
+    `saturday_start` time null,
+    `saturday_end` time null,
+    
+    `sunday_status` boolean not null default 0,
+    `sunday_start` time null,
+    `sunday_end` time null
+);
 
 
 
