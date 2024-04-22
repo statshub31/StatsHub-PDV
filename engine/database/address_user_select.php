@@ -2,7 +2,7 @@
 
 # get + Pasta + Arquivo + Função + Dependencia
 
-function getDatabaseAddressUserSelectsData($id)
+function getDatabaseUserSelectsData($id)
 {
     
 
@@ -16,64 +16,73 @@ function getDatabaseAddressUserSelectsData($id)
         unset($func_get_args[0]);
 
         $fields = '`' . implode('`, `', $func_get_args) . '`';
-        return doSelectSingleDB("SELECT $fields FROM `address_user_select` WHERE `id` = '" . $id_sanitize . "' LIMIT 1;");
+        return doSelectSingleDB("SELECT $fields FROM `user_select` WHERE `id` = '" . $id_sanitize . "' LIMIT 1;");
     } else
         return false;
 }
 
-function getDatabaseAddressUserSelectAddressID($id)
+function getDatabaseUserSelectAddressID($id)
 {
     
     $id_sanitize = sanitize($id);
 
-    $query = getDatabaseAddressUserSelectsData($id_sanitize, 'address_id');
+    $query = getDatabaseUserSelectsData($id_sanitize, 'address_id');
     return ($query !== false) ? $query['address_id'] : false;
 }
 
-function getDatabaseAddressUserSelectUserID($id)
+function getDatabaseUserSelectUserID($id)
 {
     
     $id_sanitize = sanitize($id);
 
-    $query = getDatabaseAddressUserSelectsData($id_sanitize, 'user_id');
+    $query = getDatabaseUserSelectsData($id_sanitize, 'user_id');
     return ($query !== false) ? $query['user_id'] : false;
 }
 
-function getDatabaseAddressUserSelectAddressByUserID($id)
+function getDatabaseUserSelectPayID($id)
 {
     
     $id_sanitize = sanitize($id);
 
-    $query = doSelectSingleDB("SELECT `address_id` FROM `address_user_select` WHERE `user_id`='".$id_sanitize."';");
+    $query = getDatabaseUserSelectsData($id_sanitize, 'pay_id');
+    return ($query !== false) ? $query['pay_id'] : false;
+}
+
+function getDatabaseUserSelectAddressByUserID($id)
+{
+    
+    $id_sanitize = sanitize($id);
+
+    $query = doSelectSingleDB("SELECT `address_id` FROM `user_select` WHERE `user_id`='".$id_sanitize."';");
     return ($query !== false) ? $query['address_id'] : false;
 }
 
-function getDatabaseAddressUserSelectByUserID($id)
+function getDatabaseUserSelectByUserID($id)
 {
     
     $id_sanitize = sanitize($id);
 
-    $query = doSelectSingleDB("SELECT `id` FROM `address_user_select` WHERE `user_id`='".$id_sanitize."';");
+    $query = doSelectSingleDB("SELECT `id` FROM `user_select` WHERE `user_id`='".$id_sanitize."';");
     return ($query !== false) ? $query['id'] : false;
 }
 
-function isDatabaseAddressUserSelectByUserID($id)
+function isDatabaseUserSelectByUserID($id)
 {
     
     $id_sanitize = sanitize($id);
 
-    $query = doSelectSingleDB("SELECT `id` FROM `address_user_select` WHERE `user_id`='".$id_sanitize."';");
+    $query = doSelectSingleDB("SELECT `id` FROM `user_select` WHERE `user_id`='".$id_sanitize."';");
     return ($query !== false) ? true : false;
 }
 
 
-function doDatabaseAddressUserSelectsList($status = false)
+function doDatabaseUserSelectsList($status = false)
 {
     
-    return doSelectMultiDB("SELECT `id` FROM `address_user_select`");
+    return doSelectMultiDB("SELECT `id` FROM `user_select`");
 }
 
-function doDatabaseAddressUserSelectInsert($import_data_query)
+function doDatabaseUserSelectInsert($import_data_query)
 {
     
 
@@ -91,18 +100,18 @@ function doDatabaseAddressUserSelectInsert($import_data_query)
     // Converte para o formato Mysql
     $values = doMysqlConvertArrayValue($valueArray);
 
-    return doInsertDB("INSERT INTO `address_user_select` (" . $keys . ") VALUES (" . $values . ")");
+    return doInsertDB("INSERT INTO `user_select` (" . $keys . ") VALUES (" . $values . ")");
 }
 
-function doDatabaseAddressUserSelectDelete($id)
+function doDatabaseUserSelectDelete($id)
 {
     
     $id_sanitize = sanitize($id);
 
-    doDeleteDB("DELETE FROM `address_user_select` WHERE `id`='".$id_sanitize."'limit 1;");
+    doDeleteDB("DELETE FROM `user_select` WHERE `id`='".$id_sanitize."'limit 1;");
 }
 
-function doDatabaseAddressUserSelectUpdate($id, $import_data_query, $empty = true)
+function doDatabaseUserSelectUpdate($id, $import_data_query, $empty = true)
 {
 
     
@@ -121,7 +130,7 @@ function doDatabaseAddressUserSelectUpdate($id, $import_data_query, $empty = tru
 
     // Converte para o formato Mysql
     $query_sql = doMysqlConvertUpdateArray($keyArray, $valueArray);
-    doUpdateDB("UPDATE `address_user_select` SET $query_sql WHERE `id`='" . $id_sanitize . "';");
+    doUpdateDB("UPDATE `user_select` SET $query_sql WHERE `id`='" . $id_sanitize . "';");
 }
 
 // 
@@ -132,20 +141,20 @@ function doDatabaseAddressUserSelectUpdate($id, $import_data_query, $empty = tru
 // 
 // 
 
-function isDatabaseAddressUserSelectExistTitle($title)
+function isDatabaseUserSelectExistTitle($title)
 {
     
     $title_sanitize = sanitize($title);
 
-    $query = doSelectSingleDB("SELECT `id` FROM `address_user_select` WHERE `title`='".$title_sanitize."';");
+    $query = doSelectSingleDB("SELECT `id` FROM `user_select` WHERE `title`='".$title_sanitize."';");
     return ($query !== false) ? true : false;
 }
 
-function isDatabaseAddressUserSelectTitleValidation($title, $id) {
+function isDatabaseUserSelectTitleValidation($title, $id) {
 	$title_sanitize = sanitize($title);
 	$id_sanitize = $id;
 	
-	$data = doSelectSingleDB("SELECT `id` FROM `address_user_select` WHERE `title`='".$title_sanitize."' AND `id`='".$id_sanitize."';");
+	$data = doSelectSingleDB("SELECT `id` FROM `user_select` WHERE `title`='".$title_sanitize."' AND `id`='".$id_sanitize."';");
 	
 	return ($data !== false) ? true : false;
 }

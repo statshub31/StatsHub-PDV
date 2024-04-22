@@ -166,4 +166,13 @@ function isDatabaseCartTitleValidation($title, $id) {
 	
 	return ($data !== false) ? true : false;
 }
+
+function isDatabaseCartUserValidation($user_id, $id) {
+	$user_id_sanitize = sanitize($user_id);
+	$id_sanitize = $id;
+	
+	$data = doSelectSingleDB("SELECT `id` FROM `carts` WHERE `user_id`='".$user_id_sanitize."' AND `id`='".$id_sanitize."';");
+	
+	return ($data !== false) ? true : false;
+}
 ?>

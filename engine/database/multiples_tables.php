@@ -44,40 +44,44 @@ function doDatabaseRemoveProducts($products)
     }
 }
 
-function doDatabaseBlockProducts($products) {
+function doDatabaseBlockProducts($products)
+{
     $update_field = array('status' => 3);
 
-    foreach($products as $product_id) {
+    foreach ($products as $product_id) {
         doDatabaseProductUpdate($product_id, $update_field);
     }
 }
 
-function doDatabaseUnblockProducts($products) {
+function doDatabaseUnblockProducts($products)
+{
     $update_field = array('status' => 2);
 
-    foreach($products as $product_id) {
+    foreach ($products as $product_id) {
         doDatabaseProductUpdate($product_id, $update_field);
     }
 }
 
-function doDatabaseDepromotionProducts($products, $user_id) {
+function doDatabaseDepromotionProducts($products, $user_id)
+{
     $update_field = array(
         'end' => date("Y-m-d H:i:s"),
         'finished_by' => $user_id,
         'status' => 3,
     );
 
-    foreach($products as $product_id) {
+    foreach ($products as $product_id) {
         doDatabaseProductPromotionUpdateByProductID($product_id, $update_field);
     }
 }
 
-function doDatabaseExceptionProducts($products, $user_id) {
+function doDatabaseExceptionProducts($products, $user_id)
+{
     $promotion = false;
-    
-    foreach($products as $product_promotion_id) {
 
-        if(isDatabaseProductFeeExemptionEnabledByProductID($product_promotion_id)) {
+    foreach ($products as $product_promotion_id) {
+
+        if (isDatabaseProductFeeExemptionEnabledByProductID($product_promotion_id)) {
             doDatabaseProductFeeExemptionDeleteByProductID($product_promotion_id);
         } else {
             $promotion_products_fields[] = array(
@@ -89,7 +93,7 @@ function doDatabaseExceptionProducts($products, $user_id) {
         }
     }
 
-    if($promotion) 
+    if ($promotion)
         doDatabaseProductFeeExemptionInsertMultipleRow($promotion_products_fields);
 
 }
@@ -251,29 +255,65 @@ function doProcessProductEdit($count)
 }
 
 
-function doCartTotalPriceProduct($cart_product_id) {
+function doCartTotalPriceProduct($cart_product_id)
+{
     $cart_product_id_sanitize = sanitize($cart_product_id);
     $product_id = getDatabaseCartProductProductID($cart_product_id_sanitize);
     $amount = getDatabaseCartProductAmount($cart_product_id_sanitize);
     $price_id = getDatabaseCartProductPriceID($cart_product_id_sanitize);
 
-    $total_product_price = (getDatabaseProductPrice($price_id)*$amount);
+    $total_product_price = (getDatabaseProductPrice($price_id) * $amount);
 
     $list_additional = doDatabaseCartProductAdditionalListByCart($cart_product_id);
     $additional_total = 0;
 
-    if($list_additional) {
-        foreach($list_additional as $data) {
+    if ($list_additional) {
+        foreach ($list_additional as $data) {
             $additional_cart_id = $data['id'];
             $additional_id = getDatabaseCartProductAdditionalAdditionalID($additional_cart_id);
-            $additional_total += (getDatabaseAdditionalTotalPrice($additional_id)*$amount);
+            $additional_total += (getDatabaseAdditionalTotalPrice($additional_id) * $amount);
         }
     }
 
     return ($total_product_price + $additional_total);
 }
 
-function doCartProductIDIsUserID($cart_product_id, $user_id) {
+function doCartTotalPrice($cart_id)
+{
+    $total = 0.0;
+    $list_cart = doDatabaseCartProductsListByCartID($cart_id);
+    if ($list_cart) {
+        foreach ($list_cart as $data) {
+            $cart_product_id = $data['id'];
+            $total += doCartTotalPriceProduct($cart_product_id);
+        }
+    }
+
+    return ($total + getDatabaseSettingsDeliveryFee(1));
+}
+
+function doCartTotalPriceDiscount($cart_id)
+{
+    $cart_id_sanitize = $cart_id;
+    $id_cart_ticket = getDatabaseCartTicketSelectByCartID($cart_id_sanitize);
+    $id_ticket = getDatabaseCartTicketSelectTicketID($id_cart_ticket);
+    $price_discount_t = getDatabaseTicketValue($id_ticket);
+    $total = doCartTotalPrice($cart_id_sanitize);
+    
+    if(doGeneralValidationPriceType($price_discount_t)) {
+        $discount_percentage = (float) rtrim($price_discount_t, '%') / 100;
+        $price_discount = $total * $discount_percentage;
+    } else {
+        $price_discount = (float) $price_discount_t;
+    }
+
+    $total_discount = $total - $price_discount;
+
+    return ($total - $total_discount);
+}
+
+function doCartProductIDIsUserID($cart_product_id, $user_id)
+{
     $cart_id = getDatabaseCartProductCartID($cart_product_id);
     $user_cart_id = getDatabaseCartUserID($cart_id);
 
@@ -281,7 +321,8 @@ function doCartProductIDIsUserID($cart_product_id, $user_id) {
 }
 
 
-function doRemoveCartProductID($cart_product_id) {
+function doRemoveCartProductID($cart_product_id)
+{
     $cart_id = getDatabaseCartProductCartID($cart_product_id);
     $cart_product_id_sanitize = sanitize($cart_product_id);
     $cart_product_complement_id = getDatabaseCartProductComplementByCartProductID($cart_product_id_sanitize);
@@ -290,7 +331,7 @@ function doRemoveCartProductID($cart_product_id) {
     // Lista de todas as perguntas
     $list_question = doDatabaseProductsQuestionsListByProductID(getDatabaseCartProductProductID($cart_product_id_sanitize));
 
-    foreach($list_question as $data) {
+    foreach ($list_question as $data) {
         $question_id = $data['id'];
         $question_remove_id = getDatabaseCartProductQuestionIDByCartAndQuestID($cart_product_id_sanitize, $question_id);
 

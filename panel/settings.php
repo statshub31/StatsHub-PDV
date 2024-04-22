@@ -316,19 +316,25 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST)) {
                 }
 
                 // pay
-                $pay_fields_insert = array(
-                    'money' => (isset($_POST['pay-money'])) ? 1 : 0,
-                    'credit' => (isset($_POST['pay-credit'])) ? 1 : 0,
-                    'debit' => (isset($_POST['pay-debit'])) ? 1 : 0,
-                    'pix' => (isset($_POST['pay-pix'])) ? 1 : 0,
-                    'pix_key' => (isset($_POST['pay-pix'])) ? $_POST['pix-key'] : NULL,
+                $money_field = array(
+                    'disabled' => (!isset($_POST['pay-money'])) ? 1 : 0
+                );
+                $credit_field = array(
+                    'disabled' => (!isset($_POST['pay-credit'])) ? 1 : 0
+                );
+                $debit_field = array(
+                    'disabled' => (!isset($_POST['pay-debit'])) ? 1 : 0
                 );
 
-                if (getDatabaseSettingsPayRowCount() > 0) {
-                    doDatabaseSettingsPayUpdate(1, $pay_fields_insert);
-                } else {
-                    doDatabaseSettingsPayInsert($pay_fields_insert);
-                }
+                $pix_field = array(
+                    'disabled' => (!isset($_POST['pay-pix'])) ? 1 : 0,
+                    'pay_key' => (isset($_POST['pay-pix'])) ? $_POST['pix-key'] : NULL,
+                );
+                
+                doDatabaseSettingsPayUpdate(getDatabaseSettingsPayMoney(), $money_field);
+                doDatabaseSettingsPayUpdate(getDatabaseSettingsPayCredit(), $credit_field);
+                doDatabaseSettingsPayUpdate(getDatabaseSettingsPayDebit(), $debit_field);
+                doDatabaseSettingsPayUpdate(getDatabaseSettingsPayPix(), $pix_field);
 
                 // SOCIAL
                 $social_fields_insert = array(
@@ -659,7 +665,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST)) {
                     title="Caso habilite está função, será mostrado para o cliente a opção de pagamento em dinheiro."></i></small>
             <div class="vc-toggle-container">
                 <label class="vc-switch">
-                    <input <?php echo doCheck(getDatabaseSettingsPayMoney(1), 1) ?> type="checkbox" name="pay-money"
+                    <input <?php echo doCheck(isDatabaseSettingsPayMoneyEnabled(), 1) ?> type="checkbox" name="pay-money"
                         id="pay-money" class="vc-switch-input">
                     <span data-on="Sim" data-off="Não" class="vc-switch-label"></span>
                     <span class="vc-handle"></span>
@@ -672,7 +678,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST)) {
                     title="Caso habilite está função, será mostrado para o cliente a opção de pagamento com cartão de crédito."></i></small>
             <div class="vc-toggle-container">
                 <label class="vc-switch">
-                    <input <?php echo doCheck(getDatabaseSettingsPayCredit(1), 1) ?> type="checkbox" name="pay-credit"
+                    <input <?php echo doCheck(isDatabaseSettingsPayCreditEnabled(), 1) ?> type="checkbox" name="pay-credit"
                         id="pay-credit" class="vc-switch-input">
                     <span data-on="Sim" data-off="Não" class="vc-switch-label"></span>
                     <span class="vc-handle"></span>
@@ -685,7 +691,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST)) {
                     title="Caso habilite está função, será mostrado para o cliente a opção de pagamento com cartão de debito."></i></small>
             <div class="vc-toggle-container">
                 <label class="vc-switch">
-                    <input <?php echo doCheck(getDatabaseSettingsPayDebit(1), 1) ?> type="checkbox" name="pay-debit"
+                    <input <?php echo doCheck(isDatabaseSettingsPayDebitEnabled(), 1) ?> type="checkbox" name="pay-debit"
                         id="pay-debit" class="vc-switch-input">
                     <span data-on="Sim" data-off="Não" class="vc-switch-label"></span>
                     <span class="vc-handle"></span>
@@ -700,7 +706,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST)) {
                     title="Caso habilite está função, será mostrado para o cliente a opção de pagamento com pix."></i></small>
             <div class="vc-toggle-container">
                 <label class="vc-switch">
-                    <input <?php echo doCheck(getDatabaseSettingsPayPix(1), 1) ?> type="checkbox" name="pay-pix"
+                    <input <?php echo doCheck(isDatabaseSettingsPayPixEnabled(), 1) ?> type="checkbox" name="pay-pix"
                         id="pay-pix" class="vc-switch-input">
                     <span data-on="Sim" data-off="Não" class="vc-switch-label"></span>
                     <span class="vc-handle"></span>
@@ -714,7 +720,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST)) {
                         title="Chave Pix."></i></small>
             </label>
             <input name="pix-key" type="text" class="form-control" id="pix-key"
-                value="<?php echo getDatabaseSettingsPayPixKey(1) ?>">
+                value="<?php echo getDatabaseSettingsPayKey(getDatabaseSettingsPayPix()) ?>">
         </div>
     </div>
 

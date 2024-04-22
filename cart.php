@@ -1,10 +1,90 @@
 <?php
 include_once __DIR__ . '/layout/php/header.php';
+doGeneralSecurityProtect();
 ?>
 
 <?php
 // <!-- INICIO DA VALIDAÇÃO PHP -->
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST)) {
+
+    // ADD ADDRESS
+    if (getGeneralSecurityToken('tokenCartMainPay')) {
+        if (empty($_POST) === false) {
+            if (!isset($_POST['method_pay'])) {
+                $errors[] = "Necessário selecionar um método de pagamento.";
+            }
+
+            if (isDatabaseSettingsPayExist($_POST['method_pay']) === false) {
+                $errors[] = "Houve um erro ao salvar o método de pagamento, reinicie a pagina e tente novamente";
+            }
+
+        }
+
+
+        if (empty($errors)) {
+            $pay_add_fields = array(
+                'user_id' => $in_user_id,
+                'pay_id' => $_POST['method_pay']
+            );
+
+            if (isDatabaseUserSelectByUserID($in_user_id)) {
+                $main = getDatabaseUserSelectByUserID($in_user_id);
+                doDatabaseUserSelectUpdate($main, $pay_add_fields);
+            } else {
+                doDatabaseUserSelectInsert($pay_add_fields);
+            }
+
+            doAlertSuccess("As informações foram alteradas com sucesso!!");
+            // Coloque o código que deve ser executado após as verificações bem-sucedidas aqui
+        }
+    }
+
+
+    // ADD ADDRESS
+    if (getGeneralSecurityToken('tokenCartTicketSelect')) {
+        if (empty($_POST) === false) {
+            if (!isset($_POST['ticket_select'])) {
+                $errors[] = "Necessário selecionar um cupom.";
+            }
+
+            if ($_POST['ticket_select'] != 0) {
+                if (isDatabaseTicketExistID($_POST['ticket_select']) === false) {
+                    $errors[] = "Houve um erro ao salvar o cupom, reinicie a pagina e tente novamente";
+                }
+            }
+
+            if (isDatabaseCartUserValidation($in_user_id, $_POST['cart_id']) === false) {
+                $errors[] = "Houve um erro ao salvar o cupom, reinicie a pagina e tente novamente";
+            }
+
+
+        }
+
+
+        if (empty($errors)) {
+            $ticket_add_id = array(
+                'cart_id' => $_POST['cart_id'],
+                'ticket_id' => $_POST['ticket_select']
+            );
+
+            if ($_POST['ticket_select'] == 0) {
+                if (isDatabaseCartTicketSelectByCartID($in_user_id)) {
+                    $main = getDatabaseCartTicketSelectByCartID($in_user_id);
+                    doDatabaseCartTicketSelectDelete($main);
+                }
+            } else {
+                if (isDatabaseCartTicketSelectByCartID($in_user_id)) {
+                    $main = getDatabaseCartTicketSelectByCartID($in_user_id);
+                    doDatabaseCartTicketSelectUpdate($main, $ticket_add_id);
+                } else {
+                    doDatabaseCartTicketSelectInsert($ticket_add_id);
+                }
+            }
+
+            doAlertSuccess("As informações foram alteradas com sucesso!!");
+            // Coloque o código que deve ser executado após as verificações bem-sucedidas aqui
+        }
+    }
 
     // ADD ADDRESS
     if (getGeneralSecurityToken('tokenCartMainAddress')) {
@@ -26,11 +106,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST)) {
                 'address_id' => $_POST['address']
             );
 
-            if (isDatabaseAddressUserSelectByUserID($in_user_id)) {
-                $main = getDatabaseAddressUserSelectByUserID($in_user_id);
-                doDatabaseAddressUserSelectUpdate($main, $address_add_fields);
+            if (isDatabaseUserSelectByUserID($in_user_id)) {
+                $main = getDatabaseUserSelectByUserID($in_user_id);
+                doDatabaseUserSelectUpdate($main, $address_add_fields);
             } else {
-                doDatabaseAddressUserSelectInsert($address_add_fields);
+                doDatabaseUserSelectInsert($address_add_fields);
             }
 
             doAlertSuccess("As informações foram alteradas com sucesso!!");
@@ -38,7 +118,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST)) {
         }
     }
 
-    
+
     // REMOVE ADDRESS
     if (getGeneralSecurityToken('tokenCartRemoveProduct')) {
 
@@ -55,7 +135,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST)) {
                 if (isDatabaseCartProductExistID($_POST['cart_product_id']) === false) {
                     $errors[] = "Houve um erro ao remover o produto, o mesmo não foi encontrado.";
                 }
-                
+
                 if (doCartProductIDIsUserID($_POST['cart_product_id'], $in_user_id) === false) {
                     $errors[] = "Houve um erro ao remover o produto, o mesmo não foi encontrado.";
                 }
@@ -71,7 +151,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST)) {
         }
     }
 
-    
+
     // 
     // ADDRESS
     // 
@@ -275,21 +355,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST)) {
 <div>
     <section id="address">
         <div><?php
-        $main_address_id = getDatabaseAddressUserSelectAddressByUserID($in_user_id);
-
-        echo getDatabaseAddressPublicPlace($main_address_id) . ', ';
-        echo getDatabaseAddressNumber($main_address_id) . '(';
-        echo getDatabaseAddressComplement($main_address_id) . '), ';
-        echo getDatabaseAddressNeighborhood($main_address_id) . ', ';
-        echo getDatabaseAddressCity($main_address_id) . ' - ';
-        echo getDatabaseAddressState($main_address_id);
+        $discount = getDatabaseTicketValue(getDatabaseCartTicketSelectTicketID(getDatabaseCartTicketSelectByCartID($cart_id)));
         ?></div>
         <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#addressModal">Alterar</button>
     </section>
     <hr>
     <section id="ticket">
-        <div>XTY210
-            <small>R$ -25,00</small>
+        <div>
+            <?php echo getDatabaseTicketCode(getDatabaseCartTicketSelectTicketID(getDatabaseCartTicketSelectCartID($cart_id))) ?>
+            <small>(Você terá um desconto de
+                [<?php echo ($discount !== false) ? $discount : 'Você não selecionou nenhum cupom.' ?>])</small>
         </div>
         <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#ticketModal">Alterar</button>
     </section>
@@ -303,14 +378,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST)) {
     <section id="ticket">
         <div>
             <p class="t">Taxa de entrega
-                <label class="v">R$ 10.00</label>
+                <label class="v">R$ <?php echo getDatabaseSettingsDeliveryFee(1) ?></label>
             </p>
-            <p class="t">Total de desconto
-                <label class="v">R$ 10.00</label>
+            <p class="t">Desconto de Cupom
+                <label class="v">-<?php
+                if (doGeneralValidationPriceType($discount)) {
+                    echo $discount;
+                } 
+                else {
+                    echo 'R$ '.(int)$discount;
+                }
+                    ?></label>
             </p>
             <b>
                 <p class="t">Total do Pedido
-                    <label class="v">R$ 10.00</label>
+                    <label class="v">R$
+                        <?php echo (doCartTotalPrice($cart_id) - doCartTotalPriceDiscount($cart_id)) ?></label>
                 </p>
             </b>
         </div>
@@ -329,11 +412,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST)) {
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
-            <div class="modal-body">
 
-                <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#addAddressModal">Novo
-                    Endereço</button><br><br>
-                <form action="/cart" method="POST">
+            <form action="/cart" method="POST">
+                <div class="modal-body">
+
+                    <button type="button" class="btn btn-primary" data-toggle="modal"
+                        data-target="#addAddressModal">Novo
+                        Endereço</button><br><br>
                     <div id="user_address">
                         <table border="1" width="100%">
                             <tr>
@@ -352,7 +437,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST)) {
                                     ++$count;
                                     ?>
                                     <tr>
-                                        <td><input <?php echo doCheck(getDatabaseAddressUserSelectAddressByUserID($in_user_id), $user_address_id) ?> type="radio" name="address"
+                                        <td><input <?php echo doCheck(getDatabaseUserSelectAddressByUserID($in_user_id), $user_address_id) ?> type="radio" name="address"
                                                 value="<?php echo $user_address_id ?>"></td>
                                         <td><?php echo getDatabaseAddressPublicPlace($user_address_id) ?>,
                                             <?php echo getDatabaseAddressNumber($user_address_id) ?>,
@@ -388,13 +473,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST)) {
                             <!-- ENDEREÇO FIM -->
                         </table>
                     </div>
-            </div>
-            <div class="modal-footer">
-                <input name="token" type="text" value="<?php echo addGeneralSecurityToken('tokenCartMainAddress') ?>"
-                    hidden>
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Fechar</button>
-                <button type="submit" class="btn btn-primary">Salvar</button>
-            </div>
+                </div>
+                <div class="modal-footer">
+                    <input name="token" type="text"
+                        value="<?php echo addGeneralSecurityToken('tokenCartMainAddress') ?>" hidden>
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Fechar</button>
+                    <button type="submit" class="btn btn-primary">Salvar</button>
+                </div>
             </form>
         </div>
     </div>
@@ -406,18 +491,64 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST)) {
     <div class="modal-dialog modal-dialog-scrollable" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="exampleModalScrollableTitle">Endereços</h5>
+                <h5 class="modal-title" id="exampleModalScrollableTitle">Cupons</h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
-            <div class="modal-body">
-                ...
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Fechar</button>
-                <button type="button" class="btn btn-primary">Salvar</button>
-            </div>
+
+            <form action="/cart" method="POST">
+                <div class="modal-body">
+                    <div id="user_pay">
+                        <table border="1" width="100%">
+                            <tr>
+                                <th></th>
+                                <th>Código</th>
+                                <th>Valor de Desconto</th>
+                                <th>Descrição</th>
+                            </tr>
+                            <!-- PAGAMENTO INICIO -->
+                            <?php
+                            $ticket_list = doDatabaseTicketsListByStatus();
+
+                            if ($ticket_list) {
+                                foreach ($ticket_list as $dataTicket) {
+                                    $ticket_list_id = $dataTicket['id'];
+                                    ?>
+                                    <tr>
+                                        <td><input <?php echo doCheck(isDatabaseCartTicketSelectNotUsed($ticket_list_id, $cart_id), 1) ?> type="radio" name="ticket_select"
+                                                value="<?php echo $ticket_list_id ?>" />
+                                        </td>
+                                        <td><?php echo getDatabaseTicketCode($ticket_list_id) ?></td>
+                                        <td><?php echo getDatabaseTicketValue($ticket_list_id) ?></td>
+                                        <td>Utilize este cupom, para receber o desconto de
+                                            [<?php echo getDatabaseTicketValue($ticket_list_id) ?>]</td>
+                                    </tr>
+                                    <?php
+                                }
+                            } else { ?>
+                                <tr>
+                                    <td colspan="3">Não existe cupom disponivel.</td>
+                                </tr><?php
+                            } ?>
+                            <!-- PAGAMENTO FIM -->
+
+                            <tr>
+                                <td><input type="radio" name="ticket_select" value="0" />
+                                </td>
+                                <td colspan="3">Nenhum</td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <input name="token" type="text"
+                        value="<?php echo addGeneralSecurityToken('tokenCartTicketSelect') ?>" hidden>
+                    <input name="cart_id" type="text" value="<?php echo $cart_id ?>" hidden>
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Fechar</button>
+                    <button type="submit" class="btn btn-primary">Salvar</button>
+                </div>
+            </form>
         </div>
     </div>
 </div>
@@ -427,18 +558,61 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST)) {
     <div class="modal-dialog modal-dialog-scrollable" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="exampleModalScrollableTitle">Endereços</h5>
+                <h5 class="modal-title" id="exampleModalScrollableTitle">Escolha o Metodo de Pagamento</h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
-            <div class="modal-body">
-                ...
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Fechar</button>
-                <button type="button" class="btn btn-primary">Salvar</button>
-            </div>
+
+            <form action="/cart" method="POST">
+                <div class="modal-body">
+                    <div id="user_pay">
+                        <table border="1" width="100%">
+                            <tr>
+                                <th colspan="3">Pagamento Presencial</th>
+                            </tr>
+                            <tr>
+                                <th></th>
+                                <th>Tipo</th>
+                                <th>Chave</th>
+                            </tr>
+                            <!-- PAGAMENTO INICIO -->
+                            <?php
+                            $pay_list = doDatabaseSettingsPayListByStatus();
+
+                            if ($pay_list) {
+                                foreach ($pay_list as $dataPay) {
+                                    $pay_list_id = $dataPay['id'];
+                                    ?>
+                                    <tr>
+                                        <td><input <?php echo doCheck(getDatabaseUserSelectPayID(getDatabaseUserSelectByUserID($in_user_id)), $pay_list_id) ?> type="radio" name="method_pay"
+                                                value="<?php echo $pay_list_id ?>" /></td>
+                                        <td><?php echo getDatabaseSettingsPayType($pay_list_id) ?></td>
+                                        <td><?php echo getDatabaseSettingsPayKey($pay_list_id) ?></td>
+                                    </tr>
+                                    <?php
+                                }
+                            } else { ?>
+                                <tr>
+                                    <td colspan="3">Não existe métodos de pagamento liberado.</td>
+                                </tr><?php
+                            } ?>
+                            <!-- PAGAMENTO FIM -->
+                            <tr>
+                                <th colspan="3">
+                                    <center>Pagamento Online</center>
+                                </th>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <input name="token" type="text" value="<?php echo addGeneralSecurityToken('tokenCartMainPay') ?>"
+                        hidden>
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Fechar</button>
+                    <button type="submit" class="btn btn-primary">Salvar</button>
+                </div>
+            </form>
         </div>
     </div>
 </div>
@@ -470,7 +644,8 @@ if (isCampanhaInURL("product")) {
                         </div>
                         <form action="/cart" method="POST">
                             <div class="modal-body">
-                                Você está prestes a remover o produto [<?php echo getDatabaseProductName($product_id) ?>],  do carrinho, tem certeza?
+                                Você está prestes a remover o produto [<?php echo getDatabaseProductName($product_id) ?>], do
+                                carrinho, tem certeza?
                             </div>
                             <div class="modal-footer">
                                 <input name="cart_product_id" type="text" value="<?php echo $cart_product_id ?>" hidden>

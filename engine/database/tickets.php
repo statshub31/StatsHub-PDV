@@ -144,6 +144,7 @@ function doDatabaseTicketsList($status = false)
     return doSelectMultiDB("SELECT `id` FROM `tickets`");
 }
 
+
 function doDatabaseTicketInsert($import_data_query)
 {
     
@@ -221,6 +222,12 @@ function isDatabaseTicketEnabledByCode($code)
     $query = doSelectSingleDB("SELECT `status` FROM `tickets` WHERE `code`='".$code_sanitize."';");
 
     return ($query !== false && $query['status'] == 2) ? true : false;
+}
+
+function doDatabaseTicketsListByStatus($status = 2)
+{
+    $status_sanitize = $status;
+    return doSelectMultiDB("SELECT `id` FROM `tickets` where `status` = $status_sanitize");
 }
 
 ?>

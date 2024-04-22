@@ -20,83 +20,120 @@ function getDatabaseSettingsPaysData($id)
         return false;
 }
 
-function getDatabaseSettingsPayMoney($id)
+function getDatabaseSettingsPayType($id)
 {
     
     $id_sanitize = sanitize($id);
 
-    $query = getDatabaseSettingsPaysData($id_sanitize, 'money');
-    return ($query !== false) ? $query['money'] : false;
+    $query = getDatabaseSettingsPaysData($id_sanitize, 'type');
+    return ($query !== false) ? $query['type'] : false;
 }
-function isDatabaseSettingsPayMoneyEnabled($id)
+
+function getDatabaseSettingsPayKey($id)
 {
     
     $id_sanitize = sanitize($id);
 
-    $query = getDatabaseSettingsPaysData($id_sanitize, 'money');
-    return ($query !== false && $query['money'] == 1) ? true : false;
+    $query = getDatabaseSettingsPaysData($id_sanitize, 'pay_key');
+    return ($query !== false) ? $query['pay_key'] : false;
 }
-function getDatabaseSettingsPayCredit($id)
+function getDatabaseSettingsPayDisabled($id)
 {
     
     $id_sanitize = sanitize($id);
 
-    $query = getDatabaseSettingsPaysData($id_sanitize, 'credit');
-    return ($query !== false) ? $query['credit'] : false;
+    $query = getDatabaseSettingsPaysData($id_sanitize, 'disabled');
+    return ($query !== false) ? $query['disabled'] : false;
 }
-function isDatabaseSettingsPayCreditEnabled($id)
+
+
+function getDatabaseSettingsPayByType($type)
+{
+    
+    $type_sanitize = sanitize($type);
+
+    $query = doSelectSingleDB("SELECT `id` FROM `settings_pay` WHERE `type`='".$type_sanitize."';");
+
+    return ($query !== false) ? $query['id'] : false;
+}
+
+
+function getDatabaseSettingsPayMoney()
+{
+    $query = getDatabaseSettingsPayByType('Dinheiro');
+
+    return ($query !== false) ? $query : false;
+}
+
+function isDatabaseSettingsPayMoneyEnabled()
+{
+    $type_id = (int)getDatabaseSettingsPayMoney();
+    
+    $query = doSelectSingleDB("SELECT `disabled` FROM `settings_pay` WHERE `id`=$type_id;");
+    return ($query !== false && $query['disabled'] == 0) ? true : false;
+}
+
+function getDatabaseSettingsPayCredit()
+{
+    
+    $query = getDatabaseSettingsPayByType('Crédito');
+
+    return ($query !== false) ? $query : false;
+}
+function isDatabaseSettingsPayCreditEnabled()
+{
+    
+    $type_id = getDatabaseSettingsPayCredit();
+
+    $query = doSelectSingleDB("SELECT `disabled` FROM `settings_pay` WHERE `id`=$type_id;");
+    return ($query !== false && $query['disabled'] == 0) ? true : false;
+}
+function getDatabaseSettingsPayDebit()
+{
+    $query = getDatabaseSettingsPayByType('Débito');
+
+    return ($query !== false) ? $query : false;
+}
+
+function isDatabaseSettingsPayDebitEnabled()
+{
+    
+    $type_id = getDatabaseSettingsPayDebit();
+
+    $query = doSelectSingleDB("SELECT `disabled` FROM `settings_pay` WHERE `id`=$type_id;");
+    return ($query !== false && $query['disabled'] == 0) ? true : false;
+}
+
+function getDatabaseSettingsPayPix()
+{
+    $query = getDatabaseSettingsPayByType('Pix');
+
+    return ($query !== false) ? $query : false;
+}
+
+function isDatabaseSettingsPayPixEnabled()
+{
+    $type_id = getDatabaseSettingsPayPix();
+
+    $query = doSelectSingleDB("SELECT `disabled` FROM `settings_pay` WHERE `id`=$type_id;");
+    return ($query !== false && $query['disabled'] == 0) ? true : false;
+}
+
+function isDatabaseSettingsPayExist($id)
 {
     
     $id_sanitize = sanitize($id);
 
-    $query = getDatabaseSettingsPaysData($id_sanitize, 'credit');
-    return ($query !== false && $query['credit'] == 1) ? true : false;
+    $query = doSelectSingleDB("SELECT `id` FROM `settings_pay` WHERE `id`='".$id_sanitize."';");
+    return ($query !== false) ? true : false;
 }
-function getDatabaseSettingsPayDebit($id)
+
+
+function doDatabaseSettingsPayListByStatus($status = 0)
 {
     
-    $id_sanitize = sanitize($id);
-
-    $query = getDatabaseSettingsPaysData($id_sanitize, 'debit');
-    return ($query !== false) ? $query['debit'] : false;
+    return doSelectMultiDB("SELECT `id` FROM `settings_pay`");
 }
-function isDatabaseSettingsPayDebitEnabled($id)
-{
-    
-    $id_sanitize = sanitize($id);
-
-    $query = getDatabaseSettingsPaysData($id_sanitize, 'debit');
-    return ($query !== false && $query['debit'] == 1) ? true : false;
-}
-
-function getDatabaseSettingsPayPix($id)
-{
-    
-    $id_sanitize = sanitize($id);
-
-    $query = getDatabaseSettingsPaysData($id_sanitize, 'pix');
-    return ($query !== false) ? $query['pix'] : false;
-}
-function isDatabaseSettingsPayPixEnabled($id)
-{
-    
-    $id_sanitize = sanitize($id);
-
-    $query = getDatabaseSettingsPaysData($id_sanitize, 'pix');
-    return ($query !== false && $query['pix'] == 1) ? true : false;
-}
-
-function getDatabaseSettingsPayPixKey($id)
-{
-    
-    $id_sanitize = sanitize($id);
-
-    $query = getDatabaseSettingsPaysData($id_sanitize, 'pix_key');
-    return ($query !== false) ? $query['pix_key'] : false;
-}
-
-
-
 
 
 

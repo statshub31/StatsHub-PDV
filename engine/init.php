@@ -57,6 +57,7 @@ require_once(__DIR__ . "/database/cart_product_additional.php");
 require_once(__DIR__ . "/database/cart_product_questions.php");
 require_once(__DIR__ . "/database/cart_product_question_responses.php");
 require_once(__DIR__ . "/database/address_user_select.php");
+require_once(__DIR__ . "/database/ticket_select.php");
 
 
 require_once(__DIR__ . "/database/settings_images.php");

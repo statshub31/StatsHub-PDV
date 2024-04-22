@@ -49,6 +49,9 @@ function doGeneralCategoryNameFormat($string) {
 function doGeneralValidationDescriptionFormat($string) {
     return preg_match('/^[a-zA-Z.,:^~´`éóíóú #$%]*$/', $string);
 }
+function doGeneralValidationPriceType($string) {
+    return preg_match('/^.*%$/', $string);
+}
 
 function isCampanhaInURL($param)
 {

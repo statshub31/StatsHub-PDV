@@ -325,13 +325,35 @@ create table cart_product_question_responses (
 );
 
 
-create table address_user_select (
+create table user_select (
     `id` int PRIMARY KEY AUTO_INCREMENT,
-    `address_id` int not null,
+    `address_id` int null,
+    `pay_id` int not null default 1,
     `user_id` int null,
     FOREIGN KEY (`address_id`) REFERENCES `address`(`id`),
+    FOREIGN KEY (`pay_id`) REFERENCES `settings_pay`(`id`),
     FOREIGN KEY (`user_id`) REFERENCES `users`(`id`)
 );
+
+create table cart_ticket_select (
+    `id` int PRIMARY KEY AUTO_INCREMENT,
+    `ticket_id` int not null default 1,
+    `cart_id` int null,
+    `used` boolean not null default 0,
+    FOREIGN KEY (`ticket_id`) REFERENCES `tickets`(`id`),
+    FOREIGN KEY (`cart_id`) REFERENCES `carts`(`id`)
+);
+
+create table user_select (
+    `id` int PRIMARY KEY AUTO_INCREMENT,
+    `address_id` int null,
+    `pay_id` int not null default 1,
+    `user_id` int null,
+    FOREIGN KEY (`address_id`) REFERENCES `address`(`id`),
+    FOREIGN KEY (`pay_id`) REFERENCES `settings_pay`(`id`),
+    FOREIGN KEY (`user_id`) REFERENCES `users`(`id`)
+);
+
 
 create table settings_images (
     `id` int PRIMARY KEY AUTO_INCREMENT,
@@ -369,13 +391,14 @@ create table settings_delivery (
 
 create table settings_pay (
     `id` int PRIMARY KEY AUTO_INCREMENT,
-    `money` boolean not null default 0,
-    `credit` boolean  not null default 0,
-    `debit` boolean  not null default 0,
-    `pix` boolean  not null default 0,
-    `pix_key` varchar(255) null
+    `type` varchar(255) not null,
+    `pay_key` varchar(255)  null default '',
+    `icon_pay` int  not null default 1,
+    `disabled` boolean  not null default 0,
+    FOREIGN KEY (`icon_pay`) REFERENCES `icons`(`id`)
 );
 
+insert into `settings_pay` (`type`, `pay_key`, `disabled`) VALUES ('Dinheiro', NULL, 0), ('Crédito', NULL, 0), ('Débito', NULL, 0), ('Pix', NULL, 0);
 
 create table settings_social (
     `id` int PRIMARY KEY AUTO_INCREMENT,
