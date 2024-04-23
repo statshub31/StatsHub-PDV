@@ -29,16 +29,29 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST)) {
             );
 
             $cart_id = $_POST['cart_id'];
+            $main_address = getDatabaseUserSelectAddressID($in_user_id);
+            $ticket = getDatabaseCartTicketSelectByCartID($cart_id);
 
             doDatabaseCartUpdate($cart_id, $cart_update_fields);
 
             $request_order_insert_fields = array(
                 'cart_id' => $cart_id,
+                'address_id_select' => ($main_address !== false) ? $main_address : NULL ,
+                'ticket_id_select' => ($ticket !== false) ? $ticket : NULL,
                 'status' => 2
             );
 
             $request_order_id_insert = doDatabaseRequestOrderInsert($request_order_insert_fields);
+
             doRequestOrderLogInsert($request_order_id_insert, 2);
+
+            $cart_ticket_update_fields = array(
+                'used' => 1
+            ); 
+            
+            if(isDatabaseCartTicketSelectByCartID($cart_id))
+                doDatabaseCartTicketSelectUpdate($ticket, $cart_ticket_update_fields);
+
 
             doAlertSuccess("sucesso!!");
         }

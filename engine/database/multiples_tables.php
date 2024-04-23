@@ -365,3 +365,43 @@ function getMaxTimeOrderDelivery($order_id) {
     $created = getDatabaseRequestOrderLogCreated($order_log_id);
     return date("H:i", strtotime($created . " + ".getDatabaseSettingsDeliveryTimeMax(1)." minutes"));
 }
+
+
+function getOrderProgressBarValue($order_id) {
+    $order_first_log_id = doDatabaseRequestOrderLogsFirstLogByOrderID($order_id);
+
+    if($order_first_log_id == 1) {
+        $order_first_log_id = getDatabaseRequestOrderLogIDByOrderIDAndStatusID($order_id, 2);
+    }
+
+    $created = getDatabaseRequestOrderLogCreated($order_first_log_id);
+
+    $time_min_strtotime = strtotime($created . " + ".getDatabaseSettingsDeliveryTimeMin(1)." minutes");
+    $time_max_strtotime = strtotime($created . " + ".getDatabaseSettingsDeliveryTimeMax(1)." minutes");
+    $date_actual_strtotime = strtotime(date("Y-m-d H:i:s"));
+
+    $time_min_restant = ($time_min_strtotime - $date_actual_strtotime) / 60;
+    $time_max_restant = ($time_max_strtotime - $date_actual_strtotime) / 60;
+    $percentual_min = ((getDatabaseSettingsDeliveryTimeMin(1) - $time_min_restant) / getDatabaseSettingsDeliveryTimeMin(1)) * 100;
+    $percentual_max = ((getDatabaseSettingsDeliveryTimeMax(1) - $time_max_restant) / getDatabaseSettingsDeliveryTimeMax(1)) * 100;
+    
+
+    return array(
+        'min' => number_format((($percentual_min > 100) ? 100 : $percentual_min), 0),
+        'max' => number_format((($percentual_max > 100) ? 100 : $percentual_max), 0),
+        'minutes_min' => ($time_min_restant < 0) ? 0 : $time_min_restant,
+        'minutes_max' => ($time_max_restant < 0) ? 0 : $time_max_restant,
+    );
+
+}
+
+
+function doDeliveryManList()
+{
+    
+    return doSelectMultiDB("
+    SELECT u.id FROM users AS u 
+    INNER JOIN accounts AS a ON a.id = u.account_id 
+    WHERE a.group_id = 2;
+    ");
+}

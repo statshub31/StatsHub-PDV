@@ -396,7 +396,8 @@ if (isCampanhaInURL("user")) {
                                 <?php
                                 if (getDatabaseAccountBlock($account_select_id) == 0) {
                                     ?>
-                                    Você está prestes a desativar o usuário <b>[<?php echo getDatabaseUserName($user_select_id) ?>]</b>, você tem certeza disso?
+                                    Você está prestes a desativar o usuário <b>[<?php echo getDatabaseUserName($user_select_id) ?>]</b>,
+                                    você tem certeza disso?
 
                                     <div class="alert alert-danger" role="alert">
                                         Confirmando está ação, o usuário não poderá fazer login ou executar qualquer tarefa.
@@ -407,7 +408,8 @@ if (isCampanhaInURL("user")) {
                                 if (getDatabaseAccountBlock($account_select_id) == 1) {
                                     ?>
 
-                                    Você está prestes a ativar o usuário <b>[<?php echo getDatabaseUserName($user_select_id) ?>]</b>, você tem certeza disso?
+                                    Você está prestes a ativar o usuário <b>[<?php echo getDatabaseUserName($user_select_id) ?>]</b>,
+                                    você tem certeza disso?
 
                                     <div class="alert alert-warning" role="alert">
                                         Confirmando está ação, o usuário voltará a fazer login e executar tarefas de sua função.
@@ -517,12 +519,13 @@ if (isCampanhaInURL("user")) {
                                             ?>
                                             <!-- LISTA DE PERMISSÕES FIM -->
                                         </select>
-                                        <?php
+
+                                    </div>
+                                    <?php
                                 }
                                 ?>
 
-                                    <!-- VALIDA SE TEM PERMISSÃO PARA Visualização -->
-                                </div>
+                                <!-- VALIDA SE TEM PERMISSÃO PARA Visualização -->
                             </div>
                             <div class="modal-footer">
                                 <input type="text" name="user_select_id" value="<?php echo $user_select_id ?>" hidden />

@@ -1,4 +1,7 @@
 <?php
+setlocale(LC_TIME, 'pt_BR', 'pt_BR.utf-8', 'pt_BR.utf-8', 'portuguese');
+date_default_timezone_set('America/Sao_Paulo');
+ini_set('memory_limit', '-1');
 
 // Inicia a sessão e o buffer de saída
 session_start();

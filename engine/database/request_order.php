@@ -29,6 +29,15 @@ function getDatabaseRequestOrderCartID($id)
     $query = getDatabaseRequestOrdersData($id_sanitize, 'cart_id');
     return ($query !== false) ? $query['cart_id'] : false;
 }
+function getDatabaseRequestOrderAddressIDSelect($id)
+{
+    
+    $id_sanitize = sanitize($id);
+
+    $query = getDatabaseRequestOrdersData($id_sanitize, 'address_id_select');
+    return ($query !== false) ? $query['address_id_select'] : false;
+}
+
 
 function getDatabaseRequestOrderStatus($id)
 {
@@ -57,10 +66,10 @@ function isDatabaseRequestOrderExistID($id)
     return ($query !== false) ? true : false;
 }
 
-function doDatabaseRequestOrdersList($status = false)
+function doDatabaseRequestOrdersListByConfirmed()
 {
     
-    return doSelectMultiDB("SELECT `id` FROM `request_order`");
+    return doSelectMultiDB("SELECT `id` FROM `request_order` where (`status`>1) and  (`status`<4)");
 }
 
 function doDatabaseRequestOrderInsert($import_data_query)

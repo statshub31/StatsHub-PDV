@@ -36,7 +36,7 @@ function getDatabaseRequestOrderLogStatusDelivery($id)
     $id_sanitize = sanitize($id);
 
     $query = getDatabaseRequestOrderLogsData($id_sanitize, 'status_delivery');
-    return ($query !== false) ? $query['status_delivery'] : false;
+    return ($query !== false) ? (int)$query['status_delivery'] : false;
 }
 
 function getDatabaseRequestOrderLogCreated($id)
@@ -61,6 +61,12 @@ function doDatabaseRequestOrderLogsListByOrderID($order_id)
 {
     $order_id_sanitize = $order_id;
     return doSelectMultiDB("SELECT id FROM request_order_logs where `request_order_id`='".$order_id_sanitize."' ORDER BY id DESC");
+}
+
+function doDatabaseRequestOrderLogsFirstLogByOrderID($order_id)
+{
+    $order_id_sanitize = $order_id;
+    return doSelectSingleDB("SELECT id FROM request_order_logs where `request_order_id`='".$order_id_sanitize."' ORDER BY id asc LIMIT 1")['id'];
 }
 
 function doDatabaseRequestOrderLogsLastLogByOrderID($order_id)

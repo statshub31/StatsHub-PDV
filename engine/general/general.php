@@ -380,13 +380,18 @@ function doTime($time) {
 
 function doStyleProgress($n) {
     $style = array(
-        1 => '#e1d702',
-        2 => '#8bc34a',
+        1 => '#ff5722',
+        2 => '#e1d702',
         3 => '#4caf50',
         4 => '#009688',
-        5 => '#ff5722',
+        5 => '#8bc34a',
         6 => '#f44336'
     );
 
-    return (in_array($n, $style)) ? $style[$n] : $style[1]; 
+    return (isset($style[$n])) ? $style[$n] : $style[1]; 
+}
+
+
+function doBRDateTime($date) {
+    return date('d/m/Y H:i', strtotime($date));
 }

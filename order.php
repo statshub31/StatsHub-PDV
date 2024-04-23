@@ -27,12 +27,12 @@ if (isDatabaseRequestOrderExistID($order_id) === false) {
         <div>
 
             <div class="barra">
-                <div style="background-color: <?php echo doStyleProgress(getDatabaseRequestOrderLogStatusDelivery($order_last_log_id)) ?>" class="progresso"></div>
+                <div <?php echo 'style="background-color:'.doStyleProgress(getDatabaseRequestOrderLogStatusDelivery($order_last_log_id)).'"' ?> class="progresso"></div>
             </div>
             <div id="order-status-info">
                 <section class="order-main-status" data-toggle="collapse" href="#collapseExample" role="button"
                     aria-expanded="false" aria-controls="collapseExample">
-                    <label class="bolinha" style="box-shadow: 0 0 10px <?php echo doStyleProgress(getDatabaseRequestOrderLogStatusDelivery($order_last_log_id)) ?>; background-color: <?php echo doStyleProgress(getDatabaseRequestOrderLogStatusDelivery($order_last_log_id)) ?>"></label>
+                    <label class="bolinha" <?php echo 'style="box-shadow: 0 0 10px '.doStyleProgress(getDatabaseRequestOrderLogStatusDelivery($order_last_log_id)).'; background-color: '.doStyleProgress(getDatabaseRequestOrderLogStatusDelivery($order_last_log_id)).'"' ?>></label>
                     <label><?php echo getDatabaseStatusDeliveryTitle(getDatabaseRequestOrderLogStatusDelivery($order_last_log_id)) ?></label>
                     <label><?php echo doTime(getDatabaseRequestOrderLogCreated($order_last_log_id)) ?></label>
                 </section>
@@ -49,8 +49,8 @@ if (isDatabaseRequestOrderExistID($order_id) === false) {
                         ?>
                         <section class="order-main-status" data-toggle="collapse" href="#collapseExample" role="button"
                             aria-expanded="false" aria-controls="collapseExample">
-                            <label class="bolinha"
-                            style="animation: none; box-shadow: 0 0 10px <?php echo doStyleProgress(getDatabaseRequestOrderLogStatusDelivery($order_last_log_id)) ?>; background-color: <?php echo doStyleProgress(getDatabaseRequestOrderLogStatusDelivery($order_last_log_id)) ?>"></label>
+
+                            <label class="bolinha" <?php echo 'style="animation: none; box-shadow: 0 0 10px '.doStyleProgress(getDatabaseRequestOrderLogStatusDelivery($log_list_id)).'; background-color: '.doStyleProgress(getDatabaseRequestOrderLogStatusDelivery($log_list_id)).'"' ?>></label>
                             <label><?php echo getDatabaseStatusDeliveryTitle(getDatabaseRequestOrderLogStatusDelivery($log_list_id)) ?></label>
                             <label><?php echo doTime(getDatabaseRequestOrderLogCreated($log_list_id)) ?></label>
                         </section>
