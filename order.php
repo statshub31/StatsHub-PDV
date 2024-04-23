@@ -1,179 +1,64 @@
 <?php
 include_once __DIR__ . '/layout/php/header.php';
 ?>
-<style>
-    .bolinha {
-        width: 20px;
-        height: 20px;
-        border-radius: 50%;
-        animation: piscar 1.2s infinite alternate;
-        /* Define a animação de piscar */
-        box-shadow: 0 0 10px red;
-        /* Adiciona uma sombra vermelha */
+
+<?php
+
+$order_id = getURLLastParam();
+if (isDatabaseRequestOrderExistID($order_id) === false) {
+} else {
+    $cart_id = getDatabaseRequestOrderCartID($order_id);
+    $order_last_log_id = doDatabaseRequestOrderLogsLastLogByOrderID($order_id);
+
+    if (isDatabaseCartUserValidation($in_user_id, $cart_id) === false) {
+        header('Location: /cart');
     }
+}
 
-    @keyframes piscar {
-        0% {
-            opacity: 1;
-            /* Opacidade máxima */
-        }
-
-        100% {
-            opacity: 0;
-            /* Opacidade mínima */
-        }
-    }
-
-    #order-status-delivery,
-    #order-info {
-        position: relative;
-        border: 1px solid var(--border-color);
-        padding: 15px;
-        border-radius: 10px;
-        background: #ffffff;
-        margin-bottom: 20px;
-    }
-
-    #order-delivery-forecast {
-        color: var(--border-color);
-        font-weight: bold;
-    }
-
-    .stime {
-        font-size: 20px;
-        font-weight: bold;
-        color: var(--primary-color);
-    }
-
-    #order-status-info {
-        cursor: pointer;
-    }
-
-    .barra {
-        width: 400px;
-        height: 5px;
-        background-color: transparent;
-        border-radius: 2px;
-        margin-bottom: 20px;
-    }
-
-    .progresso {
-        width: 0;
-        height: 100%;
-        animation: carregar 2s linear infinite;
-    }
-
-    @keyframes carregar {
-        0% {
-            width: 40%;
-            /* Largura inicial da barra de progresso */
-        }
-
-        100% {
-            width: 100%;
-            /* Largura final da barra de progresso */
-        }
-    }
-
-
-    .order-main-status {
-        display: flex;
-        flex-direction: row;
-    }
-
-    .order-main-status label:nth-child(2) {
-        margin: 0px 15px;
-        ;
-    }
-
-    #order-number {
-        position: absolute;
-        right: 25px;
-        font-size: 1.5em;
-    }
-
-    #order-total {
-        position: absolute;
-        right: 25px;
-        font-weight: bold;
-    }
-
-    .available {
-        display: flex;
-        align-items: flex-start;
-        border: 1px solid var(--border-color);
-        padding: 20px;
-        margin-bottom: 20px;
-    }
-
-    #availables div:not(:last-child) {
-        margin-right: 20px;
-    }
-
-    .comments {
-        width: 40%;
-        background-color: white;
-        padding: 15px;
-        border: 1px solid var(--border-color);
-        position: relative;
-        width: 60%;
-        height: 132px;
-        margin: 0px 20px;
-    }
-</style>
-
-
+?>
 
 <div id="order-status">
     <style>
-        :root {
-            --color-actual-status: red;
-        }
     </style>
     <section id="order-status-delivery">
         <label id="order-delivery-forecast">Previsão de Entrega:</label><br>
-        <span class="stime">12:28</span> -
-        <span class="stime">13:28</span>
+        <span class="stime"><?php echo getMinTimeOrderDelivery($order_id) ?></span> -
+        <span class="stime"><?php echo getMaxTimeOrderDelivery($order_id) ?></span>
         <div>
 
             <div class="barra">
-                <div style="background-color: var(--color-actual-status)" class="progresso"></div>
+                <div style="background-color: <?php echo doStyleProgress(getDatabaseRequestOrderLogStatusDelivery($order_last_log_id)) ?>" class="progresso"></div>
             </div>
             <div id="order-status-info">
                 <section class="order-main-status" data-toggle="collapse" href="#collapseExample" role="button"
                     aria-expanded="false" aria-controls="collapseExample">
-                    <label class="bolinha" style="background-color: var(--color-actual-status)"></label>
-                    <label>Aguardando Confirmação do Pedido</label>
-                    <label>12:38</label>
+                    <label class="bolinha" style="box-shadow: 0 0 10px <?php echo doStyleProgress(getDatabaseRequestOrderLogStatusDelivery($order_last_log_id)) ?>; background-color: <?php echo doStyleProgress(getDatabaseRequestOrderLogStatusDelivery($order_last_log_id)) ?>"></label>
+                    <label><?php echo getDatabaseStatusDeliveryTitle(getDatabaseRequestOrderLogStatusDelivery($order_last_log_id)) ?></label>
+                    <label><?php echo doTime(getDatabaseRequestOrderLogCreated($order_last_log_id)) ?></label>
                 </section>
             </div>
         </div>
         <div class="collapse" id="collapseExample">
             <div class="card card-body w-100">
-
-                <section class="order-main-status" data-toggle="collapse" href="#collapseExample" role="button"
-                    aria-expanded="false" aria-controls="collapseExample">
-                    <label class="bolinha"
-                        style="animation: none; background-color: var(--color-actual-status)"></label>
-                    <label>Aguardando Confirmação do Pedido</label>
-                    <label>12:38</label>
-                </section>
-
-                <section class="order-main-status" data-toggle="collapse" href="#collapseExample" role="button"
-                    aria-expanded="false" aria-controls="collapseExample">
-                    <label class="bolinha"
-                        style="animation: none; background-color: var(--color-actual-status)"></label>
-                    <label>Aguardando Confirmação do Pedido</label>
-                    <label>12:38</label>
-                </section>
-
-                <section class="order-main-status" data-toggle="collapse" href="#collapseExample" role="button"
-                    aria-expanded="false" aria-controls="collapseExample">
-                    <label class="bolinha"
-                        style="animation: none; background-color: var(--color-actual-status)"></label>
-                    <label>Aguardando Confirmação do Pedido</label>
-                    <label>12:38</label>
-                </section>
+                <!-- LOG START -->
+                <?php
+                $log_list = doDatabaseRequestOrderLogsListByOrderID($order_id);
+                if ($log_list) {
+                    foreach ($log_list as $dataLog) {
+                        $log_list_id = $dataLog['id'];
+                        ?>
+                        <section class="order-main-status" data-toggle="collapse" href="#collapseExample" role="button"
+                            aria-expanded="false" aria-controls="collapseExample">
+                            <label class="bolinha"
+                            style="animation: none; box-shadow: 0 0 10px <?php echo doStyleProgress(getDatabaseRequestOrderLogStatusDelivery($order_last_log_id)) ?>; background-color: <?php echo doStyleProgress(getDatabaseRequestOrderLogStatusDelivery($order_last_log_id)) ?>"></label>
+                            <label><?php echo getDatabaseStatusDeliveryTitle(getDatabaseRequestOrderLogStatusDelivery($log_list_id)) ?></label>
+                            <label><?php echo doTime(getDatabaseRequestOrderLogCreated($log_list_id)) ?></label>
+                        </section>
+                    <?php
+                    }
+                }
+                ?>
+                <!-- LOG END -->
             </div>
         </div>
 
@@ -181,13 +66,13 @@ include_once __DIR__ . '/layout/php/header.php';
     <section id="order-info">
         <label>Detalhes do Pedido:</label>
         <button type="button" class="btn btn-info" data-toggle="modal" data-target="#orderInfoModal">Ver mais</button>
-        <label id="order-number">#200</label>
+        <label id="order-number">#<?php echo $order_id ?></label>
         <hr>
         <label>Pagamento na Entrega</label>
-        <label id="order-total">Total <span>R$ 20.00</span></label>
+        <label id="order-total">Total <span>R$ <?php echo (doCartTotalPrice($cart_id) - doCartTotalPriceDiscount($cart_id)) ?></span></label>
     </section>
 
-    <div class="available">
+    <div class="available" hidden>
         <div class="second-available-frame">
             <section>
                 <label>Comida</label>

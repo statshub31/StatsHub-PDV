@@ -354,3 +354,14 @@ function doRequestOrderLogInsert($order_id, $status) {
 
     doDatabaseRequestOrderLogInsert($request_order__logs_insert_fields);
 }
+
+function getMinTimeOrderDelivery($order_id) {
+    $order_log_id = getDatabaseRequestOrderLogIDByOrderIDAndStatusID($order_id, 2);
+    $created = getDatabaseRequestOrderLogCreated($order_log_id);
+    return date("H:i", strtotime($created . " + ".getDatabaseSettingsDeliveryTimeMin(1)." minutes"));
+}
+function getMaxTimeOrderDelivery($order_id) {
+    $order_log_id = getDatabaseRequestOrderLogIDByOrderIDAndStatusID($order_id, 2);
+    $created = getDatabaseRequestOrderLogCreated($order_log_id);
+    return date("H:i", strtotime($created . " + ".getDatabaseSettingsDeliveryTimeMax(1)." minutes"));
+}

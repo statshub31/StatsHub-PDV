@@ -592,3 +592,124 @@ div .quantity {
 #pays-type {
   display: none;
 }
+
+
+/* ORDER.PHP */
+
+.bolinha {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  animation: piscar 1.2s infinite alternate;
+  /* Define a animação de piscar */
+  /* Adiciona uma sombra vermelha */
+}
+
+@keyframes piscar {
+  0% {
+      opacity: 1;
+      /* Opacidade máxima */
+  }
+
+  100% {
+      opacity: 0;
+      /* Opacidade mínima */
+  }
+}
+
+#order-status-delivery,
+#order-info {
+  position: relative;
+  border: 1px solid var(--border-color);
+  padding: 15px;
+  border-radius: 10px;
+  background: #ffffff;
+  margin-bottom: 20px;
+}
+
+#order-delivery-forecast {
+  color: var(--border-color);
+  font-weight: bold;
+}
+
+.stime {
+  font-size: 20px;
+  font-weight: bold;
+  color: var(--primary-color);
+}
+
+#order-status-info {
+  cursor: pointer;
+}
+
+.barra {
+  width: 400px;
+  height: 5px;
+  background-color: transparent;
+  border-radius: 2px;
+  margin-bottom: 20px;
+}
+
+.progresso {
+  width: 0;
+  height: 100%;
+  animation: carregar 2s linear infinite;
+}
+
+@keyframes carregar {
+  0% {
+      width: 40%;
+      /* Largura inicial da barra de progresso */
+  }
+
+  100% {
+      width: 100%;
+      /* Largura final da barra de progresso */
+  }
+}
+
+
+.order-main-status {
+  display: flex;
+  flex-direction: row;
+}
+
+.order-main-status label:nth-child(2) {
+  margin: 0px 15px;
+  ;
+}
+
+#order-number {
+  position: absolute;
+  right: 25px;
+  font-size: 1.5em;
+}
+
+#order-total {
+  position: absolute;
+  right: 25px;
+  font-weight: bold;
+}
+
+.available {
+  display: flex;
+  align-items: flex-start;
+  border: 1px solid var(--border-color);
+  padding: 20px;
+  margin-bottom: 20px;
+}
+
+#availables div:not(:last-child) {
+  margin-right: 20px;
+}
+
+.comments {
+  width: 40%;
+  background-color: white;
+  padding: 15px;
+  border: 1px solid var(--border-color);
+  position: relative;
+  width: 60%;
+  height: 132px;
+  margin: 0px 20px;
+}

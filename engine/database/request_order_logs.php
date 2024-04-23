@@ -57,10 +57,16 @@ function isDatabaseRequestOrderLogExistID($id)
     return ($query !== false) ? true : false;
 }
 
-function doDatabaseRequestOrderLogsList($status = false)
+function doDatabaseRequestOrderLogsListByOrderID($order_id)
 {
-    
-    return doSelectMultiDB("SELECT `id` FROM `request_order_logs`");
+    $order_id_sanitize = $order_id;
+    return doSelectMultiDB("SELECT id FROM request_order_logs where `request_order_id`='".$order_id_sanitize."' ORDER BY id DESC");
+}
+
+function doDatabaseRequestOrderLogsLastLogByOrderID($order_id)
+{
+    $order_id_sanitize = $order_id;
+    return doSelectSingleDB("SELECT id FROM request_order_logs where `request_order_id`='".$order_id_sanitize."' ORDER BY id DESC LIMIT 1")['id'];
 }
 
 function doDatabaseRequestOrderLogInsert($import_data_query)
@@ -138,5 +144,15 @@ function isDatabaseRequestOrderLogTitleValidation($title, $id) {
 	$data = doSelectSingleDB("SELECT `id` FROM `request_order_logs` WHERE `title`='".$title_sanitize."' AND `id`='".$id_sanitize."';");
 	
 	return ($data !== false) ? true : false;
+}
+
+
+function getDatabaseRequestOrderLogIDByOrderIDAndStatusID($order_id, $status_id) {
+	$order_id_sanitize = sanitize($order_id);
+	$status_id_sanitize = sanitize($status_id);
+	
+	$data = doSelectSingleDB("SELECT `id` FROM `request_order_logs` WHERE `request_order_id`='".$order_id_sanitize."' AND `status_delivery`='".$status_id_sanitize."';");
+	
+	return ($data !== false) ? $data['id'] : false;
 }
 ?>

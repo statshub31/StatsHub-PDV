@@ -373,3 +373,20 @@ function doYN($f) {
 function isGeneralExistProduct($table, $n) {
     return isset($table[$n]);
 }
+
+function doTime($time) {
+    return date("H:i", strtotime($time));
+}
+
+function doStyleProgress($n) {
+    $style = array(
+        1 => '#e1d702',
+        2 => '#8bc34a',
+        3 => '#4caf50',
+        4 => '#009688',
+        5 => '#ff5722',
+        6 => '#f44336'
+    );
+
+    return (in_array($n, $style)) ? $style[$n] : $style[1]; 
+}
