@@ -53,7 +53,7 @@ function getDatabaseCartExistIDByUserID($user_id)
     
     $user_id_sanitize = sanitize($user_id);
 
-    $query = doSelectSingleDB("SELECT `id` FROM `carts` WHERE `user_id`='".$user_id_sanitize."';");
+    $query = doSelectSingleDB("SELECT `id` FROM `carts` WHERE `user_id`='".$user_id_sanitize."' and `status`=2;");
     return ($query !== false) ? $query['id'] : false;
 }
 
@@ -87,7 +87,7 @@ function doDatabaseCartsListByUserID($user_id)
 {
     $user_id_sanitize = sanitize($user_id);
     
-    return doSelectMultiDB("SELECT `id` FROM `carts` where `user_id` = '".$user_id."';");
+    return doSelectMultiDB("SELECT `id` FROM `carts` where `user_id` = '".$user_id."' and `status`=2;");
 }
 
 function doDatabaseCartInsert($import_data_query)

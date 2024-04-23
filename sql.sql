@@ -55,7 +55,7 @@ create table status (
     `title` varchar(50)
 );
 
-INSERT INTO `status`(`title`) VALUES ('Desativado'), ('Ativo'), ('Bloqueado'), ('Pendente'), ('Invalidado'), ('Cancelado');
+INSERT INTO `status`(`title`) VALUES ('Desativado'), ('Ativo'), ('Bloqueado'), ('Pendente'), ('Invalidado'), ('Cancelado'), ('Finalizado');
 
 create table tickets (
     `id` int PRIMARY KEY AUTO_INCREMENT,
@@ -270,6 +270,32 @@ INSERT INTO icons (`title`) VALUES
 ('fa-briefcase'),
 ('fa-shirt')
 
+
+create table request_order (
+    `id` int PRIMARY KEY AUTO_INCREMENT,
+    `cart_id` int not null,
+    `status` int not null,
+    `deliveryman` int null,
+    `address_id_select` int null,
+    `ticket_id_select` int null,
+    `pay_id` int null,
+    FOREIGN KEY (`status`) REFERENCES `status`(`id`),
+    FOREIGN KEY (`deliveryman`) REFERENCES `users`(`id`),
+    FOREIGN KEY (`address_id_select`) REFERENCES `address`(`id`),
+    FOREIGN KEY (`ticket_id_select`) REFERENCES `tickets`(`id`),
+    FOREIGN KEY (`cart_id`) REFERENCES `carts`(`id`),
+    FOREIGN KEY (`pay_id`) REFERENCES `settings_pay`(`id`)
+);
+
+
+create table request_order_logs (
+    `id` int PRIMARY KEY AUTO_INCREMENT,
+    `request_order_id` int not null,
+    `status_delivery` int not null,
+    `created` datetime not null,
+    FOREIGN KEY (`status_delivery`) REFERENCES `status_delivery`(`id`),
+    FOREIGN KEY (`request_order_id`) REFERENCES `request_order`(`id`)
+);
 
 create table carts (
     `id` int PRIMARY KEY AUTO_INCREMENT,

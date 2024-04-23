@@ -342,3 +342,15 @@ function doRemoveCartProductID($cart_product_id)
     doDatabaseCartProductAdditionalDeleteByCartProductUnlimited($cart_product_id);
     doDatabaseCartProductDelete($cart_product_id_sanitize);
 }
+
+
+function doRequestOrderLogInsert($order_id, $status) {
+    
+    $request_order__logs_insert_fields = array(
+        'request_order_id' => $order_id,
+        'status_delivery' => $status,
+        'created' => date('Y-m-d H:i:s')
+    );
+
+    doDatabaseRequestOrderLogInsert($request_order__logs_insert_fields);
+}

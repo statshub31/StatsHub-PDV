@@ -7,7 +7,44 @@ doGeneralSecurityProtect();
 // <!-- INICIO DA VALIDAÇÃO PHP -->
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST)) {
 
-    // ADD ADDRESS
+    // SELECT MAIN METHOD PAY
+    if (getGeneralSecurityToken('tokenRequestOrder')) {
+        if (empty($_POST) === false) {
+            if (!isset($_POST['cart_id'])) {
+                $errors[] = "Houve um erro ao processar a compra, reinicie a pagina e tente novamente";
+            }
+
+            if (isDatabaseCartEnabled($_POST['cart_id'])) {
+                if (isDatabaseCartExistIDByUserID($in_user_id) != $_POST['cart_id']) {
+                    $errors[] = "Houve um erro ao salvar o método de pagamento, reinicie a pagina e tente novamente";
+                }
+            }
+
+        }
+
+
+        if (empty($errors)) {
+            $cart_update_fields = array(
+                'status' => 7
+            );
+
+            $cart_id = $_POST['cart_id'];
+
+            doDatabaseCartUpdate($cart_id, $cart_update_fields);
+
+            $request_order_insert_fields = array(
+                'cart_id' => $cart_id,
+                'status' => 2
+            );
+
+            $request_order_id_insert = doDatabaseRequestOrderInsert($request_order_insert_fields);
+            doRequestOrderLogInsert($request_order_id_insert, 2);
+
+            doAlertSuccess("sucesso!!");
+        }
+    }
+
+    // SELECT MAIN METHOD PAY
     if (getGeneralSecurityToken('tokenCartMainPay')) {
         if (empty($_POST) === false) {
             if (!isset($_POST['method_pay'])) {
@@ -40,7 +77,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST)) {
     }
 
 
-    // ADD ADDRESS
+    // SELECT TICKET DISCOUNT
     if (getGeneralSecurityToken('tokenCartTicketSelect')) {
         if (empty($_POST) === false) {
             if (!isset($_POST['ticket_select'])) {
@@ -86,7 +123,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST)) {
         }
     }
 
-    // ADD ADDRESS
+    // SELECT MAIN ADDRESS
     if (getGeneralSecurityToken('tokenCartMainAddress')) {
         if (empty($_POST) === false) {
             if (!isset($_POST['address'])) {
@@ -119,7 +156,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST)) {
     }
 
 
-    // REMOVE ADDRESS
+    // REMOVE CART PRODUCT
     if (getGeneralSecurityToken('tokenCartRemoveProduct')) {
 
         if (empty($_POST) === false) {
@@ -355,6 +392,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST)) {
 <div>
     <section id="address">
         <div><?php
+        $main_address_id = getDatabaseUserSelectAddressByUserID($in_user_id);
+        echo getDatabaseAddressPublicPlace($main_address_id) . ', ';
+        echo getDatabaseAddressNumber($main_address_id) . '(';
+        echo getDatabaseAddressComplement($main_address_id) . '), ';
+        echo getDatabaseAddressNeighborhood($main_address_id) . ', ';
+        echo getDatabaseAddressCity($main_address_id) . ' - ';
+        echo getDatabaseAddressState($main_address_id);
         $discount = getDatabaseTicketValue(getDatabaseCartTicketSelectTicketID(getDatabaseCartTicketSelectByCartID($cart_id)));
         ?></div>
         <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#addressModal">Alterar</button>
@@ -384,11 +428,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST)) {
                 <label class="v">-<?php
                 if (doGeneralValidationPriceType($discount)) {
                     echo $discount;
-                } 
-                else {
-                    echo 'R$ '.(int)$discount;
+                } else {
+                    echo 'R$ ' . (int) $discount;
                 }
-                    ?></label>
+                ?></label>
             </p>
             <b>
                 <p class="t">Total do Pedido
@@ -397,7 +440,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST)) {
                 </p>
             </b>
         </div>
-        <button type="button" class="btn btn-primary">Confirmar Compra</button>
+        <form action="/cart" method="POST">
+            <input name="token" type="text" value="<?php echo addGeneralSecurityToken('tokenRequestOrder') ?>" hidden>
+            <input name="cart_id" type="text" value="<?php echo $cart_id ?>" hidden>
+            <button type="submit" class="btn btn-primary">Confirmar Compra</button>
+        </form>
     </section>
 </div>
 

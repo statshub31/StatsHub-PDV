@@ -1,0 +1,142 @@
+<?php
+
+# get + Pasta + Arquivo + Função + Dependencia
+
+function getDatabaseRequestOrderLogsData($id)
+{
+    
+
+    $data = array();
+    $id_sanitize = sanitize($id);
+
+    $func_num_args = func_num_args();
+    $func_get_args = func_get_args();
+
+    if ($func_num_args > 1) {
+        unset($func_get_args[0]);
+
+        $fields = '`' . implode('`, `', $func_get_args) . '`';
+        return doSelectSingleDB("SELECT $fields FROM `request_order_logs` WHERE `id` = '" . $id_sanitize . "' LIMIT 1;");
+    } else
+        return false;
+}
+
+function getDatabaseRequestOrderLogRequestID($id)
+{
+    
+    $id_sanitize = sanitize($id);
+
+    $query = getDatabaseRequestOrderLogsData($id_sanitize, 'request_order_id');
+    return ($query !== false) ? $query['request_order_id'] : false;
+}
+
+function getDatabaseRequestOrderLogStatusDelivery($id)
+{
+    
+    $id_sanitize = sanitize($id);
+
+    $query = getDatabaseRequestOrderLogsData($id_sanitize, 'status_delivery');
+    return ($query !== false) ? $query['status_delivery'] : false;
+}
+
+function getDatabaseRequestOrderLogCreated($id)
+{
+    
+    $id_sanitize = sanitize($id);
+
+    $query = getDatabaseRequestOrderLogsData($id_sanitize, 'created');
+    return ($query !== false) ? $query['created'] : false;
+}
+
+function isDatabaseRequestOrderLogExistID($id)
+{
+    
+    $id_sanitize = sanitize($id);
+
+    $query = doSelectSingleDB("SELECT `id` FROM `request_order_logs` WHERE `id`='".$id_sanitize."';");
+    return ($query !== false) ? true : false;
+}
+
+function doDatabaseRequestOrderLogsList($status = false)
+{
+    
+    return doSelectMultiDB("SELECT `id` FROM `request_order_logs`");
+}
+
+function doDatabaseRequestOrderLogInsert($import_data_query)
+{
+    
+
+    // Remove todos os campos vazios
+    removeEmptyValues($import_data_query);
+
+    // transforma as chaves em um único array
+    $keyArray = doGeneralCreateArrayFromKeys($import_data_query);
+    // transforma os valores em um único array
+    $valueArray = doGeneralCreateArrayFromValues($import_data_query);
+
+    // Converte para o formato Mysql
+    $keys = doMysqlConvertArrayKey($keyArray);
+
+    // Converte para o formato Mysql
+    $values = doMysqlConvertArrayValue($valueArray);
+
+    return doInsertDB("INSERT INTO `request_order_logs` (" . $keys . ") VALUES (" . $values . ")");
+}
+
+function doDatabaseRequestOrderLogDelete($id)
+{
+    
+    $id_sanitize = sanitize($id);
+
+    doDeleteDB("DELETE FROM `request_order_logs` WHERE `id`='".$id_sanitize."'limit 1;");
+}
+
+function doDatabaseRequestOrderLogUpdate($id, $import_data_query, $empty = true)
+{
+
+    
+    $id_sanitize = sanitize($id);
+    
+    if ($empty) {
+        // Remove todos os campos vazios
+        removeEmptyValues($import_data_query);
+    }
+
+    // transforma as chaves em um único array
+    $keyArray = doGeneralCreateArrayFromKeys($import_data_query);
+
+    // transforma os valores em um único array
+    $valueArray = doGeneralCreateArrayFromValues($import_data_query);
+
+    // Converte para o formato Mysql
+    $query_sql = doMysqlConvertUpdateArray($keyArray, $valueArray);
+    doUpdateDB("UPDATE `request_order_logs` SET $query_sql WHERE `id`='" . $id_sanitize . "';");
+}
+
+// 
+// 
+// 
+// SPECIFIC
+// 
+// 
+// 
+
+function isDatabaseRequestOrderLogExistTitle($title)
+{
+    
+    $title_sanitize = sanitize($title);
+
+    $query = doSelectSingleDB("SELECT `id` FROM `request_order_logs` WHERE `title`='".$title_sanitize."';");
+    return ($query !== false) ? true : false;
+}
+
+function isDatabaseRequestOrderLogTitleValidation($title, $id) {
+	$title_sanitize = sanitize($title);
+	$id_sanitize = $id;
+	
+	$data = doSelectSingleDB("SELECT `id` FROM `request_order_logs` WHERE `title`='".$title_sanitize."' AND `id`='".$id_sanitize."';");
+	
+	return ($data !== false) ? true : false;
+}
+?>
