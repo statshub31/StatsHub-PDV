@@ -17,22 +17,104 @@ if (isDatabaseRequestOrderExistID($order_id) === false) {
 
 ?>
 
-<div id="order-status">
-    <style>
-    </style>
-    <section id="order-status-delivery">
-        <label id="order-delivery-forecast">Previsão de Entrega:</label><br>
-        <span class="stime"><?php echo getMinTimeOrderDelivery($order_id) ?></span> -
-        <span class="stime"><?php echo getMaxTimeOrderDelivery($order_id) ?></span>
-        <div>
+<?php
+// <!-- INICIO DA VALIDAÇÃO PHP -->
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST)) {
 
-            <div class="barra">
-                <div <?php echo 'style="background-color:'.doStyleProgress(getDatabaseRequestOrderLogStatusDelivery($order_last_log_id)).'"' ?> class="progresso"></div>
-            </div>
+
+    // EDIT USER
+
+    // if (getGeneralSecurityToken('tokenAvailable')) {
+    if (1 == 1) {
+        data_dump($_POST);
+        if (empty($_POST) === false) {
+            $required_fields_status = true;
+
+            if ((!isset($_POST['food'])) || (!isset($_POST['box'])) || (!isset($_POST['deliverytime'])) || (!isset($_POST['costbenefit']))) {
+                $errors[] = "Obrigatório o preenchimento de pontuação.";
+                $required_fields_status = false;
+            }
+
+            if ($required_fields_status) {
+                if (isDatabaseRequestOrderExistID($_POST['order_id']) === false) {
+                    $errors[] = "Houve um erro ao enviar a avaliação, reinicie a pagina e tente novamente";
+                } else {
+                    $cart_id = getDatabaseRequestOrderCartID($_POST['order_id']);
+                    if (isDatabaseCartUserValidation($in_user_id, $cart_id) === false) {
+                        $errors[] = "Houve um erro ao enviar a avaliação, reinicie a pagina e tente novamente";
+                    }
+                }
+                if ($_POST['food'] < 0 || $_POST['food'] > 5) {
+                    $errors[] = "Houve um erro ao enviar a avaliação, reinicie a pagina e tente novamente";
+                }
+                if ($_POST['box'] < 0 || $_POST['box'] > 5) {
+                    $errors[] = "Houve um erro ao enviar a avaliação, reinicie a pagina e tente novamente";
+                }
+                if ($_POST['deliverytime'] < 0 || $_POST['deliverytime'] > 5) {
+                    $errors[] = "Houve um erro ao enviar a avaliação, reinicie a pagina e tente novamente";
+                }
+                if ($_POST['costbenefit'] < 0 || $_POST['costbenefit'] > 5) {
+                    $errors[] = "Houve um erro ao enviar a avaliação, reinicie a pagina e tente novamente";
+                }
+            }
+
+        }
+
+
+        if (empty($errors)) {
+            $available_insert_fields = array(
+                'request_order_id' => $_POST['order_id'],
+                'created' => date('Y-m-d H:i:s'),
+                'food' => $_POST['food'],
+                'box' => $_POST['box'],
+                'deliverytime' => $_POST['deliverytime'],
+                'costbenefit' => $_POST['costbenefit'],
+                'comments' => sanitize($_POST['comment'])
+            );
+
+            doDatabaseRequestOrderAvailableInsert($available_insert_fields);
+            doAlertSuccess("As informações de usuário, foram alteradas!!");
+        }
+    }
+
+
+    if (empty($errors) === false) {
+        header("HTTP/1.1 401 Not Found");
+        echo doAlertError($errors);
+    }
+}
+
+
+// <!-- FINAL DA VALIDAÇÃO PHP -->
+?>
+
+
+<div id="order-status">
+    <section id="order-status-delivery">
+        <?php
+        if (getDatabaseRequestOrderLogStatusDelivery($order_last_log_id) != 5) {
+            ?>
+            <label id="order-delivery-forecast">Previsão de Entrega:</label><br>
+            <span class="stime"><?php echo getMinTimeOrderDelivery($order_id) ?></span> -
+            <span class="stime"><?php echo getMaxTimeOrderDelivery($order_id) ?></span>
+            <?php
+        }
+        ?>
+        <div>
+            <?php
+            if (getDatabaseRequestOrderLogStatusDelivery($order_last_log_id) != 5) {
+                ?>
+                <div class="barra">
+                    <div <?php echo 'style="background-color:' . doStyleProgress(getDatabaseRequestOrderLogStatusDelivery($order_last_log_id)) . '"' ?>
+                        class="progresso"></div>
+                </div>
+                <?php
+            }
+            ?>
             <div id="order-status-info">
                 <section class="order-main-status" data-toggle="collapse" href="#collapseExample" role="button"
                     aria-expanded="false" aria-controls="collapseExample">
-                    <label class="bolinha" <?php echo 'style="box-shadow: 0 0 10px '.doStyleProgress(getDatabaseRequestOrderLogStatusDelivery($order_last_log_id)).'; background-color: '.doStyleProgress(getDatabaseRequestOrderLogStatusDelivery($order_last_log_id)).'"' ?>></label>
+                    <label class="bolinha" <?php echo 'style="box-shadow: 0 0 10px ' . doStyleProgress(getDatabaseRequestOrderLogStatusDelivery($order_last_log_id)) . '; background-color: ' . doStyleProgress(getDatabaseRequestOrderLogStatusDelivery($order_last_log_id)) . '"' ?>></label>
                     <label><?php echo getDatabaseStatusDeliveryTitle(getDatabaseRequestOrderLogStatusDelivery($order_last_log_id)) ?></label>
                     <label><?php echo doTime(getDatabaseRequestOrderLogCreated($order_last_log_id)) ?></label>
                 </section>
@@ -50,11 +132,11 @@ if (isDatabaseRequestOrderExistID($order_id) === false) {
                         <section class="order-main-status" data-toggle="collapse" href="#collapseExample" role="button"
                             aria-expanded="false" aria-controls="collapseExample">
 
-                            <label class="bolinha" <?php echo 'style="animation: none; box-shadow: 0 0 10px '.doStyleProgress(getDatabaseRequestOrderLogStatusDelivery($log_list_id)).'; background-color: '.doStyleProgress(getDatabaseRequestOrderLogStatusDelivery($log_list_id)).'"' ?>></label>
+                            <label class="bolinha" <?php echo 'style="animation: none; box-shadow: 0 0 10px ' . doStyleProgress(getDatabaseRequestOrderLogStatusDelivery($log_list_id)) . '; background-color: ' . doStyleProgress(getDatabaseRequestOrderLogStatusDelivery($log_list_id)) . '"' ?>></label>
                             <label><?php echo getDatabaseStatusDeliveryTitle(getDatabaseRequestOrderLogStatusDelivery($log_list_id)) ?></label>
                             <label><?php echo doTime(getDatabaseRequestOrderLogCreated($log_list_id)) ?></label>
                         </section>
-                    <?php
+                        <?php
                     }
                 }
                 ?>
@@ -69,97 +151,225 @@ if (isDatabaseRequestOrderExistID($order_id) === false) {
         <label id="order-number">#<?php echo $order_id ?></label>
         <hr>
         <label>Pagamento na Entrega</label>
-        <label id="order-total">Total <span>R$ <?php echo (doCartTotalPrice($cart_id) - doCartTotalPriceDiscount($cart_id)) ?></span></label>
+        <label id="order-total">Total <span>R$
+                <?php echo (doCartTotalPrice($cart_id) - doCartTotalPriceDiscount($cart_id)) ?></span></label>
     </section>
+    <?php
+    if (getDatabaseRequestOrderLogStatusDelivery($order_last_log_id) == 5) {
+        ?>
+        <form action="/order/<?php echo $order_id ?>" method="POST">
+            <div class="available">
+                <div class="second-available-frame">
+                    <section>
+                        <label>Comida</label>
+                        <div id="stars">
+                            <section
+                                class="star <?php echo (isDatabaseRequestOrderAvailableFoodAvailable($order_id, 1)) ? 'colorstar' : ''; ?>">
+                                <input <?php echo doCheck(isDatabaseRequestOrderAvailableFoodAvailable($order_id, 1), 1) ?>
+                                    type="radio" name="food" id="starFood1" value="1" onclick="fillPreviousStars(1, 'Food')"
+                                    hidden>
+                                <label for="starFood1">
+                                    <img src="/layout/images/model/star-a.svg">
+                                </label>
+                            </section>
+                            <section
+                                class="star <?php echo (isDatabaseRequestOrderAvailableFoodAvailable($order_id, 2)) ? 'colorstar' : ''; ?>">
+                                <input <?php echo doCheck(isDatabaseRequestOrderAvailableFoodAvailable($order_id, 1), 2) ?>
+                                    type="radio" name="food" id="starFood2" value="2" onclick="fillPreviousStars(2, 'Food')"
+                                    hidden>
+                                <label for="starFood2">
+                                    <img src="/layout/images/model/star-a.svg">
+                                </label>
+                            </section>
+                            <section
+                                class="star <?php echo (isDatabaseRequestOrderAvailableFoodAvailable($order_id, 3)) ? 'colorstar' : ''; ?>">
+                                <input <?php echo doCheck(isDatabaseRequestOrderAvailableFoodAvailable($order_id, 1), 3) ?>
+                                    type="radio" name="food" id="starFood3" value="3" onclick="fillPreviousStars(3, 'Food')"
+                                    hidden>
+                                <label for="starFood3">
+                                    <img src="/layout/images/model/star-a.svg">
+                                </label>
+                            </section>
+                            <section
+                                class="star <?php echo (isDatabaseRequestOrderAvailableFoodAvailable($order_id, 4)) ? 'colorstar' : ''; ?>">
+                                <input <?php echo doCheck(isDatabaseRequestOrderAvailableFoodAvailable($order_id, 1), 4) ?>
+                                    type="radio" name="food" id="starFood4" value="4" onclick="fillPreviousStars(4, 'Food')"
+                                    hidden>
+                                <label for="starFood4">
+                                    <img src="/layout/images/model/star-a.svg">
+                                </label>
+                            </section>
+                            <section
+                                class="star <?php echo (isDatabaseRequestOrderAvailableFoodAvailable($order_id, 5)) ? 'colorstar' : ''; ?>">
+                                <input <?php echo doCheck(isDatabaseRequestOrderAvailableFoodAvailable($order_id, 1), 5) ?>
+                                    type="radio" name="food" id="starFood5" value="5" onclick="fillPreviousStars(5, 'Food')"
+                                    hidden>
+                                <label for="starFood5">
+                                    <img src="/layout/images/model/star-a.svg">
+                                </label>
+                            </section>
+                        </div>
+                    </section>
+                    <section>
+                        <label>Embalagem</label>
+                        <div id="stars">
+                            <section
+                                class="star <?php echo (isDatabaseRequestOrderAvailableBoxAvailable($order_id, 1)) ? 'colorstar' : ''; ?>">
+                                <input <?php echo doCheck(isDatabaseRequestOrderAvailableBoxAvailable($order_id, 1), 1) ?>
+                                    type="radio" name="box" id="starBox1" value="1" onclick="fillPreviousStars(1, 'Box')"
+                                    hidden>
+                                <label for="starBox1">
+                                    <img src="/layout/images/model/star-a.svg">
+                                </label>
+                            </section>
+                            <section
+                                class="star <?php echo (isDatabaseRequestOrderAvailableBoxAvailable($order_id, 2)) ? 'colorstar' : ''; ?>">
+                                <input <?php echo doCheck(isDatabaseRequestOrderAvailableBoxAvailable($order_id, 1), 2) ?>
+                                    type="radio" name="box" id="starBox2" value="2" onclick="fillPreviousStars(2, 'Box')"
+                                    hidden>
+                                <label for="starBox2">
+                                    <img src="/layout/images/model/star-a.svg">
+                                </label>
+                            </section>
+                            <section
+                                class="star <?php echo (isDatabaseRequestOrderAvailableBoxAvailable($order_id, 3)) ? 'colorstar' : ''; ?>">
+                                <input <?php echo doCheck(isDatabaseRequestOrderAvailableBoxAvailable($order_id, 1), 3) ?>
+                                    type="radio" name="box" id="starBox3" value="3" onclick="fillPreviousStars(3, 'Box')"
+                                    hidden>
+                                <label for="starBox3">
+                                    <img src="/layout/images/model/star-a.svg">
+                                </label>
+                            </section>
+                            <section
+                                class="star <?php echo (isDatabaseRequestOrderAvailableBoxAvailable($order_id, 4)) ? 'colorstar' : ''; ?>">
+                                <input <?php echo doCheck(isDatabaseRequestOrderAvailableBoxAvailable($order_id, 1), 4) ?>
+                                    type="radio" name="box" id="starBox4" value="4" onclick="fillPreviousStars(4, 'Box')"
+                                    hidden>
+                                <label for="starBox4">
+                                    <img src="/layout/images/model/star-a.svg">
+                                </label>
+                            </section>
+                            <section
+                                class="star <?php echo (isDatabaseRequestOrderAvailableBoxAvailable($order_id, 5)) ? 'colorstar' : ''; ?>">
+                                <input <?php echo doCheck(isDatabaseRequestOrderAvailableBoxAvailable($order_id, 1), 5) ?>
+                                    type="radio" name="box" id="starBox5" value="5" onclick="fillPreviousStars(5, 'Box')"
+                                    hidden>
+                                <label for="starBox5">
+                                    <img src="/layout/images/model/star-a.svg">
+                                </label>
+                            </section>
+                        </div>
+                    </section>
+                    <section>
+                        <label>Tempo de Entrega</label>
+                        <div id="stars">
+                            <section
+                                class="star <?php echo (isDatabaseRequestOrderAvailableDeliveryTimeAvailable($order_id, 1)) ? 'colorstar' : ''; ?>">
+                                <input <?php echo doCheck(isDatabaseRequestOrderAvailableDeliveryTimeAvailable($order_id, 1), 1) ?> type="radio" name="deliverytime" id="starDeliveryTime1" value="1"
+                                    onclick="fillPreviousStars(1, 'DeliveryTime')" hidden>
+                                <label for="starDeliveryTime1">
+                                    <img src="/layout/images/model/star-a.svg">
+                                </label>
+                            </section>
+                            <section
+                                class="star <?php echo (isDatabaseRequestOrderAvailableDeliveryTimeAvailable($order_id, 2)) ? 'colorstar' : ''; ?>">
+                                <input <?php echo doCheck(isDatabaseRequestOrderAvailableDeliveryTimeAvailable($order_id, 1), 2) ?> type="radio" name="deliverytime" id="starDeliveryTime2" value="2"
+                                    onclick="fillPreviousStars(2, 'DeliveryTime')" hidden>
+                                <label for="starDeliveryTime2">
+                                    <img src="/layout/images/model/star-a.svg">
+                                </label>
+                            </section>
+                            <section
+                                class="star <?php echo (isDatabaseRequestOrderAvailableDeliveryTimeAvailable($order_id, 3)) ? 'colorstar' : ''; ?>">
+                                <input <?php echo doCheck(isDatabaseRequestOrderAvailableDeliveryTimeAvailable($order_id, 1), 3) ?> type="radio" name="deliverytime" id="starDeliveryTime3" value="3"
+                                    onclick="fillPreviousStars(3, 'DeliveryTime')" hidden>
+                                <label for="starDeliveryTime3">
+                                    <img src="/layout/images/model/star-a.svg">
+                                </label>
+                            </section>
+                            <section
+                                class="star <?php echo (isDatabaseRequestOrderAvailableDeliveryTimeAvailable($order_id, 4)) ? 'colorstar' : ''; ?>">
+                                <input <?php echo doCheck(isDatabaseRequestOrderAvailableDeliveryTimeAvailable($order_id, 1), 4) ?> type="radio" name="deliverytime" id="starDeliveryTime4" value="4"
+                                    onclick="fillPreviousStars(4, 'DeliveryTime')" hidden>
+                                <label for="starDeliveryTime4">
+                                    <img src="/layout/images/model/star-a.svg">
+                                </label>
+                            </section>
+                            <section
+                                class="star <?php echo (isDatabaseRequestOrderAvailableDeliveryTimeAvailable($order_id, 5)) ? 'colorstar' : ''; ?>">
+                                <input <?php echo doCheck(isDatabaseRequestOrderAvailableDeliveryTimeAvailable($order_id, 1), 5) ?> type="radio" name="deliverytime" id="starDeliveryTime5" value="5"
+                                    onclick="fillPreviousStars(5, 'DeliveryTime')" hidden>
+                                <label for="starDeliveryTime5">
+                                    <img src="/layout/images/model/star-a.svg">
+                                </label>
+                            </section>
+                        </div>
+                    </section>
 
-    <div class="available" hidden>
-        <div class="second-available-frame">
-            <section>
-                <label>Comida</label>
-                <div id="stars">
-                    <section class="star">
-                        <img src="/layout/images/model/star-a.svg">
+                    <section>
+                        <label>Custo Beneficio</label>
+                        <div id="stars">
+                            <section
+                                class="star <?php echo (isDatabaseRequestOrderAvailableCostBenefitAvailable($order_id, 1)) ? 'colorstar' : ''; ?>">
+                                <input <?php echo doCheck(isDatabaseRequestOrderAvailableCostBenefitAvailable($order_id, 1), 1) ?> type="radio" name="costbenefit" id="starCostBenefit1" value="1"
+                                    onclick="fillPreviousStars(1, 'CostBenefit')" hidden>
+                                <label for="starCostBenefit1">
+                                    <img src="/layout/images/model/star-a.svg">
+                                </label>
+                            </section>
+                            <section
+                                class="star <?php echo (isDatabaseRequestOrderAvailableCostBenefitAvailable($order_id, 2)) ? 'colorstar' : ''; ?>">
+                                <input <?php echo doCheck(isDatabaseRequestOrderAvailableCostBenefitAvailable($order_id, 1), 2) ?> type="radio" name="costbenefit" id="starCostBenefit2" value="2"
+                                    onclick="fillPreviousStars(2, 'CostBenefit')" hidden>
+                                <label for="starCostBenefit2">
+                                    <img src="/layout/images/model/star-a.svg">
+                                </label>
+                            </section>
+                            <section
+                                class="star <?php echo (isDatabaseRequestOrderAvailableCostBenefitAvailable($order_id, 3)) ? 'colorstar' : ''; ?>">
+                                <input <?php echo doCheck(isDatabaseRequestOrderAvailableCostBenefitAvailable($order_id, 1), 3) ?> type="radio" name="costbenefit" id="starCostBenefit3" value="3"
+                                    onclick="fillPreviousStars(3, 'CostBenefit')" hidden>
+                                <label for="starCostBenefit3">
+                                    <img src="/layout/images/model/star-a.svg">
+                                </label>
+                            </section>
+                            <section
+                                class="star <?php echo (isDatabaseRequestOrderAvailableCostBenefitAvailable($order_id, 4)) ? 'colorstar' : ''; ?>">
+                                <input <?php echo doCheck(isDatabaseRequestOrderAvailableCostBenefitAvailable($order_id, 1), 4) ?> type="radio" name="costbenefit" id="starCostBenefit4" value="4"
+                                    onclick="fillPreviousStars(4, 'CostBenefit')" hidden>
+                                <label for="starCostBenefit4">
+                                    <img src="/layout/images/model/star-a.svg">
+                                </label>
+                            </section>
+                            <section
+                                class="star <?php echo (isDatabaseRequestOrderAvailableCostBenefitAvailable($order_id, 5)) ? 'colorstar' : ''; ?>">
+                                <input <?php echo doCheck(isDatabaseRequestOrderAvailableCostBenefitAvailable($order_id, 1), 5) ?> type="radio" name="costbenefit" id="starCostBenefit5" value="5"
+                                    onclick="fillPreviousStars(5, 'CostBenefit')" hidden>
+                                <label for="starCostBenefit5">
+                                    <img src="/layout/images/model/star-a.svg">
+                                </label>
+                            </section>
+                        </div>
                     </section>
-                    <section class="star">
-                        <img src="/layout/images/model/star-a.svg">
-                    </section>
-                    <section class="star">
-                        <img src="/layout/images/model/star-a.svg">
-                    </section>
-                    <section class="star">
-                        <img src="/layout/images/model/star-a.svg">
-                    </section>
-                    <section class="star">
-                        <img src="/layout/images/model/star-a.svg">
-                    </section>
+                    <?php
+                    if (getDatabaseRequestOrderLogStatusDelivery($order_last_log_id) != 5) {
+                        ?>
+                        <input name="order_id" type="text" value="<?php echo $order_id ?>" hidden>
+                        <input name="token" type="text" value="<?php echo addGeneralSecurityToken('tokenAvailable') ?>" hidden>
+                        <button type="submit" class="btn btn-success">Enviar</button>
+                    <?php }
+                    ?>
                 </div>
-            </section>
-            <section>
-                <label>Embalagem</label>
-                <div id="stars">
-                    <section class="star">
-                        <img src="/layout/images/model/star-a.svg">
-                    </section>
-                    <section class="star">
-                        <img src="/layout/images/model/star-a.svg">
-                    </section>
-                    <section class="star">
-                        <img src="/layout/images/model/star-a.svg">
-                    </section>
-                    <section class="star">
-                        <img src="/layout/images/model/star-a.svg">
-                    </section>
-                    <section class="star">
-                        <img src="/layout/images/model/star-a.svg">
-                    </section>
-                </div>
-            </section>
-            <section>
-                <label>Tempo de Entrega</label>
-                <div id="stars">
-                    <section class="star">
-                        <img src="/layout/images/model/star-a.svg">
-                    </section>
-                    <section class="star">
-                        <img src="/layout/images/model/star-a.svg">
-                    </section>
-                    <section class="star">
-                        <img src="/layout/images/model/star-a.svg">
-                    </section>
-                    <section class="star">
-                        <img src="/layout/images/model/star-a.svg">
-                    </section>
-                    <section class="star">
-                        <img src="/layout/images/model/star-a.svg">
-                    </section>
-                </div>
-            </section>
-            <section>
-                <label>Custo Beneficio</label>
-                <div id="stars">
-                    <section class="star">
-                        <img src="/layout/images/model/star-a.svg">
-                    </section>
-                    <section class="star">
-                        <img src="/layout/images/model/star-a.svg">
-                    </section>
-                    <section class="star">
-                        <img src="/layout/images/model/star-a.svg">
-                    </section>
-                    <section class="star">
-                        <img src="/layout/images/model/star-a.svg">
-                    </section>
-                    <section class="star">
-                        <img src="/layout/images/model/star-a.svg">
-                    </section>
-                </div>
-            </section>
-            <button type="button" class="btn btn-success">Enviar</button>
-        </div>
 
 
-        <textarea class="form-control third-available-frame comments" aria-label="With textarea"></textarea>
-    </div>
+                <textarea <?php echo (isDatabaseRequestOrderAvailableExistByOrderID($order_id) ? 'disabled' : '') ?> name="comment" class="form-control third-available-frame comments"
+                    aria-label="With textarea"><?php echo getDatabaseRequestOrderAvailableComment($order_id) ?></textarea>
+            </div>
+        </form>
+        <?php
+    }
+    ?>
+
 </div>
 
 
@@ -300,6 +510,16 @@ if (isDatabaseRequestOrderExistID($order_id) === false) {
     </div>
 </div>
 
+<script>
+    function fillPreviousStars(selectedStar, type) {
+        for (let i = 1; i <= selectedStar; i++) {
+            document.getElementById('star' + type + i).parentNode.classList.add('colorstar');
+        }
+        for (let i = selectedStar + 1; i <= 5; i++) {
+            document.getElementById('star' + type + i).parentNode.classList.remove('colorstar');
+        }
+    }
+</script>
 
 <?php
 include_once __DIR__ . '/layout/php/footer.php';

@@ -65,6 +65,7 @@ require_once(__DIR__ . "/database/ticket_select.php");
 
 require_once(__DIR__ . "/database/request_order.php");
 require_once(__DIR__ . "/database/request_order_logs.php");
+require_once(__DIR__ . "/database/request_order_available.php");
 
 require_once(__DIR__ . "/database/settings_images.php");
 require_once(__DIR__ . "/database/settings_info.php");

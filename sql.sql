@@ -287,6 +287,25 @@ create table request_order (
     FOREIGN KEY (`pay_id`) REFERENCES `settings_pay`(`id`)
 );
 
+create table request_order_available (
+    `id` int PRIMARY KEY AUTO_INCREMENT,
+    `request_order_id` int not null,
+    `created` datetime not null,
+    `food` tinyint not null,
+    `box` tinyint not null,
+    `deliverytime` tinyint not null,
+    `costbenefit` tinyint not null,
+    `comment` text null,
+
+    FOREIGN KEY (`status`) REFERENCES `status`(`id`),
+    FOREIGN KEY (`deliveryman`) REFERENCES `users`(`id`),
+    FOREIGN KEY (`address_id_select`) REFERENCES `address`(`id`),
+    FOREIGN KEY (`ticket_id_select`) REFERENCES `tickets`(`id`),
+    FOREIGN KEY (`cart_id`) REFERENCES `carts`(`id`),
+    FOREIGN KEY (`pay_id`) REFERENCES `settings_pay`(`id`)
+);
+
+
 
 create table request_order_logs (
     `id` int PRIMARY KEY AUTO_INCREMENT,

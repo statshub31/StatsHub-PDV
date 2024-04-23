@@ -432,7 +432,12 @@ div .quantity {
 }
 .star img {
   width: 100%;
+  filter: grayscale(1);
   height: 100%;
+}
+
+.colorstar label img {
+  filter: none;
 }
 
 #users-rating {
