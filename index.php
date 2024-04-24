@@ -1,5 +1,6 @@
 <?php
 include_once __DIR__ . '/layout/php/header.php';
+$media = doAvailableGeneral();
 ?>
 <div id="restaurant-info">
     <section id="status">
@@ -95,21 +96,21 @@ include_once __DIR__ . '/layout/php/header.php';
 <div id="rating">
     <div id="general-rating">
         <p>Média Geral</p>
-        <label>5,0</label><br>
+        <label><?php echo $media['general'] ?></label><br>
         <div id="stars">
-            <section class="star">
+            <section class="star <?php echo $media['general'] >= 1 ? 'colorstar' : ''; ?>">
                 <img src="/layout/images/model/star-a.svg">
             </section>
-            <section class="star">
+            <section class="star <?php echo $media['general'] >= 2 ? 'colorstar' : ''; ?>">
                 <img src="/layout/images/model/star-a.svg">
             </section>
-            <section class="star">
+            <section class="star <?php echo $media['general'] >= 3 ? 'colorstar' : ''; ?>">
                 <img src="/layout/images/model/star-a.svg">
             </section>
-            <section class="star">
+            <section class="star <?php echo $media['general'] >= 4 ? 'colorstar' : ''; ?>">
                 <img src="/layout/images/model/star-a.svg">
             </section>
-            <section class="star">
+            <section class="star <?php echo $media['general'] >= 5 ? 'colorstar' : ''; ?>">
                 <img src="/layout/images/model/star-a.svg">
             </section>
         </div>
@@ -117,80 +118,84 @@ include_once __DIR__ . '/layout/php/header.php';
     <div id="ratings">
         <section>
             <label>Comida</label>
+
             <div id="stars">
-                <section class="star">
+                <section class="star <?php echo $media['food'] >= 1 ? 'colorstar' : ''; ?>">
                     <img src="/layout/images/model/star-a.svg">
                 </section>
-                <section class="star">
+                <section class="star <?php echo $media['food'] >= 2 ? 'colorstar' : ''; ?>">
                     <img src="/layout/images/model/star-a.svg">
                 </section>
-                <section class="star">
+                <section class="star <?php echo $media['food'] >= 3 ? 'colorstar' : ''; ?>">
                     <img src="/layout/images/model/star-a.svg">
                 </section>
-                <section class="star">
+                <section class="star <?php echo $media['food'] >= 4 ? 'colorstar' : ''; ?>">
                     <img src="/layout/images/model/star-a.svg">
                 </section>
-                <section class="star">
+                <section class="star <?php echo $media['food'] >= 5 ? 'colorstar' : ''; ?>">
                     <img src="/layout/images/model/star-a.svg">
                 </section>
             </div>
         </section>
         <section>
             <label>Embalagem</label>
+
             <div id="stars">
-                <section class="star">
+                <section class="star <?php echo $media['box'] >= 1 ? 'colorstar' : ''; ?>">
                     <img src="/layout/images/model/star-a.svg">
                 </section>
-                <section class="star">
+                <section class="star <?php echo $media['box'] >= 2 ? 'colorstar' : ''; ?>">
                     <img src="/layout/images/model/star-a.svg">
                 </section>
-                <section class="star">
+                <section class="star <?php echo $media['box'] >= 3 ? 'colorstar' : ''; ?>">
                     <img src="/layout/images/model/star-a.svg">
                 </section>
-                <section class="star">
+                <section class="star <?php echo $media['box'] >= 4 ? 'colorstar' : ''; ?>">
                     <img src="/layout/images/model/star-a.svg">
                 </section>
-                <section class="star">
+                <section class="star <?php echo $media['box'] >= 5 ? 'colorstar' : ''; ?>">
                     <img src="/layout/images/model/star-a.svg">
                 </section>
             </div>
         </section>
         <section>
             <label>Tempo de Entrega</label>
+
             <div id="stars">
-                <section class="star">
+                <section class="star <?php echo $media['deliverytime'] >= 1 ? 'colorstar' : ''; ?>">
                     <img src="/layout/images/model/star-a.svg">
                 </section>
-                <section class="star">
+                <section class="star <?php echo $media['deliverytime'] >= 2 ? 'colorstar' : ''; ?>">
                     <img src="/layout/images/model/star-a.svg">
                 </section>
-                <section class="star">
+                <section class="star <?php echo $media['deliverytime'] >= 3 ? 'colorstar' : ''; ?>">
                     <img src="/layout/images/model/star-a.svg">
                 </section>
-                <section class="star">
+                <section class="star <?php echo $media['deliverytime'] >= 4 ? 'colorstar' : ''; ?>">
                     <img src="/layout/images/model/star-a.svg">
                 </section>
-                <section class="star">
+                <section class="star <?php echo $media['deliverytime'] >= 5 ? 'colorstar' : ''; ?>">
                     <img src="/layout/images/model/star-a.svg">
                 </section>
             </div>
         </section>
         <section>
             <label>Custo Beneficio</label>
+
             <div id="stars">
-                <section class="star">
+                <section class="star <?php echo $media['costbenefit'] >= 1 ? 'colorstar' : ''; ?>">
                     <img src="/layout/images/model/star-a.svg">
                 </section>
-                <section class="star">
+                <section class="star <?php echo $media['costbenefit'] >= 2 ? 'colorstar' : ''; ?>">
                     <img src="/layout/images/model/star-a.svg">
                 </section>
-                <section class="star">
+                <section class="star <?php echo $media['costbenefit'] >= 3 ? 'colorstar' : ''; ?>">
                     <img src="/layout/images/model/star-a.svg">
                 </section>
-                <section class="star">
+                <section class="star <?php echo $media['costbenefit'] >= 4 ? 'colorstar' : ''; ?>">
                     <img src="/layout/images/model/star-a.svg">
                 </section>
-                <section class="star">
+                <section class="star <?php echo $media['costbenefit'] >= 5 ? 'colorstar' : ''; ?>">
                     <img src="/layout/images/model/star-a.svg">
                 </section>
             </div>
@@ -217,12 +222,12 @@ include_once __DIR__ . '/layout/php/header.php';
                         <img src="<?php echo getPathAvatarImage(getDatabaseUserPhotoName($user_id)); ?>">
                     </div>
                     <h6><?php echo getDatabaseUserName($user_id); ?></h6>
-                    <?php echo (isDatabaseRequestOrderAvailableFoodAvailable($available_list_id, 1)) ? 'colorstar' : ''; ?>
                     <div class="second-available-frame" style="font-size: 0.9em !important;">
                         <section>
                             <label>Comida</label>
                             <div id="stars">
-                                <section class="star <?php echo (isDatabaseRequestOrderAvailableFoodAvailable($available_list_id, 1)) ? 'colorstar' : ''; ?>">
+                                <section
+                                    class="star <?php echo (isDatabaseRequestOrderAvailableFoodAvailable($available_list_id, 1)) ? 'colorstar' : ''; ?>">
                                     <img src="/layout/images/model/star-a.svg">
                                 </section>
                                 <section
@@ -321,7 +326,9 @@ include_once __DIR__ . '/layout/php/header.php';
                     </div>
                     <small><?php echo doDate(getDatabaseRequestOrderAvailableCreated($available_list_id)) ?> às
                         <?php echo doTime(getDatabaseRequestOrderAvailableCreated($available_list_id)) ?></small>
-                    <p class="user-comment" style="min-height: 30px"><?php echo getDatabaseRequestOrderAvailableComment($available_list_id) ?></p>
+                    <p class="user-comment" style="min-height: 30px">
+                        <?php echo getDatabaseRequestOrderAvailableComment($available_list_id) ?>
+                    </p>
                 </section>
                 <?php
             }

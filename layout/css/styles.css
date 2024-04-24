@@ -460,6 +460,8 @@ div .quantity {
 .rating-wrapper {
   display: flex;
   flex-wrap: nowrap;
+  background-color: #ffffff;
+  padding: 20px 0px;
   /* Evita que os elementos quebrem para a próxima linha */
   overflow-x: hidden;
   /* Oculta a barra de rolagem nativa */
@@ -469,8 +471,14 @@ div .quantity {
   flex: 0 0 auto;
   /* Define a largura automática dos elementos */
   margin-right: 20px;
+  background-color: var(--secondary-color)
   /* Adiciona um espaço entre os elementos */
 }
+/* 
+.scroll-left,
+.scroll-right {
+  display: none;
+} */
 
 .scroll-left,
 .scroll-right {
@@ -479,7 +487,7 @@ div .quantity {
   bottom: 0;
   width: 30px;
   /* Largura das setas */
-  background-color: rgba(255, 255, 255, 0.5);
+  background-color: rgba(170, 167, 167, 0.5);
   /* Cor de fundo das setas */
   z-index: 1;
   /* Coloca as setas sobre o conteúdo */

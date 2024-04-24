@@ -429,3 +429,33 @@ function isOpenByDay($date_actual) {
 
     return true;
 }
+
+
+function doAvailableGeneral() {
+    $food_sum = doSelectSingleDB("SELECT sum(`food`) as total FROM request_order_available");
+    $food_count = doSelectSingleDB("SELECT count(`food`) as total FROM request_order_available");
+
+    $box_sum = doSelectSingleDB("SELECT sum(`box`) as total FROM request_order_available");
+    $box_count = doSelectSingleDB("SELECT count(`box`) as total FROM request_order_available");
+
+    $deliverytime_sum = doSelectSingleDB("SELECT sum(`deliverytime`) as total FROM request_order_available");
+    $deliverytime_count = doSelectSingleDB("SELECT count(`deliverytime`) as total FROM request_order_available");
+
+    $costbenefit_sum = doSelectSingleDB("SELECT sum(`costbenefit`) as total FROM request_order_available");
+    $costbenefit_count = doSelectSingleDB("SELECT count(`costbenefit`) as total FROM request_order_available");
+
+    $food = $food_sum['total'] / $food_count['total'];
+    $box = $box_sum['total'] / $box_count['total'];
+    $deliverytime = $deliverytime_sum['total'] / $deliverytime_count['total'];
+    $costbenefit = $costbenefit_sum['total'] / $costbenefit_count['total'];
+    $general = ($food + $box + $deliverytime + $costbenefit) / 4;
+
+    return array(
+        'general' => round($general, 2),
+        'food' => round($food, 2),
+        'box' => round($box, 2),
+        'deliverytime' => round($deliverytime, 2),
+        'costbenefit' => round($costbenefit, 2)
+    );
+    
+}
