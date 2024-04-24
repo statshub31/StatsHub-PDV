@@ -13025,28 +13025,36 @@ table {
 #stars {
     display: inline-flex;
     float: right;
-  }
-  
-  .star {
-    width: 20px;
-  }
-  .star img {
-    width: 100%;
-    height: 100%;
-  }
-  
+}
 
-  
+.star {
+    width: 20px;
+}
+
+.star img {
+    width: 100%;
+    filter: grayscale(1);
+    height: 100%;
+}
+
+.colorstar img {
+    filter: none;
+}
+
+
+
 #user_photo {
-    flex: 1 0 200px; /* Largura flexível com um tamanho mínimo de 200 pixels */
+    flex: 1 0 200px;
+    /* Largura flexível com um tamanho mínimo de 200 pixels */
     height: 250px;
-    margin-right: 20px; /* Espaço entre as seções */
-  }
-  
-  #user_photo img {
+    margin-right: 20px;
+    /* Espaço entre as seções */
+}
+
+#user_photo img {
     width: 100%;
     height: 100%;
-  }
+}
 
 .response {
     margin-bottom: 20px !important;

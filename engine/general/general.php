@@ -390,6 +390,11 @@ function doTime($time) {
     return date("H:i", strtotime($time));
 }
 
+function doDate($date) {
+    return date("d/m/Y", strtotime($date));
+}
+
+
 function doStyleProgress($n) {
     $style = array(
         1 => '#ff5722',

@@ -128,10 +128,9 @@ function isDatabaseRequestOrderAvailableExistID($id)
     return ($query !== false) ? true : false;
 }
 
-function doDatabaseRequestOrderAvailableListByOrderID($order_id)
+function doDatabaseRequestOrderAvailableList()
 {
-    $order_id_sanitize = $order_id;
-    return doSelectMultiDB("SELECT id FROM request_order_available where `request_order_id`='".$order_id_sanitize."' ORDER BY id DESC");
+    return doSelectMultiDB("SELECT id FROM request_order_available ORDER BY id DESC");
 }
 
 function doDatabaseRequestOrderAvailableFirstAvailableByOrderID($order_id)
