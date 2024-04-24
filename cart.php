@@ -31,6 +31,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST)) {
             $cart_id = $_POST['cart_id'];
             $main_address = getDatabaseUserSelectAddressID($in_user_id);
             $ticket = getDatabaseCartTicketSelectByCartID($cart_id);
+            $pay = getDatabaseUserSelectPayID($cart_id);
 
             doDatabaseCartUpdate($cart_id, $cart_update_fields);
 
@@ -38,6 +39,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST)) {
                 'cart_id' => $cart_id,
                 'address_id_select' => ($main_address !== false) ? $main_address : NULL ,
                 'ticket_id_select' => ($ticket !== false) ? $ticket : NULL,
+                'pay_id' => ($pay !== false) ? $pay : NULL,
                 'status' => 2
             );
 
@@ -53,7 +55,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST)) {
                 doDatabaseCartTicketSelectUpdate($ticket, $cart_ticket_update_fields);
 
 
-            doAlertSuccess("sucesso!!");
+                header('Location: /order/'.$request_order_id_insert);
         }
     }
 
@@ -427,7 +429,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST)) {
     </section>
     <hr>
     <section id="pay">
-        <div>Pix
+        <div><?php echo getDatabaseSettingsPayType(getDatabaseUserSelectPayID(getDatabaseUserSelectByUserID($in_user_id))); ?>
         </div>
         <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#paysModal">Alterar</button>
     </section>

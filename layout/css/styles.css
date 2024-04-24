@@ -384,17 +384,21 @@ div .quantity {
 }
 
 #user_photo {
-  flex: 1 0 200px; /* Largura flexível com um tamanho mínimo de 200 pixels */
+  flex: 1 0 200px;
+  /* Largura flexível com um tamanho mínimo de 200 pixels */
   height: 250px;
-  margin-right: 20px; /* Espaço entre as seções */
+  margin-right: 20px;
+  /* Espaço entre as seções */
 }
 
 #user_photo img {
   width: 100%;
   height: 100%;
 }
+
 #user_infos {
-  flex: 1 0 calc(100% - 400px); /* Largura flexível com base no espaço restante */
+  flex: 1 0 calc(100% - 400px);
+  /* Largura flexível com base no espaço restante */
 }
 
 
@@ -413,7 +417,8 @@ div .quantity {
   border-right: 5px solid black;
 }
 
-#general-rating p, #general-rating label {
+#general-rating p,
+#general-rating label {
   margin: 0px;
 }
 
@@ -430,7 +435,8 @@ div .quantity {
 .star {
   width: 20px;
 }
-.star img {
+
+.star img{
   width: 100%;
   filter: grayscale(1);
   height: 100%;
@@ -441,18 +447,25 @@ div .quantity {
 }
 
 #users-rating {
-  overflow: hidden; /* Oculta qualquer conteúdo que ultrapasse a largura do contêiner */
-  position: relative; /* Define o contexto de posicionamento para os pseudoelementos */
+  overflow: hidden;
+  /* Oculta qualquer conteúdo que ultrapasse a largura do contêiner */
+  position: relative;
+  /* Define o contexto de posicionamento para os pseudoelementos */
 }
+
 .rating-wrapper {
   display: flex;
-  flex-wrap: nowrap; /* Evita que os elementos quebrem para a próxima linha */
-  overflow-x: hidden; /* Oculta a barra de rolagem nativa */
+  flex-wrap: nowrap;
+  /* Evita que os elementos quebrem para a próxima linha */
+  overflow-x: hidden;
+  /* Oculta a barra de rolagem nativa */
 }
 
 .rating-container {
-  flex: 0 0 auto; /* Define a largura automática dos elementos */
-  margin-right: 20px; /* Adiciona um espaço entre os elementos */
+  flex: 0 0 auto;
+  /* Define a largura automática dos elementos */
+  margin-right: 20px;
+  /* Adiciona um espaço entre os elementos */
 }
 
 .scroll-left,
@@ -460,18 +473,24 @@ div .quantity {
   position: absolute;
   top: 0;
   bottom: 0;
-  width: 30px; /* Largura das setas */
-  background-color: rgba(255, 255, 255, 0.5); /* Cor de fundo das setas */
-  z-index: 1; /* Coloca as setas sobre o conteúdo */
-  cursor: pointer; /* Altera o cursor ao passar sobre as setas */
+  width: 30px;
+  /* Largura das setas */
+  background-color: rgba(255, 255, 255, 0.5);
+  /* Cor de fundo das setas */
+  z-index: 1;
+  /* Coloca as setas sobre o conteúdo */
+  cursor: pointer;
+  /* Altera o cursor ao passar sobre as setas */
 }
 
 .scroll-left {
-  left: 0; /* Define a seta esquerda */
+  left: 0;
+  /* Define a seta esquerda */
 }
 
 .scroll-right {
-  right: 0; /* Define a seta direita */
+  right: 0;
+  /* Define a seta direita */
 }
 
 #users-rating .rating-wrapper .rating-container {
@@ -529,8 +548,7 @@ div .quantity {
   align-items: center;
 }
 
-#three-info {
-}
+#three-info {}
 
 #three-info p {
   margin: 0px;
@@ -573,6 +591,7 @@ div .quantity {
 #time-icon {
   margin-right: 10px;
 }
+
 #time-icon svg {
   font-size: 3em;
 }
@@ -590,6 +609,7 @@ div .quantity {
 #pays-icon {
   margin-right: 10px;
 }
+
 #pays-icon svg {
   font-size: 3em;
 }
@@ -612,13 +632,13 @@ div .quantity {
 
 @keyframes piscar {
   0% {
-      opacity: 1;
-      /* Opacidade máxima */
+    opacity: 1;
+    /* Opacidade máxima */
   }
 
   100% {
-      opacity: 0;
-      /* Opacidade mínima */
+    opacity: 0;
+    /* Opacidade mínima */
   }
 }
 
@@ -663,13 +683,13 @@ div .quantity {
 
 @keyframes carregar {
   0% {
-      width: 40%;
-      /* Largura inicial da barra de progresso */
+    width: 40%;
+    /* Largura inicial da barra de progresso */
   }
 
   100% {
-      width: 100%;
-      /* Largura final da barra de progresso */
+    width: 100%;
+    /* Largura final da barra de progresso */
   }
 }
 
@@ -717,4 +737,15 @@ div .quantity {
   width: 60%;
   height: 132px;
   margin: 0px 20px;
+}
+
+
+#order-image {
+  display: flex;
+  justify-content: center;
+}
+
+#order-image img {
+  width: 40vw;
+  height: 25vw;
 }

@@ -42,13 +42,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST)) {
         if (empty($errors)) {
             $new_order_status_id = getDatabaseRequestOrderLogStatusDelivery($order_last_log_id) + 1;
 
-            $order_log_update_fields = array(
-                'request_order_id' => $_POST['order_id'],
-                'status_delivery' => $new_order_status_id,
-                'created' => date("Y-m-d H:i:s")
-            );
-
-            doDatabaseRequestOrderLogInsert($order_log_update_fields);
+            doRequestOrderLogInsert($_POST['order_id'], $new_order_status_id);
 
             if ($new_order_status_id == 4) {
                 $order_update_fields = array(
@@ -57,10 +51,114 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST)) {
                 doDatabaseRequestOrderUpdate($_POST['order_id'], $order_update_fields);
             }
 
+            if ($new_order_status_id == 5) {
+                $order_update_fields = array(
+                    'status' => 7
+                );
+                doDatabaseRequestOrderUpdate($_POST['order_id'], $order_update_fields);
+            }
+
         }
     }
 
 
+    if (getGeneralSecurityToken('tokenCartCancelOrderConfirm')) {
+
+        if (empty($_POST) === false) {
+            $required_fields_status = true;
+            $required_fields = array('order_id', 'reason');
+
+            if (validateRequiredFields($_POST, $required_fields) === false) {
+                $errors[] = "Obrigatório o preenchimento de todos os campos.";
+                $required_fields_status = false;
+            }
+
+            if (isDatabaseRequestOrderExistID($_POST['order_id']) === false) {
+                $errors[] = "Houve um erro ao processar a solicitação, reinicie a pagina e tente novamente.";
+                $required_fields_status = false;
+            }
+
+        }
+
+
+        if (empty($errors)) {
+
+            doRequestOrderLogInsert($_POST['order_id'], 6);
+
+            $order_update_fields = array(
+                'status' => 6,
+                'reason' => $_POST['reason']
+            );
+            doDatabaseRequestOrderUpdate($_POST['order_id'], $order_update_fields);
+
+        }
+    }
+
+    // CONFIRMAÇÃO DO CANCELAMENTO
+    if (getGeneralSecurityToken('tokenOrderCancel')) {
+
+        if (empty($_POST) === false) {
+            $required_fields_status = true;
+            $required_fields = array('order_id');
+
+            if (validateRequiredFields($_POST, $required_fields) === false) {
+                $errors[] = "Obrigatório o preenchimento de todos os campos.";
+                $required_fields_status = false;
+            }
+
+            if (isDatabaseRequestOrderExistID($_POST['order_id']) === false) {
+                $errors[] = "Houve um erro ao processar a solicitação, reinicie a pagina e tente novamente.";
+                $required_fields_status = false;
+            }
+
+            if ($required_fields_status) {
+            }
+
+        }
+
+
+        if (empty($errors)) {
+            ?>
+
+            <div class="modal fade show" style="padding-right: 19px; display: block;" id="cancelOrderModal" tabindex="-1"
+                role="dialog" aria-labelledby="cancelOrderModalLabel" aria-hidden="true">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="cancelOrderModalLabel">Cancelar</h5>
+                            <a href="/panel/index">
+                                <button type="button" class="close">&times;</span>
+                                </button>
+                            </a>
+                        </div>
+                        <form action="/panel/index" method="POST">
+                            <div class="modal-body">
+                                Você está prestes a cancelar o pedi [#<?php echo $_POST['order_id']; ?>], tem certeza?
+                                <div class="input-group">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text">Motivo<font color="red">*</font>:</span>
+                                    </div>
+                                    <textarea class="form-control" name="reason" aria-label="With textarea"></textarea>
+                                </div>
+
+                            </div>
+                            <div class="modal-footer">
+                                <input name="order_id" type="text" value="<?php echo $_POST['order_id'] ?>" hidden>
+                                <input name="token" type="text"
+                                    value="<?php echo addGeneralSecurityToken('tokenCartCancelOrderConfirm') ?>" hidden>
+                                <button type="submit" class="btn btn-success">Confirmar</button>
+                                <a href="/panel/index">
+                                    <button type="button" class="btn btn-danger" data-dismiss="modal">Cancelar</button>
+                                </a>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-backdrop fade show"></div>
+            <?php
+        }
+    }
 
     if (empty($errors) === false) {
         header("HTTP/1.1 401 Not Found");
@@ -93,6 +191,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST)) {
 
 <?php
 $tokenOrder = addGeneralSecurityToken('tokenOrder');
+$tokenOrderCancel = addGeneralSecurityToken('tokenOrderCancel');
 ?>
 
 
@@ -127,7 +226,8 @@ $tokenOrder = addGeneralSecurityToken('tokenOrder');
                         <div class="col mr-2">
                             <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
                                 Aguardando</div>
-                            <div class="h5 mb-0 font-weight-bold text-gray-800">5
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">
+                                <?php echo doDatabaseRequestOrderLogCountRowByStatus(2) ?>
                             </div>
                         </div>
                         <div class="col-auto">
@@ -146,7 +246,8 @@ $tokenOrder = addGeneralSecurityToken('tokenOrder');
                         <div class="col mr-2">
                             <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
                                 Em Preparo</div>
-                            <div class="h5 mb-0 font-weight-bold text-gray-800"> 10 Minutos</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">
+                                <?php echo doDatabaseRequestOrderLogCountRowByStatus(3) ?></div>
                         </div>
                         <div class="col-auto">
                             <i class="fas fa-spinner fa-2x text-gray-300"></i>
@@ -163,8 +264,9 @@ $tokenOrder = addGeneralSecurityToken('tokenOrder');
                     <div class="row no-gutters align-items-center">
                         <div class="col mr-2">
                             <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
-                                Finalizado</div>
-                            <div class="h5 mb-0 font-weight-bold text-gray-800">5
+                                Entregue</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">
+                                <?php echo doDatabaseRequestOrderLogCountRowByStatus(5) ?>
                             </div>
                         </div>
                         <div class="col-auto">
@@ -185,7 +287,8 @@ $tokenOrder = addGeneralSecurityToken('tokenOrder');
                             </div>
                             <div class="row no-gutters align-items-center">
                                 <div class="col-auto">
-                                    <div class="h5 mb-0 mr-3 font-weight-bold text-gray-800">5
+                                    <div class="h5 mb-0 mr-3 font-weight-bold text-gray-800">
+                                <?php echo doDatabaseRequestOrderLogCountRowByStatus(6) ?>
                                     </div>
                                 </div>
                             </div>
@@ -226,7 +329,7 @@ $tokenOrder = addGeneralSecurityToken('tokenOrder');
             <tbody>
                 <!-- ORDER LIST START -->
                 <?php
-                $order_list = doDatabaseRequestOrdersListByConfirmed();
+                $order_list = doDatabaseRequestOrdersList();
 
                 if ($order_list) {
                     foreach ($order_list as $orderData) {
@@ -332,7 +435,11 @@ $tokenOrder = addGeneralSecurityToken('tokenOrder');
                                     }
                                     ?>
                                     <br><br>
-                                    <input name="token" type="text" value="<?php echo $tokenOrder ?>" hidden />
+                                </form>
+                                <form action="/panel/index" method="post">
+
+                                    <input name="order_id" type="text" value="<?php echo $order_list_id ?>" hidden>
+                                    <input name="token" type="text" value="<?php echo $tokenOrderCancel ?>" hidden />
                                     <button type="submit" class="btn btn-danger">Cancelar Pedido</button>
                                 </form>
                             </td>

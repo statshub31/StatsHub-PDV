@@ -52,7 +52,6 @@ function isDatabaseRequestOrderAvailableFoodAvailable($id, $n)
 {
     
     $id_sanitize = sanitize($id);
-
     $query = getDatabaseRequestOrderAvailableData($id_sanitize, 'food');
     return ($query !== false && $query['food'] >= $n) ? true : false;
 }
@@ -87,7 +86,6 @@ function getDatabaseRequestOrderAvailableCostBenefitAvailable($id)
 
 function isDatabaseRequestOrderAvailableCostBenefitAvailable($id, $n)
 {
-    
     $id_sanitize = sanitize($id);
 
     $query = getDatabaseRequestOrderAvailableData($id_sanitize, 'costbenefit');

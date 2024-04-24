@@ -63,7 +63,7 @@ function isDatabaseCartExistIDByUserID($user_id)
     
     $user_id_sanitize = sanitize($user_id);
 
-    $query = doSelectSingleDB("SELECT `id` FROM `carts` WHERE `user_id`='".$user_id_sanitize."';");
+    $query = doSelectSingleDB("SELECT `id` FROM `carts` WHERE `user_id`='".$user_id_sanitize."' and `status`=2;");
     return ($query !== false) ? true : false;
 }
 

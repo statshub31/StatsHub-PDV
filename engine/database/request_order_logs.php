@@ -63,6 +63,20 @@ function doDatabaseRequestOrderLogsListByOrderID($order_id)
     return doSelectMultiDB("SELECT id FROM request_order_logs where `request_order_id`='".$order_id_sanitize."' ORDER BY id DESC");
 }
 
+
+function doDatabaseRequestOrderLogCountRowByStatus($equals) {
+    return doSelectSingleDB("SELECT COUNT(*) AS total
+    FROM (
+        SELECT request_order_id
+        FROM request_order_logs AS r1
+        GROUP BY request_order_id
+        HAVING MAX(ID) = (SELECT MAX(ID) FROM request_order_logs WHERE request_order_id = r1.request_order_id)
+            AND MAX(status_delivery) = $equals
+    ) AS pedidos_ultimos_status_2;
+    
+    ")['total'];
+}
+
 function doDatabaseRequestOrderLogsFirstLogByOrderID($order_id)
 {
     $order_id_sanitize = $order_id;

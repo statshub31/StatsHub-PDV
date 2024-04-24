@@ -149,6 +149,18 @@ function getPathProductImage($img)
     }
 }
 
+function getPathModelImage($img)
+{
+    global $image_model_dir;
+
+    $format = getPathImageFormat($image_model_dir, $img);
+
+    if ($format !== false) {
+        return $image_model_dir . $img . '.' . $format;
+    } else {
+        return $image_model_dir . 'no-image.png';
+    }
+}
 
 function doGeneralRemoveArchives($caminho_pasta, $nome_arquivo) {
     // Obtém uma lista de todos os arquivos no diretório
