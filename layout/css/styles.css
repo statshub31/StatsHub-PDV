@@ -446,6 +446,10 @@ div .quantity {
   filter: none;
 }
 
+.colorstar img {
+  filter: none;
+}
+
 #users-rating {
   overflow: hidden;
   /* Oculta qualquer conteúdo que ultrapasse a largura do contêiner */
@@ -562,10 +566,16 @@ div .quantity {
 #status-icon {
   width: 3em;
   margin-right: 5px;
-  background-color: red;
   height: 3em;
   border: 2px solid black;
   border-radius: 50%;
+}
+
+.status-close {
+  background-color: rgb(241, 7, 7);
+}
+.status-open {
+  background-color: rgb(7, 241, 85);
 }
 
 #week-horary {

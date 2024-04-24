@@ -58,6 +58,15 @@ function getDatabaseSettingsPayByType($type)
 }
 
 
+function getDatabaseSettingsPayIcon($id)
+{
+    $id_sanitize = sanitize($id);
+
+    $query = getDatabaseSettingsPaysData($id_sanitize, 'icon_pay');
+    return ($query !== false) ? $query['icon_pay'] : false;
+}
+
+
 function getDatabaseSettingsPayMoney()
 {
     $query = getDatabaseSettingsPayByType('Dinheiro');
@@ -129,10 +138,10 @@ function isDatabaseSettingsPayExist($id)
 }
 
 
-function doDatabaseSettingsPayListByStatus($status = 0)
+function doDatabaseSettingsPayListByStatus()
 {
     
-    return doSelectMultiDB("SELECT `id` FROM `settings_pay`");
+    return doSelectMultiDB("SELECT `id` FROM `settings_pay` where `disabled`=0");
 }
 
 

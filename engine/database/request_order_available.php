@@ -222,4 +222,9 @@ function getDatabaseRequestOrderAvailableExistByOrderID($order_id)
     return ($query !== false) ? $query['id'] : false;
 }
 
+function doDatabaseRequestOrderAvailableListLimit($n)
+{
+    return doSelectMultiDB("SELECT id FROM request_order_available ORDER BY id DESC limit $n");
+}
+
 ?>

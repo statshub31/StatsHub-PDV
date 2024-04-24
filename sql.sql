@@ -295,14 +295,7 @@ create table request_order_available (
     `box` tinyint not null,
     `deliverytime` tinyint not null,
     `costbenefit` tinyint not null,
-    `comment` text null,
-
-    FOREIGN KEY (`status`) REFERENCES `status`(`id`),
-    FOREIGN KEY (`deliveryman`) REFERENCES `users`(`id`),
-    FOREIGN KEY (`address_id_select`) REFERENCES `address`(`id`),
-    FOREIGN KEY (`ticket_id_select`) REFERENCES `tickets`(`id`),
-    FOREIGN KEY (`cart_id`) REFERENCES `carts`(`id`),
-    FOREIGN KEY (`pay_id`) REFERENCES `settings_pay`(`id`)
+    `comment` text null
 );
 
 

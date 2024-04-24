@@ -405,3 +405,27 @@ function doDeliveryManList()
     WHERE a.group_id = 2;
     ");
 }
+
+function isOpen() {
+    $date_actual = date('N');
+    $time_actual = date('H:i:s');
+
+    if(getDatabaseSettingsHoraryDayEnabled(1, $date_actual) == 0) 
+        return false;
+
+    if(getDatabaseSettingsHoraryDayEnabled(1, $date_actual) == 1) {
+        if($time_actual < getDatabaseSettingsHoraryDayStart(1, $date_actual) || $time_actual > getDatabaseSettingsHoraryDayEnd(1, $date_actual))
+            return false;
+    }
+
+    return true;
+}
+
+function isOpenByDay($date_actual) {
+    $time_actual = date('H:i:s');
+
+    if(getDatabaseSettingsHoraryDayEnabled(1, $date_actual) == 0) 
+        return false;
+
+    return true;
+}
