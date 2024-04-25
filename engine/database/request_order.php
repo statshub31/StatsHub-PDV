@@ -80,7 +80,6 @@ function doDatabaseRequestOrdersList()
     
     return doSelectMultiDB("SELECT `id` FROM `request_order` where `status`=2 order by `id` asc;");
 }
-
 function doDatabaseRequestOrderInsert($import_data_query)
 {
     
@@ -156,5 +155,14 @@ function isDatabaseRequestOrderTitleValidation($title, $id) {
 	$data = doSelectSingleDB("SELECT `id` FROM `request_order` WHERE `title`='".$title_sanitize."' AND `id`='".$id_sanitize."';");
 	
 	return ($data !== false) ? true : false;
+}
+
+
+function getDatabaseRequestOrderByCartID($cart_id) {
+	$cart_id_sanitize = $cart_id;
+	
+	$data = doSelectSingleDB("SELECT `id` FROM `request_order` WHERE `cart_id`='".$cart_id_sanitize."';");
+	
+	return ($data !== false) ? $data['id'] : false;
 }
 ?>

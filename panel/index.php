@@ -2,6 +2,17 @@
 include_once (realpath(__DIR__ . "/layout/php/header.php"));
 ?>
 
+<script>
+    var timerID;
+
+    function atualizarPagina() {
+        location.reload(); // Recarrega a página
+    }
+
+    timerID = setInterval(atualizarPagina, 15 * 1000);
+
+
+</script>
 
 <?php
 // <!-- INICIO DA VALIDAÇÃO PHP -->
@@ -247,7 +258,8 @@ $tokenOrderCancel = addGeneralSecurityToken('tokenOrderCancel');
                             <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
                                 Em Preparo</div>
                             <div class="h5 mb-0 font-weight-bold text-gray-800">
-                                <?php echo doDatabaseRequestOrderLogCountRowByStatus(3) ?></div>
+                                <?php echo doDatabaseRequestOrderLogCountRowByStatus(3) ?>
+                            </div>
                         </div>
                         <div class="col-auto">
                             <i class="fas fa-spinner fa-2x text-gray-300"></i>
@@ -288,7 +300,7 @@ $tokenOrderCancel = addGeneralSecurityToken('tokenOrderCancel');
                             <div class="row no-gutters align-items-center">
                                 <div class="col-auto">
                                     <div class="h5 mb-0 mr-3 font-weight-bold text-gray-800">
-                                <?php echo doDatabaseRequestOrderLogCountRowByStatus(6) ?>
+                                        <?php echo doDatabaseRequestOrderLogCountRowByStatus(6) ?>
                                     </div>
                                 </div>
                             </div>
@@ -443,7 +455,11 @@ $tokenOrderCancel = addGeneralSecurityToken('tokenOrderCancel');
                                     <button type="submit" class="btn btn-danger">Cancelar Pedido</button>
                                 </form>
                             </td>
-                            <td><i class="fa-solid fa-eye"></i></td>
+                            <td>
+                                <a href="/panel/index/order/view/<?php echo $order_list_id ?>">
+                                    <i class="fa-solid fa-eye"></i>
+                                </a>
+                            </td>
                         </tr>
                         <?php
                     }
@@ -460,6 +476,184 @@ $tokenOrderCancel = addGeneralSecurityToken('tokenOrderCancel');
         </table>
     </div>
 </div>
+
+
+
+
+
+
+
+<!-- AÇÃO UNITARIA PRODUTO -->
+<?php
+if (isCampanhaInURL("order")) {
+
+    // <!-- Modal REMOVE -->
+    if (isCampanhaInURL("view")) {
+        $order_select_id = getURLLastParam();
+        if (isDatabaseRequestOrderExistID($order_select_id)) {
+            ?>
+            <script>
+
+                // Para a atualização da página
+                function pararAtualizacao() {
+                    clearInterval(timerID);
+                }
+            </script>
+            <div class="modal-open">
+                <div class="modal fade show" style="padding-right: 19px; display: block;" id="viewOrderModal" tabindex="-1"
+                    role="dialog" aria-labelledby="viewOrderModalLabel" aria-hidden="true">
+                    <div class="modal-dialog" style="max-width: 800px" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="viewOrderModalTitle">Visualização</h5>
+                                <a href="/panel/index">
+                                    <button type="button" class="close" aria-label="Close">
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
+                                </a>
+                            </div>
+                            <div class="modal-body">
+
+                                <link href="/front/vendor/datatables/dataTables.bootstrap4.min.css" rel="stylesheet">
+                                <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                                    <thead>
+                                        <tr>
+                                            <th></th>
+                                            <th></th>
+                                        </tr>
+                                    </thead>
+                                    <tfoot>
+                                        <tr>
+                                            <th></th>
+                                            <th></th>
+                                        </tr>
+                                    </tfoot>
+                                    <tbody>
+                                        <!-- LISTA CARRINHO START -->
+                                        <?php
+                                        $cart_id = getDatabaseRequestOrderCartID($order_select_id);
+                                        $cart_list = doDatabaseCartProductsListByCartID($cart_id);
+                                        if ($cart_list) {
+                                            foreach ($cart_list as $data) {
+                                                $cart_product_list_id = $data['id']; // PRODUTO CART
+                                                $cart_product_id = getDatabaseCartProductProductID($cart_product_list_id); // PRODUTO_ID
+                                                $obs = getDatabaseCartProductObservation($cart_product_list_id);
+                                                ?>
+                                                <tr>
+                                                    <td>
+                                                        <div class="cart-product">
+                                                            <section class="product-photo">
+                                                                <img
+                                                                    src="<?php echo getPathProductImage(getDatabaseProductPhotoName($cart_product_id)) ?>">
+                                                            </section>
+                                                            <section class="product-name">
+                                                                <label><?php echo getDatabaseProductName($cart_product_id) ?> </label>
+                                                            </section>
+                                                        </div>
+                                                    </td>
+                                                    <td>
+                                                        Descrição do Produto:
+                                                        <small><?php echo getDatabaseProductDescription($cart_product_id) ?></small><br>
+
+                                                        <small>Observação:
+                                                            <?php echo ($obs) ? $obs : 'Vazio' ?>
+                                                        </small><br>
+                                                        <b>
+                                                            <label class="v">R$
+                                                                <?php echo doCartTotalPriceProduct($cart_product_list_id) ?></label>
+                                                        </b>
+                                                    </td>
+                                                </tr>
+                                                <?php
+                                            }
+                                        } else {
+                                            echo 'Não existe nenhum produto no carrinho.';
+                                        }
+                                        ?>
+                                        <!-- LISTA CARRINHO END -->
+                                    </tbody>
+                                </table>
+
+                                <div>
+                                    <section id="address">
+                                        <div><?php
+                                        $main_address_id = getDatabaseUserSelectAddressByUserID($in_user_id);
+                                        echo getDatabaseAddressPublicPlace($main_address_id) . ', ';
+                                        echo getDatabaseAddressNumber($main_address_id) . '(';
+                                        echo getDatabaseAddressComplement($main_address_id) . '), ';
+                                        echo getDatabaseAddressNeighborhood($main_address_id) . ', ';
+                                        echo getDatabaseAddressCity($main_address_id) . ' - ';
+                                        echo getDatabaseAddressState($main_address_id);
+                                        $discount = getDatabaseTicketValue(getDatabaseCartTicketSelectTicketID(getDatabaseCartTicketSelectByCartID($cart_id)));
+                                        ?></div>
+                                    </section>
+                                    <hr>
+                                    <section id="ticket">
+                                        <div>
+                                            <?php echo getDatabaseTicketCode(getDatabaseCartTicketSelectTicketID(getDatabaseCartTicketSelectCartID($cart_id))) ?>
+                                            <small>Usuário obteve desconto de
+                                                [<?php echo ($discount !== false) ? $discount : 'Nenhum desconto selecionado.' ?>]</small>
+                                        </div>
+                                    </section>
+                                    <hr>
+                                    <section id="pay">
+                                        <div><?php echo (getDatabaseRequestOrderPayIDSelect($order_select_id)); ?>
+                                        </div>
+                                    </section>
+                                    <hr>
+                                    <section id="ticket">
+                                        <div>
+                                            <p class="t">Taxa de entrega
+                                                <label class="v">R$ <?php echo getDatabaseSettingsDeliveryFee(1) ?></label>
+                                            </p>
+                                            <p class="t">Desconto de Cupom
+                                                <label class="v">-<?php
+                                                if (doGeneralValidationPriceType($discount)) {
+                                                    echo $discount;
+                                                } else {
+                                                    echo 'R$ ' . (int) $discount;
+                                                }
+                                                ?></label>
+                                            </p>
+                                            <b>
+                                                <p class="t">Total do Pedido
+                                                    <label class="v">R$
+                                                        <?php echo (doCartTotalPrice($cart_id) - doCartTotalPriceDiscount($cart_id)) ?></label>
+                                                </p>
+                                            </b>
+                                        </div>
+                                    </section>
+                                </div>
+
+                            </div>
+                            <div class="modal-footer">
+                                <a href="/panel/index">
+                                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Fechar</button>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+            <div class="modal-backdrop fade show"></div>
+            <?php
+        } else {
+            header('Location: /myaccount');
+        }
+    }
+
+
+}
+?>
+<!-- AÇÃO UNITARIA PRODUTO END -->
+
+
+
+
+
+
 
 <?php
 include_once (realpath(__DIR__ . "/layout/php/footer.php"));

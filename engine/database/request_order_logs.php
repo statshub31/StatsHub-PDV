@@ -72,7 +72,9 @@ function doDatabaseRequestOrderLogCountRowByStatus($equals) {
         GROUP BY request_order_id
         HAVING MAX(ID) = (SELECT MAX(ID) FROM request_order_logs WHERE request_order_id = r1.request_order_id)
             AND MAX(status_delivery) = $equals
+            AND DATE((SELECT MAX(created) FROM request_order_logs WHERE request_order_id = r1.request_order_id)) = DATE(NOW())
     ) AS pedidos_ultimos_status_2;
+    
     
     ")['total'];
 }

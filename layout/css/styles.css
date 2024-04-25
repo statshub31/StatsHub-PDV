@@ -78,7 +78,7 @@ body {
 
 
   #user_panel section:nth-child(1) {
-    margin-right: 20px;
+    margin-bottom: 70px;
   }
 }
 
@@ -575,15 +575,17 @@ div .quantity {
   width: 3em;
   margin-right: 5px;
   height: 3em;
-  border: 2px solid black;
+  border: 2px solid #0000001a;
   border-radius: 50%;
 }
 
 .status-close {
   background-color: rgb(241, 7, 7);
+  box-shadow: 0 0 10px #ff0000;
 }
 .status-open {
   background-color: rgb(7, 241, 85);
+  box-shadow: 0 0 10px #00ff01;
 }
 
 #week-horary {

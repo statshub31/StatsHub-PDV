@@ -267,6 +267,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST)) {
 ?>
 
 
+
+<script src="/layout/vendor/datatables/jquery.dataTables.min.js"></script>
+
+<link href="/layout/vendor/datatables/dataTables.bootstrap4.min.css" rel="stylesheet">
 <form action="/myaccount" method="post" enctype="multipart/form-data">
     <div id="user_panel">
         <section id="user_photo">
@@ -384,7 +388,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST)) {
 
 <hr>
 <div id="user_history">
-    <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+    <table class="table table-bordered" id="dataTableHistory" width="100%" cellspacing="0">
         <thead>
             <tr>
                 <th>#</th>
@@ -400,110 +404,33 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST)) {
             </tr>
         </tfoot>
         <tbody>
-            <tr>
-                <td>#255</td>
-                <td>08/04/2024 10:30</td>
-                <td><i class="fa-solid fa-eye" data-toggle="modal" data-target="#exampleModal"></i></td>
-            </tr>
+            <!-- INICIO LISTA PEDIDO -->
+            <?php
+            $cart_list = doDatabaseCartsListByUserIDAllStatus($in_user_id);
+            if ($cart_list) {
+                foreach ($cart_list as $dataCart) {
+                    $cart_list_id = $dataCart['id'];
+                    $order_id = getDatabaseRequestOrderByCartID($cart_list_id);
+                    $first_status = doDatabaseRequestOrderLogsFirstLogByOrderID($order_id);
+                    ?>
+                    <tr>
+                        <td>#<?php echo $order_id ?></td>
+                        <td><?php echo doDate(getDatabaseRequestOrderLogCreated($first_status)) . ' às ' . doTime(getDatabaseRequestOrderLogCreated($first_status)); ?>
+                        </td>
+                        <td>
+                            <a target="on_blank" href="/order/<?php echo $order_id ?>">
+                                <i class="fa-solid fa-eye"></i>
+                            </a>
+                        </td>
+                    </tr>
+                    <?php
+
+                }
+            }
+            ?>
+            <!-- FIM LISTA PEDIDO -->
         </tbody>
     </table>
-</div>
-
-
-
-<!-- Modal -->
-<div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
-    aria-hidden="true">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-            <div class="modal-body">
-                <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
-                    <thead>
-                        <tr>
-                            <th></th>
-                            <th></th>
-                        </tr>
-                    </thead>
-                    <tfoot>
-                        <tr>
-                            <th></th>
-                            <th></th>
-                        </tr>
-                    </tfoot>
-                    <tbody>
-                        <tr>
-                            <td>
-                                <div class="cart-product">
-                                    <section class="product-photo">
-                                        <img src="/layout/images/products/1.jpeg">
-                                    </section>
-                                    <section class="product-name">
-                                        <label>Produto 1</label>
-                                    </section>
-                                </div>
-                            </td>
-                            <td>
-                                Descrição do Produto:<br>
-                                <small>Observações</small><br>
-                                [2x]
-                                <b>
-                                    <label class="v">R$ 10.00</label>
-                                </b>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
-                <hr>
-                <div>
-                    <section id="address">
-                        <div>Av. Arcilio Federzoni, 399, Jardim Silvia, Francisco Morato-SP</div>
-                    </section>
-                    <hr>
-                    <section id="ticket">
-                        <div>XTY210
-                            <small>R$ -25,00</small>
-                        </div>
-                    </section>
-                    <hr>
-                    <section id="pay">
-                        <div>Pix
-                        </div>
-                    </section>
-                    <hr>
-                    <section id="pay">
-                        <div>08/04/2024 10:30
-                        </div>
-                    </section>
-                    <hr>
-                    <section id="ticket">
-                        <div>
-                            <p class="t">Taxa de entrega
-                                <label class="v">R$ 10.00</label>
-                            </p>
-                            <p class="t">Total de desconto
-                                <label class="v">R$ 10.00</label>
-                            </p>
-                            <b>
-                                <p class="t">Total do Pedido
-                                    <label class="v">R$ 10.00</label>
-                                </p>
-                            </b>
-                        </div>
-                    </section>
-                </div>
-
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Fechar</button>
-            </div>
-        </div>
-    </div>
 </div>
 
 
@@ -757,7 +684,6 @@ if (isCampanhaInURL("address")) {
 ?>
 
 <script>
-
     function exibirIMG(input, id) {
         var reader = new FileReader();
 
@@ -769,6 +695,20 @@ if (isCampanhaInURL("address")) {
 
 
     $(document).ready(function () {
+
+
+        $('#dataTableHistory').DataTable({
+            "language": {
+                "search": "Pesquisar:",
+                "info": "Mostrando _START_ até _END_ de _TOTAL_ entradas",
+                "lengthMenu": "Mostrar _MENU_",
+                "paginate": {
+                    "previous": "Anterior ",
+                    "next": " Próximo"
+                }
+                // Outras opções de linguagem...
+            }
+        });
 
         $('#inputAvatarImage').change(function () {
             exibirIMG(this, '#avatarImageSelect');

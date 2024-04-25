@@ -370,7 +370,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST)) {
                 <textarea <?php echo (isDatabaseRequestOrderAvailableExistByOrderID($order_id) ? 'disabled' : '') ?> name="comment" class="form-control third-available-frame comments"
                     aria-label="With textarea"><?php echo getDatabaseRequestOrderAvailableComment(getDatabaseRequestOrderAvailableExistByOrderID($order_id)) ?></textarea>
             </div>
-        </form>
         <?php
     }
     ?>
@@ -506,11 +505,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST)) {
 
             </div>
             <div class="modal-footer">
-                <input name="token" type="text" value="<?php echo addGeneralSecurityToken('tokenCartMainAddress') ?>"
-                    hidden>
                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Fechar</button>
             </div>
-            </form>
         </div>
     </div>
 </div>
@@ -525,6 +521,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST)) {
             document.getElementById('star' + type + i).parentNode.classList.remove('colorstar');
         }
     }
+
+    function atualizarPagina() {
+        location.reload();
+    }
+
+    setInterval(atualizarPagina, 15 * 1000);
+
 </script>
 
 <?php
