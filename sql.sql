@@ -298,6 +298,12 @@ create table request_order_available (
     `comment` text null
 );
 
+create table delivery (
+    `id` int PRIMARY KEY AUTO_INCREMENT,
+    `title` varchar(100) not null
+);
+
+insert into delivery (`title`) VALUES ('Retirada no Local'), ('Entrega');
 
 
 create table request_order_logs (

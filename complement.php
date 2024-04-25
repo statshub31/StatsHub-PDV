@@ -12,6 +12,7 @@ doGeneralSecurityProtect();
 // <!-- Modal PRODUCT -->
 if (isCampanhaInURL("product")) {
     $product_select_id = getURLLastParam();
+    data_dump($product_select_id);
     if (isDatabaseProductExistID($product_select_id)) {
         $product_select_stock_id = getDatabaseStockIDByProductID($product_select_id);
         ?>
@@ -186,7 +187,7 @@ if (isCampanhaInURL("product")) {
         ?>
 
         <!-- FIM -->
-        <form action="/complement/product/<?php echo $product_select_stock_id ?>" method="post">
+        <form action="/complement/product/<?php echo $product_select_id ?>" method="post">
             <div class="card" style="width: 100%">
                 <img class="card-img-top" style="height: 15rem"
                     src="<?php echo getPathProductImage(getDatabaseProductPhotoName($product_select_id)); ?>">

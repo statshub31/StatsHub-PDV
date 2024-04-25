@@ -56,6 +56,15 @@ function getDatabaseRequestOrderStatus($id)
     $query = getDatabaseRequestOrdersData($id_sanitize, 'status');
     return ($query !== false) ? $query['status'] : false;
 }
+function getDatabaseRequestOrderTicketID($id)
+{
+    
+    $id_sanitize = sanitize($id);
+
+    $query = getDatabaseRequestOrdersData($id_sanitize, 'ticket_id_select');
+    return ($query !== false) ? $query['ticket_id_select'] : false;
+}
+
 
 function getDatabaseRequestOrderDeliveryManID($id)
 {

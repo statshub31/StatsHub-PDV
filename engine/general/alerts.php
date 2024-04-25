@@ -32,7 +32,7 @@ function doAlertSuccess($message, $refresh = false)
         $ex = '
             setTimeout(function() {
                 window.location.href = "' . $refresh . '";
-            }, 5 * 1000);
+            }, 1 * 1000);
         ';
     } else {
         $ex = '';

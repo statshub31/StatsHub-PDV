@@ -112,7 +112,7 @@ if (isCampanhaInURL("product")) {
                         'observation' => $_POST['obs']
                     );
 
-                    doDatabaseCartProductUpdate($product_id, $cart_product_insert_fields);
+                    doDatabaseCartProductUpdate($product_select_id, $cart_product_insert_fields);
 
                     // ADICIONAR COMPLEMENTO
                     $cart_product_complement_insert_fields = array(
@@ -123,13 +123,13 @@ if (isCampanhaInURL("product")) {
 
 
                     // // // ADICIONAR ADICIONAL
-                    doDatabaseCartProductAdditionalDeleteByCartProductUnlimited($product_id);
+                    doDatabaseCartProductAdditionalDeleteByCartProductUnlimited($product_select_id);
 
                     
                     if (isset($_POST['additional'])) {
                         foreach ($_POST['additional'] as $additional_select_list_id) {
                             $cart_product_additional_insert_fields[] = array(
-                                'cart_product_id' => $product_id,
+                                'cart_product_id' => $product_select_id,
                                 'additional_id' => $additional_select_list_id
                             );
 
@@ -157,13 +157,13 @@ if (isCampanhaInURL("product")) {
                                 $response_question_product_insert = array(
                                     'response_text' => (!empty($_POST['response' . $count_checked])) ? $_POST['response' . $count_checked] : NULL
                                 );
-                                $id_question_update = getDatabaseCartProductQuestionIDByCartAndQuestID($product_id, $_POST['question' . $count_checked]);
+                                $id_question_update = getDatabaseCartProductQuestionIDByCartAndQuestID($product_select_id, $_POST['question' . $count_checked]);
                                 doDatabaseCartProductQuestionResponseUpdate($id_question_update, $response_question_product_insert, false);
                             }
                              else {
                                 if (isDatabaseProductQuestionMultipleResponse($_POST['question' . $count_checked])) {
                                     $count_response = 0;
-                                    $id_question_update = getDatabaseCartProductQuestionIDByCartAndQuestID($product_id, $_POST['question' . $count_checked]);
+                                    $id_question_update = getDatabaseCartProductQuestionIDByCartAndQuestID($product_select_id, $_POST['question' . $count_checked]);
                                     doDatabaseCartProductQuestionResponseDeleteByQuestionIDUnlimited($id_question_update);
 
                                     while (isset($_POST['response' . $count_checked][$count_response])) {
@@ -181,7 +181,7 @@ if (isCampanhaInURL("product")) {
                     }
 
 
-                    doAlertSuccess("Produto adicionado ao carrinho com sucesso.", true);
+                    doAlertSuccess("Produto alterado ao com sucesso.", '/cart');
                 }
 
 

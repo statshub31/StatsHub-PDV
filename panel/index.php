@@ -40,7 +40,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST)) {
             if ($required_fields_status) {
                 $order_last_log_id = doDatabaseRequestOrderLogsLastLogByOrderID($_POST['order_id']);
 
-                if ($order_last_log_id == 3) {
+                if (getDatabaseRequestOrderLogStatusDelivery($order_last_log_id) == 3) {
                     if (isDatabaseUserExistID($_POST['deliveryman']) === false || (empty($_POST['deliveryman']))) {
                         $errors[] = "É necessário selecionar o motoboy que vai fazer a entrega, o mesmo precisa estar registrado.";
                     }
@@ -54,6 +54,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST)) {
             $new_order_status_id = getDatabaseRequestOrderLogStatusDelivery($order_last_log_id) + 1;
 
             doRequestOrderLogInsert($_POST['order_id'], $new_order_status_id);
+
+            if ($new_order_status_id == 3) {
+                doPrintOrder($_POST['order_id']);
+            }
 
             if ($new_order_status_id == 4) {
                 $order_update_fields = array(
