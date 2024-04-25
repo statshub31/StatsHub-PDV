@@ -470,183 +470,195 @@ function doAvailableGeneral()
 
 function doPrintOrder($order_id)
 {
+    $html = '<style>
+        #content-header {
+            text-align: center;
+        }
+    
+        #name {
+            font-size: 15px;
+            font-weight: bold;
+            font-family: monospace;
+        }
+    
+        #cnpj {
+            font-size: 12px;
+            font-weight: bold;
+            font-family: monospace;
+        }
+    
+        #type_delivery {
+            text-align: center;
+            font-size: 14px;
+        }
+    
+        hr {
+            margin: 10px 0px;
+        }
+    
+        #date {
+            font-family: monospace;
+            font-size: 14px;
+            text-align: center;
+        }
+    
+        #number-delivery {
+            font-family: "Franklin Gothic Medium", "Arial Narrow", Arial, sans-serif;
+            font-size: 15px;
+            text-align: center;
+        }
+    
+        .title {
+            font-family: "Franklin Gothic Medium", "Arial Narrow", Arial, sans-serif;
+            font-size: 15px;
+            text-align: center;
+        }
+    
+        .order {
+            font-size: 15px;
+        }
+    
+        .value {
+            position: relative;
+            float: right;
+            font-weight: bold;
+            font-family: monospace;
+        }
+    
+        .subvalue {
+            position: relative;
+            float: right;
+            font-weight: bold;
+            font-family: monospace;
+            font-size: 10px !important;
+        }
+    
+        li, ul, ol {
+            margin: 1px;
+        }
+    
+        li {
+            width: 100%;
+        }
+    
+        .subtopic {
+            font-weight: 600;
+        }
+    </style>';
 
-    $first_log = doDatabaseRequestOrderLogsFirstLogByOrderID($order_id); // Função fictícia para obter o primeiro log do pedido
+    $first_log = doDatabaseRequestOrderLogsFirstLogByOrderID($order_id);
+    $html .= '<div id="content">
+        <div id="content-header">
+            <label id="name">' . getDatabaseSettingsInfoTitle(1) . '</label><br>
+            <small id="cnpj">CNPJ: 10.0.0.0.0.0.0.0.</small>
+        </div>
+        <hr>
+        <div id="type_delivery">' . getDatabaseDeliveryTitle(1) . '</div>
+        <hr>
+        <div id="date">' . doDate(getDatabaseRequestOrderLogCreated($first_log)) . ' às ' . doTime(getDatabaseRequestOrderLogCreated($first_log)) . '</div>
+        <hr>
+        <div id="number-delivery">PEDIDO #' . $order_id . '</div>
+        <hr>
+        <label class="title">Itens:</label><br>
+        <hr>';
 
-    // Escapando as aspas para que o conteúdo seja incluído corretamente no JavaScript
-    $conteudo = '
-
-    <style>
-    #content-header {
-        text-align: center;
-    }
-
-    #name {
-        font-size: 15px;
-        font-weight: bold;
-        font-family: monospace;
-    }
-
-    #cnpj {
-        font-size: 12px;
-        font-weight: bold;
-        font-family: monospace;
-    }
-
-    #type_delivery {
-        text-align: center;
-    }
-
-    #type_delivery {
-        font-size: 14px;
-    }
-
-    hr {
-        margin: 10px 0px;
-    }
-
-    #date {
-        font-family: monospace;
-        font-size: 14px;
-        text-align: center;
-    }
-
-    #number-delivery {
-        font-family: "Franklin Gothic Medium", "Arial Narrow", Arial, sans-serif;
-        font-size: 15px;
-        text-align: center;
-    }
-
-    .title {
-        font-family: "Franklin Gothic Medium", "Arial Narrow", Arial, sans-serif;
-        font-size: 15px;
-        text-align: center;
-    }
-
-    .order {
-        font-size: 15px;
-    }
-
-    .value {
-        position: relative;
-        float: right;
-        font-weight: bold;
-        font-family: monospace;
-    }
-
-    .subvalue {
-        position: relative;
-        float: right;
-        font-weight: bold;
-        font-family: monospace;
-        font-size: 10px !important;
-    }
-
-    li, ul, ol {
-        margin: 1px;
-    }
-
-    li {
-        width: 100%;
-    }
-
-    .subtopic {
-        font-weight: 600;
-    }
-</style>
-        <div id="content">
-            <div id="content-header">
-                <label id="name">
-                    ' . getDatabaseSettingsInfoTitle(1) . '
-                </label><br>
-                <small id="cnpj">CNPJ: 10.0.0.0.0.0.0.0.</small>
-            </div>
-            <hr>
-            <div id="type_delivery">
-                ' . getDatabaseDeliveryTitle(1) . '
-            </div>
-            <hr>
-            <div id="date">
-                ' . doDate(getDatabaseRequestOrderLogCreated($first_log)) . ' às ' . doTime(getDatabaseRequestOrderLogCreated($first_log)) . '
-            </div>
-            <hr>
-            <div id="number-delivery">
-                PEDIDO #' . $order_id . '
-            </div>
-            <hr>
-            <label class="title">Itens:</label><br>
-            <hr>';
-    // Lista de itens do carrinho
     $cart_id = getDatabaseRequestOrderCartID($order_id);
     $cart_list = doDatabaseCartProductsListByCartID($cart_id);
     $itens_count = 0;
     if ($cart_list) {
         foreach ($cart_list as $data) {
-            $cart_product_list_id = $data['id']; // ID do produto no carrinho
-            $cart_product_id = getDatabaseCartProductProductID($cart_product_list_id); // ID do produto
-            $obs = getDatabaseCartProductObservation($cart_product_list_id); // Observação do produto
-            $size_id = getDatabaseCartProductPriceID($cart_product_list_id); // ID do preço
-            $measure_id = getDatabaseProductSizeMeasureID($size_id); // ID da medida
-            $user_id = getDatabaseCartUserID($cart_product_list_id); // ID do usuário
-            $itens_count += getDatabaseCartProductAmount($cart_product_list_id); // Contador de itens
-            $main_address_id = getDatabaseRequestOrderAddressIDSelect($order_id); // ID do endereço principal
-            $discount = getDatabaseTicketValue(getDatabaseCartTicketSelectTicketID(getDatabaseCartTicketSelectByCartID($cart_product_list_id))); // Desconto
-            $conteudo .= '
-                    <label class="order">
-                        (' . getDatabaseCartProductAmount($cart_product_list_id) . ')
-                        ' . getDatabaseProductName($cart_product_id) . ' -
-                        ' . getDatabaseProductPriceSize($size_id) . '
-                        ' . getDatabaseMeasureTitle($measure_id) . '
-                        <span class="value">R$ ' . doCartTotalPriceProduct($cart_product_list_id) . '</span>
-                    </label><br>
-                    <hr>';
+            $cart_product_list_id = $data['id']; // PRODUTO CART
+            $cart_product_id = getDatabaseCartProductProductID($cart_product_list_id); // PRODUTO_ID
+            $obs = getDatabaseCartProductObservation($cart_product_list_id);
+            $size_id = getDatabaseCartProductPriceID($cart_product_list_id);
+            $measure_id = getDatabaseProductSizeMeasureID($size_id);
+            $user_id = getDatabaseCartUserID($cart_product_list_id);
+            $itens_count += getDatabaseCartProductAmount($cart_product_list_id);
+            $main_address_id = getDatabaseRequestOrderAddressIDSelect($order_id);
+            $discount = getDatabaseTicketValue(getDatabaseCartTicketSelectTicketID(getDatabaseCartTicketSelectByCartID($cart_id)));
+            $html .= '<label class="order">
+                (' . getDatabaseCartProductAmount($cart_product_list_id) . ')
+                ' . getDatabaseProductName($cart_product_id) . ' -
+                ' . getDatabaseProductPriceSize($size_id) . '
+                ' . getDatabaseMeasureTitle($measure_id) . '
+                <span class="value">R$ ' . doCartTotalPriceProduct($cart_product_list_id) . '</span><br>
+                <nav>
+                    <ul class="subtopic">Complementos</ul>
+                    <ol>';
+
+            $complement_list = doDatabaseProductsComplementsListByProductID($cart_product_id);
+            $product_complement_select = getDatabaseCartProductComplementByCartProductID($cart_product_list_id);
+            $complement_select = getDatabaseCartProductComplementComplementID($product_complement_select);
+
+            if ($complement_list) {
+                foreach ($complement_list as $dataComplement) {
+                    $product_complement_id = $dataComplement['id'];
+                    $complement_id = getDatabaseProductComplementComplementID($product_complement_id);
+                    $html .= ($complement_select == $complement_id) ? '<li>' . getDatabaseComplementDescription($complement_id) . '</li>' : '';
+                }
+            }
+
+            $html .= '</ol></nav><nav><ul class="subtopic">Adicionais</ul><ol>';
+
+            $additional_list = doDatabaseProductsAdditionalListByProductID($cart_product_id);
+            if ($additional_list) {
+                foreach ($additional_list as $dataAdditional) {
+                    $product_additional_id = $dataAdditional['id'];
+                    $additional_id = getDatabaseProductAdditionalAdditionalID($product_additional_id);
+                    $html .= (isDatabaseCartProductAdditionalExistIDByCartAndAdditionalID($cart_product_list_id, $additional_id) == 1) ? '<li>' . getDatabaseAdditionalDescription($additional_id) . '
+                         <span class="subvalue">R$ 5.00</span>
+                         </li>' : '';
+                }
+            }
+
+            $html .= '</ol></nav><span class="subtopic">Observações:</span><br>' . getDatabaseCartProductObservation($cart_product_list_id) . '</label><br><hr>';
         }
     }
-    $conteudo .= '
-            <label class="title">Dados do Cliente:</label><br>
-            <label>
-                <span class="subtopic">Nome:</span>
-                ' . getDatabaseUserName($user_id) . '<br>
-            </label>
-            <label>
-                <span class="subtopic">Telefone:</span>
-                ' . getDatabaseUserPhone($user_id) . '<br>
-            </label>
-            <label>
-                <span class="subtopic">Quantidade de Itens:</span>
-                ' . $itens_count . '<br>
-            </label>
-            <label>
-                <span class="subtopic">Entrega:</span><br>
-                ' . getDatabaseAddressPublicPlace($main_address_id) . ',
-                ' . getDatabaseAddressNumber($main_address_id) . ', (
-                ' . getDatabaseAddressComplement($main_address_id) . ')
-                ' . getDatabaseAddressNeighborhood($main_address_id) . ',
-                ' . getDatabaseAddressCity($main_address_id) . ' -
-                ' . getDatabaseAddressState($main_address_id) . '.
-                <br>
-            </label>
-            <hr>
-            <label class="title">Pagamento:</label><br>
-            <label>
-                <span class="subtopic">Forma de Pagamento:</span><br>
-            </label>
-            <label>Desconto: <span class="value">
-            <small>Usado o cupom [<?php echo getDatabaseTicketCode(getDatabaseCartTicketSelectTicketID(getDatabaseRequestOrderTicketID($cart_id))) ?>] e obtido o desconto de
-                ['.($discount !== false) ? $discount : 'Nenhum desconto selecionado.'.']</small>
 
-        </span>
-            </label><br>
-            <label>Total: <span class="value">R$ ' . (doCartTotalPrice($order_id) - doCartTotalPriceDiscount($order_id)) . '</span>
-            </label><br>
-        </div>
-        <script>
-            window.print();
-            window.close();
-        </script>';
+    $html .= '<label class="title">Dados do Cliente:</label><br>
+        <label>
+            <span class="subtopic">Nome:</span>' . getDatabaseUserName($user_id) . '<br>
+        </label>
+        <label>
+            <span class="subtopic">Telefone:</span>' . getDatabaseUserPhone($user_id) . '<br>
+        </label>
+        <label>
+            <span class="subtopic">Quantidade de Itens:</span>' . $itens_count . '<br>
+        </label>
+        <label>
+            <span class="subtopic">Entrega:</span><br>' . getDatabaseAddressPublicPlace($main_address_id) . ',
+            ' . getDatabaseAddressNumber($main_address_id) . ', (
+            ' . getDatabaseAddressComplement($main_address_id) . ')
+            ' . getDatabaseAddressNeighborhood($main_address_id) . ',
+            ' . getDatabaseAddressCity($main_address_id) . ' -
+            ' . getDatabaseAddressState($main_address_id) . '.
+            <br>
+        </label>
+        <hr>
+        <label class="title">Pagamento:</label><br>
+        <label>
+            <span class="subtopic">Forma de Pagamento:</span><br>
+        </label>
+        <label>Desconto: <span class="value">
+                <small>Usado o cupom [' . getDatabaseTicketCode(getDatabaseCartTicketSelectTicketID(getDatabaseRequestOrderTicketID($cart_id))) . '] e obtido o desconto de
+                    [' . ($discount !== false ? $discount : 'Nenhum desconto selecionado.') . ']</small>
+    
+            </span>
+        </label><br>
+        <label>Taxa de Entrega: <span class="value">R$
+                ' . getDatabaseSettingsDeliveryFee(1) . '</span>
+        </label><br></div><br>
+        <label>Total: <span class="value">R$
+                ' . (doCartTotalPrice($order_id) - doCartTotalPriceDiscount($order_id)) . '</span>
+        </label><br></div>';
+
+    $html .= '<script>
+        window.print();
+        window.close();
+    </script>';
 
     // Escapando o conteúdo usando json_encode
-    $conteudoEscapado = json_encode($conteudo);
+    $conteudoEscapado = json_encode($html);
 
     // Criando o script JavaScript para abrir a nova janela com o conteúdo
     echo "<script>";

@@ -94,7 +94,7 @@ create table categorys (
     FOREIGN KEY (`icon_id`) REFERENCES `icons`(`id`)
 );
 
-INSERT INTO `categorys`(`title`) VALUES ('Comida'), ('Bebida');
+INSERT INTO `categorys`(`title`) VALUES ('Outros'), ()'Comida'), ('Bebida');
 
 
 create table complements (
@@ -109,6 +109,8 @@ create table complements (
     FOREIGN KEY (`category_id`) REFERENCES `categorys`(`id`),
     FOREIGN KEY (`created_by`) REFERENCES `users`(`id`)
 );
+
+INSERT INTO `complements` (`category_id`, `description`, `created`, `created_by`, `status`) VALUES (1, 'Nenhum', '0000-00-00 00:00:00', 1, 2);
 
 create table additional (
     `id` int PRIMARY KEY AUTO_INCREMENT,

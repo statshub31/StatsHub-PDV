@@ -54,6 +54,13 @@ function doDatabaseCategorysList($status = false)
     return doSelectMultiDB("SELECT `id` FROM `categorys`");
 }
 
+function doDatabaseCategorysListEnabled($status = false)
+{
+    
+    return doSelectMultiDB("SELECT `id` FROM `categorys`");
+}
+
+
 function doDatabaseCategoryInsert($import_data_query)
 {
     
