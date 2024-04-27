@@ -46,6 +46,15 @@ function getDatabaseRequestOrderPayIDSelect($id)
     $query = getDatabaseRequestOrdersData($id_sanitize, 'pay_id');
     return ($query !== false) ? $query['pay_id'] : false;
 }
+function getDatabaseRequestOrderChangeOf($id)
+{
+    
+    $id_sanitize = sanitize($id);
+
+    $query = getDatabaseRequestOrdersData($id_sanitize, 'change_of');
+    return ($query !== false) ? $query['change_of'] : false;
+}
+
 
 
 function getDatabaseRequestOrderStatus($id)

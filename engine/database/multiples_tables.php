@@ -331,12 +331,14 @@ function doRemoveCartProductID($cart_product_id)
     // Lista de todas as perguntas
     $list_question = doDatabaseProductsQuestionsListByProductID(getDatabaseCartProductProductID($cart_product_id_sanitize));
 
-    foreach ($list_question as $data) {
-        $question_id = $data['id'];
-        $question_remove_id = getDatabaseCartProductQuestionIDByCartAndQuestID($cart_product_id_sanitize, $question_id);
+    if ($list_question !== false) {
+        foreach ($list_question as $data) {
+            $question_id = $data['id'];
+            $question_remove_id = getDatabaseCartProductQuestionIDByCartAndQuestID($cart_product_id_sanitize, $question_id);
 
-        doDatabaseCartProductQuestionResponseDeleteByQuestionIDUnlimited($question_remove_id);
-        doDatabaseCartProductQuestionDeleteUnlimited($question_remove_id);
+            doDatabaseCartProductQuestionResponseDeleteByQuestionIDUnlimited($question_remove_id);
+            doDatabaseCartProductQuestionDeleteUnlimited($question_remove_id);
+        }
     }
     doDatabaseCartProductComplementDelete($cart_product_complement_id);
     doDatabaseCartProductAdditionalDeleteByCartProductUnlimited($cart_product_id);

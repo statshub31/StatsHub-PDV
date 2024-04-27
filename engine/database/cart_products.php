@@ -152,4 +152,12 @@ function doDatabaseCartProductUpdate($id, $import_data_query, $empty = true)
 // 
 // 
 
+function getDatabaseCartProductRowCountByCartID($cart_id)
+{
+    $cart_id_sanitize = sanitize($cart_id);
+
+    $result = doSelectSingleDB("SELECT COUNT(*) AS rowCount FROM `cart_products` where `cart_id` = '".$cart_id_sanitize."';");
+
+    return ($result !== false) ? $result['rowCount'] : 0;
+}
 ?>

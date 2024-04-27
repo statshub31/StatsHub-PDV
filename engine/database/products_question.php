@@ -90,7 +90,8 @@ function doDatabaseProductsQuestionsListByProductID($product_id)
 {
     $sanitize_product_id = sanitize($product_id);
 
-    return doSelectMultiDB("SELECT `id` FROM `products_question` where `product_id` = '".$sanitize_product_id."' and `deleted`=0");
+    $query = doSelectMultiDB("SELECT `id` FROM `products_question` where `product_id` = '".$sanitize_product_id."' and `deleted`=0");
+    return ($query !== false) ? $query : false;
 }
 
 

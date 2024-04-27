@@ -39,13 +39,15 @@ function getDatabaseCartTicketSelectCartID($id)
     return ($query !== false) ? $query['cart_id'] : false;
 }
 
-function isDatabaseCartTicketSelectUsed($id)
+function isDatabaseCartTicketSelectUsed($ticket_id, $user_id)
 {
     
-    $id_sanitize = sanitize($id);
+    $ticket_id_sanitize = sanitize($ticket_id);
+    $user_id_sanitize = sanitize($user_id);
 
-    $query = getDatabaseCartTicketSelectsData($id_sanitize, 'used');
-    return ($query !== false && $query['used'] == 1) ? true : false;
+    $query = doSelectSingleDB("SELECT `id` FROM `cart_ticket_select` WHERE `user_id`='".$user_id_sanitize."' and `ticket_id`='".$ticket_id_sanitize."' and `used`=1;");
+    
+    return ($query !== false) ? true : false;
 }
 
 function isDatabaseCartTicketSelectNotUsed($ticket_id, $cart_id)
@@ -105,12 +107,12 @@ function doDatabaseCartTicketSelectInsert($import_data_query)
     return doInsertDB("INSERT INTO `cart_ticket_select` (" . $keys . ") VALUES (" . $values . ")");
 }
 
-function doDatabaseCartTicketSelectDelete($id)
+function doDatabaseCartTicketSelectDeleteByCartID($cart_id)
 {
     
-    $id_sanitize = sanitize($id);
+    $cart_id_sanitize = sanitize($cart_id);
 
-    doDeleteDB("DELETE FROM `cart_ticket_select` WHERE `id`='".$id_sanitize."'limit 1;");
+    doDeleteDB("DELETE FROM `cart_ticket_select` WHERE `cart_id`='".$cart_id_sanitize."' limit 1;");
 }
 
 function doDatabaseCartTicketSelectUpdate($id, $import_data_query, $empty = true)

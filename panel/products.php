@@ -140,7 +140,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST)) {
         if (empty($_POST) === false) {
             $required_fields_status = true;
             $required_fields = array('products');
-            data_dump($_POST);
             if (validateRequiredFields($_POST, $required_fields) === false) {
                 $errors[] = "Obrigatório o preenchimento de todos os campos.";
                 $required_fields_status = false;

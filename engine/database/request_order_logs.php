@@ -82,13 +82,15 @@ function doDatabaseRequestOrderLogCountRowByStatus($equals) {
 function doDatabaseRequestOrderLogsFirstLogByOrderID($order_id)
 {
     $order_id_sanitize = $order_id;
-    return doSelectSingleDB("SELECT id FROM request_order_logs where `request_order_id`='".$order_id_sanitize."' ORDER BY id asc LIMIT 1")['id'];
+    $query = doSelectSingleDB("SELECT id FROM request_order_logs where `request_order_id`='".$order_id_sanitize."' ORDER BY id asc LIMIT 1");
+    return ($query !== false) ? $query['id'] : false;
 }
 
 function doDatabaseRequestOrderLogsLastLogByOrderID($order_id)
 {
     $order_id_sanitize = $order_id;
-    return doSelectSingleDB("SELECT id FROM request_order_logs where `request_order_id`='".$order_id_sanitize."' ORDER BY id DESC LIMIT 1")['id'];
+    $query = doSelectSingleDB("SELECT id FROM request_order_logs where `request_order_id`='".$order_id_sanitize."' ORDER BY id DESC LIMIT 1");
+    return ($query !== false) ? $query['id'] : false;
 }
 
 function doDatabaseRequestOrderLogInsert($import_data_query)

@@ -19,7 +19,7 @@ table {
 body {
   background-image: url(/layout/images/config/background.avif) !important;
   background-position: center !important;
-  background-size: 110vw 100vw !important;
+  background-size: 100% 100% !important;
   background-repeat: no-repeat !important;
 }
 
@@ -532,6 +532,9 @@ div .quantity {
   border-radius: 5px;
 }
 
+.user-comment {
+  word-wrap: break-word;
+}
 
 #address-restaurant {
   background-image: url(/layout/images/model/map.png);
@@ -560,6 +563,9 @@ div .quantity {
   align-items: center;
 }
 
+.status-select:hover {
+  border-bottom: 5px solid var(--primary-color);
+}
 #three-info {}
 
 #three-info p {

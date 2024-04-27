@@ -1,6 +1,5 @@
 <?php
 include_once __DIR__ . '/layout/php/header.php';
-
 doGeneralSecurityProtect();
 
 ?>
@@ -38,6 +37,10 @@ if (isCampanhaInURL("product")) {
                     $product_complement_select = getDatabaseCartProductComplementByCartProductID($_POST['product_select_id']);
                     $complement_select = getDatabaseCartProductComplementComplementID($product_complement_select);
 
+                    if(isOpen() === false) {
+                        $errors[] = "O estabelecimento se encontra fechado no momento.";
+                    }
+                    
 
                     if (isDatabaseCartProductExistID($_POST['product_select_id']) === false) {
                         $errors[] = "Houve um erro ao alterar o produto, reinicie a pagina e tente novamente.";
@@ -205,8 +208,8 @@ if (isCampanhaInURL("product")) {
                 </div>
                 <div class="list-group-item list-quantity">
                     <button type="button" class="btn btn-sm btn-secondary decrease">-</button>
-                    <input type="number" name="quantity" class="form-control quantity" id="quantity"
-                        value="<?php echo $product_amount_select ?>">
+                    <input type="number" name="quantity" oninput="atualizarTotal()" class="form-control quantity" id="quantity"
+                        value="<?php echo $product_amount_select ?>" required>
                     <button type="button" class="btn btn-sm btn-secondary increase">+</button>
                 </div>
             </div>
@@ -228,7 +231,7 @@ if (isCampanhaInURL("product")) {
                             <div class="size-select">
                                 <input <?php echo doCheck($product_price_select, $price_list_id) ?> type="radio" name="size"
                                     value="<?php echo $price_list_id ?>" class="calc"
-                                    price="<?php echo getDatabaseProductPrice($price_list_id) ?>">
+                                    price="<?php echo getDatabaseProductPrice($price_list_id) ?>" required>
                                 <label><?php echo getDatabaseProductPriceSize($price_list_id) ?>
                                     (<?php echo getDatabaseMeasureTitle(getDatabaseProductSizeMeasureID($price_list_id)) ?>)</label>
                                 <label class="v">R$ <?php echo getDatabaseProductPrice($price_list_id) ?></label>
@@ -257,7 +260,7 @@ if (isCampanhaInURL("product")) {
                             ?>
                             <div class="complement-select">
                                 <input <?php echo doCheck($complement_select, $complement_id) ?> type="radio" name="complement"
-                                    value="<?php echo $complement_id ?>">
+                                    value="<?php echo $complement_id ?>" required>
                                 <small><?php echo getDatabaseComplementDescription($complement_id) ?></small>
                             </div>
 
@@ -340,13 +343,13 @@ if (isCampanhaInURL("product")) {
                                             if (isDatabaseProductQuestionMultipleResponse($question_list_id)) {
                                                 ?>
                                                 <input <?php echo doCheck(doDatabaseCartProductQuestionResponseIDExistByCartAndQuestID($question_response_select, $response_list_id), 1) ?> type="checkbox"
-                                                    name="response<?php echo $question_count ?>[]" value="<?php echo $response_list_id ?>" />
+                                                    name="response<?php echo $question_count ?>[]" value="<?php echo $response_list_id ?>" required/>
                                                 <small><?php echo getDatabaseProductQuestionResponseResponse($response_list_id) ?></small><br>
                                                 <?php
                                             } else {
                                                 ?>
                                                 <input <?php echo doCheck($response_select, $response_list_id) ?> type="radio"
-                                                    name="response<?php echo $question_count ?>" value="<?php echo $response_list_id ?>" />
+                                                    name="response<?php echo $question_count ?>" value="<?php echo $response_list_id ?>" required/>
                                                 <small><?php echo getDatabaseProductQuestionResponseResponse($response_list_id) ?></small><br>
                                                 <?php
                                             }

@@ -1,6 +1,5 @@
 <?php
 include_once __DIR__ . '/layout/php/header.php';
-
 doGeneralSecurityProtect();
 
 ?>
@@ -12,7 +11,6 @@ doGeneralSecurityProtect();
 // <!-- Modal PRODUCT -->
 if (isCampanhaInURL("product")) {
     $product_select_id = getURLLastParam();
-    data_dump($product_select_id);
     if (isDatabaseProductExistID($product_select_id)) {
         $product_select_stock_id = getDatabaseStockIDByProductID($product_select_id);
         ?>
@@ -23,13 +21,16 @@ if (isCampanhaInURL("product")) {
         if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST)) {
             // if (getGeneralSecurityToken('incrementedProduct')) {
             if (1 == 1) {
-                data_dump($_POST);
 
                 if (empty($_POST) === false) {
                     if (!isset($_POST['size'])) {
                         $errors[] = "Selecione o tamanho do item.";
                     }
 
+                    if(isOpen() === false) {
+                        $errors[] = "O estabelecimento se encontra fechado no momento.";
+                    }
+                    
                     if(isDatabaseProductPriceExistID($_POST['size']) === false) {
                         $errors[] = "Houve um erro ao adicionar o produto, reinicie a pagina e tente novamente.";
                     }
@@ -50,7 +51,6 @@ if (isCampanhaInURL("product")) {
                     if (isDatabaseProductQuestionExistQuestion($_POST['product_select_id'])) {
                         $count_checked = 1;
                         $total_questions = getDatabaseProductQuestionRowCountByProductID($_POST['product_select_id']);
-                        data_dump($total_questions);
                         while ($count_checked <= $total_questions) {
                             if (isDatabaseProductQuestionExistID($_POST['question' . $count_checked]) === false) {
                                 $errors[] = "Houve um erro ao adicionar o produto, reinicie a pagina e tente novamente.";
@@ -172,7 +172,7 @@ if (isCampanhaInURL("product")) {
                     }
 
 
-                    doAlertSuccess("Produto adicionado ao carrinho com sucesso.");
+                    header('Location: /cart');                    
                 }
 
 
@@ -197,7 +197,7 @@ if (isCampanhaInURL("product")) {
                 </div>
                 <div class="list-group-item list-quantity">
                     <button type="button" class="btn btn-sm btn-secondary decrease">-</button>
-                    <input type="number" name="quantity" class="form-control quantity" id="quantity" value="1">
+                    <input type="number" oninput="atualizarTotal()" name="quantity" class="form-control quantity" id="quantity" value="1" required>
                     <button type="button" class="btn btn-sm btn-secondary increase">+</button>
                 </div>
             </div>
@@ -218,7 +218,7 @@ if (isCampanhaInURL("product")) {
                             ?>
                             <div class="size-select">
                                 <input type="radio" name="size" value="<?php echo $price_list_id ?>" class="calc"
-                                    price="<?php echo getDatabaseProductPrice($price_list_id) ?>">
+                                    price="<?php echo getDatabaseProductPrice($price_list_id) ?>" required>
                                 <label><?php echo getDatabaseProductPriceSize($price_list_id) ?>
                                     (<?php echo getDatabaseMeasureTitle(getDatabaseProductSizeMeasureID($price_list_id)) ?>)</label>
                                 <label class="v">R$ <?php echo getDatabaseProductPrice($price_list_id) ?></label>
@@ -246,7 +246,7 @@ if (isCampanhaInURL("product")) {
                             $complement_id = getDatabaseProductComplementComplementID($product_complement_id);
                             ?>
                             <div class="complement-select">
-                                <input type="radio" name="complement" value="<?php echo $complement_id ?>">
+                                <input type="radio" name="complement" value="<?php echo $complement_id ?>" required>
                                 <small><?php echo getDatabaseComplementDescription($complement_id) ?></small>
                             </div>
 
@@ -311,7 +311,7 @@ if (isCampanhaInURL("product")) {
                                 <?php
                                 if (isDatabaseProductQuestionResponseFree($question_list_id)) {
                                     ?>
-                                    <input type="text" name="response<?php echo $question_count ?>" class="form-control">
+                                    <input type="text" name="response<?php echo $question_count ?>" class="form-control" >
 
                                     <?php
 
@@ -325,13 +325,13 @@ if (isCampanhaInURL("product")) {
                                             if (isDatabaseProductQuestionMultipleResponse($question_list_id)) {
                                                 ?>
                                                 <input type="checkbox" name="response<?php echo $question_count ?>[]"
-                                                    value="<?php echo $response_list_id ?>" />
+                                                    value="<?php echo $response_list_id ?>" required />
                                                 <small><?php echo getDatabaseProductQuestionResponseResponse($response_list_id) ?></small><br>
                                                 <?php
                                             } else {
                                                 ?>
                                                 <input type="radio" name="response<?php echo $question_count ?>"
-                                                    value="<?php echo $response_list_id ?>" />
+                                                    value="<?php echo $response_list_id ?>" required />
                                                 <small><?php echo getDatabaseProductQuestionResponseResponse($response_list_id) ?></small><br>
                                                 <?php
                                             }
@@ -369,7 +369,6 @@ if (isCampanhaInURL("product")) {
                     <input name="token" type="text" value="<?php echo addGeneralSecurityToken('incrementedProduct') ?>" hidden>
                     <button type="submit" class="btn btn-primary">Adicionar ao Carrinho</button>
                     <a href="#" class="card-link"><i class="fa-solid fa-star"></i></a>
-                    <a href="#" class="card-link"><i class="fa-solid fa-trash"></i></a>
                 </div>
             </div>
         </form>

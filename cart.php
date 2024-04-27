@@ -1,21 +1,42 @@
 <?php
 include_once __DIR__ . '/layout/php/header.php';
 doGeneralSecurityProtect();
+$cart_id = doGeneralSecurityCart();
+
 ?>
 
 <?php
 // <!-- INICIO DA VALIDAÇÃO PHP -->
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST)) {
 
-    // SELECT MAIN METHOD PAY
+    // REQUEST ORDER
     if (getGeneralSecurityToken('tokenRequestOrder')) {
         if (empty($_POST) === false) {
-            if (!isset($_POST['cart_id'])) {
+
+            if (isDatabaseCartExistIDByUserID($in_user_id) === false) {
                 $errors[] = "Houve um erro ao processar a compra, reinicie a pagina e tente novamente";
+            } else {
+                if (getDatabaseCartProductRowCountByCartID($cart_id) <= 0) {
+                    $errors[] = "Houve um erro ao processar a compra, reinicie a pagina e tente novamente";
+                }
             }
 
-            if (isDatabaseCartEnabled($_POST['cart_id'])) {
-                if (isDatabaseCartExistIDByUserID($in_user_id) != $_POST['cart_id']) {
+            if(isOpen() === false) {
+                $errors[] = "O estabelecimento se encontra fechado no momento.";
+            }
+            
+            if (getDatabaseUserSelectPayID(getDatabaseUserSelectByUserID($in_user_id)) == getDatabaseSettingsPayMoney(1)) {
+                if (empty($_POST['change'])) {
+                    $errors[] = "Forneça o valor para troco, caso não necessite digite 0.";
+                }
+
+                if (doGeneralValidationPriceFormat($_POST['change']) == false) {
+                    $errors[] = "No valor de troco, somente é aceito valores númerico";
+                }
+            }
+
+            if (isDatabaseCartEnabled($cart_id)) {
+                if (isDatabaseCartExistIDByUserID($in_user_id) != $cart_id) {
                     $errors[] = "Houve um erro ao salvar o método de pagamento, reinicie a pagina e tente novamente";
                 }
             }
@@ -28,7 +49,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST)) {
                 'status' => 7
             );
 
-            $cart_id = $_POST['cart_id'];
             $main_address = getDatabaseUserSelectAddressID($in_user_id);
             $ticket = getDatabaseCartTicketSelectByCartID($cart_id);
             $pay = getDatabaseUserSelectPayID($cart_id);
@@ -37,11 +57,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST)) {
 
             $request_order_insert_fields = array(
                 'cart_id' => $cart_id,
-                'address_id_select' => ($main_address !== false) ? $main_address : NULL ,
+                'address_id_select' => ($main_address !== false) ? $main_address : NULL,
                 'ticket_id_select' => ($ticket !== false) ? $ticket : NULL,
                 'pay_id' => ($pay !== false) ? $pay : NULL,
                 'status' => 2
             );
+
+            if (isset($_POST['change'])) {
+                $request_order_insert_fields['change_of'] = (!empty($_POST['change']) ? $_POST['change'] : NULL);
+            }
 
             $request_order_id_insert = doDatabaseRequestOrderInsert($request_order_insert_fields);
 
@@ -49,13 +73,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST)) {
 
             $cart_ticket_update_fields = array(
                 'used' => 1
-            ); 
-            
-            if(isDatabaseCartTicketSelectByCartID($cart_id))
+            );
+
+            if (isDatabaseCartTicketSelectByCartID($cart_id))
                 doDatabaseCartTicketSelectUpdate($ticket, $cart_ticket_update_fields);
 
 
-                header('Location: /order/'.$request_order_id_insert);
+            header('Location: /order/' . $request_order_id_insert);
         }
     }
 
@@ -95,17 +119,25 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST)) {
     // SELECT TICKET DISCOUNT
     if (getGeneralSecurityToken('tokenCartTicketSelect')) {
         if (empty($_POST) === false) {
+            // Validação se o ID está preenchido
             if (!isset($_POST['ticket_select'])) {
                 $errors[] = "Necessário selecionar um cupom.";
             }
 
+            // Validação que se foi selecionado um ID e for diferente de Nenhum, validamos se o cupom realmente existe.
             if ($_POST['ticket_select'] != 0) {
                 if (isDatabaseTicketExistID($_POST['ticket_select']) === false) {
                     $errors[] = "Houve um erro ao salvar o cupom, reinicie a pagina e tente novamente";
                 }
             }
 
-            if (isDatabaseCartUserValidation($in_user_id, $_POST['cart_id']) === false) {
+            // Validamos se o carrinho existe
+            if (isDatabaseCartExistIDByUserID($in_user_id) === false) {
+                $errors[] = "Houve um erro ao salvar o cupom, reinicie a pagina e tente novamente";
+            }
+
+            // Valida se o cupom já foi usado
+            if (isDatabaseCartTicketSelectUsed($_POST['ticket_select'], $in_user_id)) {
                 $errors[] = "Houve um erro ao salvar o cupom, reinicie a pagina e tente novamente";
             }
 
@@ -114,27 +146,27 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST)) {
 
 
         if (empty($errors)) {
+            $cart_id = getDatabaseCartExistIDByUserID($in_user_id);
             $ticket_add_id = array(
-                'cart_id' => $_POST['cart_id'],
-                'ticket_id' => $_POST['ticket_select']
+                'cart_id' => $cart_id,
+                'user_id' => $in_user_id,
+                'ticket_id' => ($_POST['ticket_select'] != 0) ? $_POST['ticket_select'] : NULL
             );
 
             if ($_POST['ticket_select'] == 0) {
-                if (isDatabaseCartTicketSelectByCartID($in_user_id)) {
-                    $main = getDatabaseCartTicketSelectByCartID($in_user_id);
-                    doDatabaseCartTicketSelectDelete($main);
+                if (isDatabaseCartTicketSelectByCartID($cart_id)) {
+                    doDatabaseCartTicketSelectDeleteByCartID($cart_id);
                 }
             } else {
-                if (isDatabaseCartTicketSelectByCartID($in_user_id)) {
-                    $main = getDatabaseCartTicketSelectByCartID($in_user_id);
+                if (isDatabaseCartTicketSelectByCartID($cart_id)) {
+                    $main = getDatabaseCartTicketSelectByCartID($cart_id);
                     doDatabaseCartTicketSelectUpdate($main, $ticket_add_id);
                 } else {
                     doDatabaseCartTicketSelectInsert($ticket_add_id);
                 }
             }
 
-            doAlertSuccess("As informações foram alteradas com sucesso!!");
-            // Coloque o código que deve ser executado após as verificações bem-sucedidas aqui
+            doAlertSuccess("Alterações de cupom efetuado com sucesso!!");
         }
     }
 
@@ -147,6 +179,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST)) {
 
             if (isDatabaseAddressExistID($_POST['address']) === false) {
                 $errors[] = "Houve um erro ao salvar endereço, reinicie a pagina e tente novamente";
+            }
+
+            if (doDatabaseAddressValidateUser($in_user_id, $_POST['address']) === false) {
+                $errors[] = "Houve um erro ao salvar o endereço, o mesmo não foi encontrado.";
             }
 
         }
@@ -166,7 +202,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST)) {
             }
 
             doAlertSuccess("As informações foram alteradas com sucesso!!");
-            // Coloque o código que deve ser executado após as verificações bem-sucedidas aqui
         }
     }
 
@@ -198,7 +233,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST)) {
 
         if (empty($errors)) {
             doRemoveCartProductID($_POST['cart_product_id']);
-            doAlertSuccess("O produto, foi removido do seu cadastro!!");
+            doGeneralSecurityCart();
+            doAlertSuccess("O produto, foi removido do seu carrinho!!");
             // Coloque o código que deve ser executado após as verificações bem-sucedidas aqui
         }
     }
@@ -336,6 +372,31 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST)) {
 ?>
 
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.mask/0.9.0/jquery.mask.min.js"
+    integrity="sha512-oJCa6FS2+zO3EitUSj+xeiEN9UTr+AjqlBZO58OPadb2RfqwxHpjTU8ckIC8F4nKvom7iru2s8Jwdo+Z8zm0Vg=="
+    crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+<script>
+    $(document).ready(function () {
+        // Adiciona um evento de input ao campo
+        $(".priceFormat").on('input', function () {
+            // Obtém o valor atual do campo
+            var inputValue = $(this).val();
+
+            // Remove todos os caracteres não numéricos
+            var numericValue = inputValue.replace(/[^0-9]/g, '');
+
+            // Verifica se o valor numérico não está vazio
+            if (numericValue !== '') {
+                // Converte para número e formata com duas casas decimais
+                var formattedValue = (parseFloat(numericValue) / 100).toFixed(2);
+
+                // Define o valor formatado de volta no campo
+                $(this).val(formattedValue);
+            }
+        });
+    });
+</script>
 <link href="/front/vendor/datatables/dataTables.bootstrap4.min.css" rel="stylesheet">
 <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
     <thead>
@@ -422,45 +483,46 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST)) {
     <section id="ticket">
         <div>
             <?php echo getDatabaseTicketCode(getDatabaseCartTicketSelectTicketID(getDatabaseCartTicketSelectCartID($cart_id))) ?>
-            <small>(Você terá um desconto de
-                [<?php echo ($discount !== false) ? $discount : 'Você não selecionou nenhum cupom.' ?>])</small>
+            <small><?php echo ($discount !== false) ? 'Você terá um desconto de [' . doTypeDiscount($discount) . ']' : 'Você não selecionou nenhum cupom.' ?></small>
         </div>
         <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#ticketModal">Alterar</button>
     </section>
     <hr>
-    <section id="pay">
-        <div><?php echo getDatabaseSettingsPayType(getDatabaseUserSelectPayID(getDatabaseUserSelectByUserID($in_user_id))); ?>
-        </div>
-        <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#paysModal">Alterar</button>
-    </section>
-    <hr>
-    <section id="ticket">
-        <div>
-            <p class="t">Taxa de entrega
-                <label class="v">R$ <?php echo getDatabaseSettingsDeliveryFee(1) ?></label>
-            </p>
-            <p class="t">Desconto de Cupom
-                <label class="v">-<?php
-                if (doGeneralValidationPriceType($discount)) {
-                    echo $discount;
-                } else {
-                    echo 'R$ ' . (int) $discount;
-                }
-                ?></label>
-            </p>
-            <b>
-                <p class="t">Total do Pedido
-                    <label class="v">R$
-                        <?php echo (doCartTotalPrice($cart_id) - doCartTotalPriceDiscount($cart_id)) ?></label>
+    <form action="/cart" method="POST">
+        <section id="pay">
+            <div>
+                <?php echo getDatabaseSettingsPayType(getDatabaseUserSelectPayID(getDatabaseUserSelectByUserID($in_user_id))); ?>
+                <?php
+                if (getDatabaseUserSelectPayID(getDatabaseUserSelectByUserID($in_user_id)) == getDatabaseSettingsPayMoney(1)) { ?>
+                    <div class="form-group">
+                        <label for="change">Troco para:</label>
+                        <input type="text" name="change" class="form-control priceFormat" id="change" value="">
+                    </div>
+                <?php }
+                ?>
+            </div>
+            <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#paysModal">Alterar</button>
+        </section>
+        <hr>
+        <section id="ticket">
+            <div>
+                <p class="t">Taxa de entrega
+                    <label class="v">R$ <?php echo getDatabaseSettingsDeliveryFee(1) ?></label>
                 </p>
-            </b>
-        </div>
-        <form action="/cart" method="POST">
+                <p class="t">Desconto de Cupom
+                    <label class="v">-<?php echo doTypeDiscount($discount) ?></label>
+                </p>
+                <b>
+                    <p class="t">Total do Pedido
+                        <label class="v">R$
+                            <?php echo sprintf("%.2f", (doCartTotalPrice($cart_id) - doCartTotalPriceDiscount($cart_id))) ?></label>
+                    </p>
+                </b>
+            </div>
             <input name="token" type="text" value="<?php echo addGeneralSecurityToken('tokenRequestOrder') ?>" hidden>
-            <input name="cart_id" type="text" value="<?php echo $cart_id ?>" hidden>
             <button type="submit" class="btn btn-primary">Confirmar Compra</button>
-        </form>
-    </section>
+        </section>
+    </form>
 </div>
 
 
@@ -576,17 +638,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST)) {
                             if ($ticket_list) {
                                 foreach ($ticket_list as $dataTicket) {
                                     $ticket_list_id = $dataTicket['id'];
-                                    ?>
-                                    <tr>
-                                        <td><input <?php echo doCheck(isDatabaseCartTicketSelectNotUsed($ticket_list_id, $cart_id), 1) ?> type="radio" name="ticket_select"
-                                                value="<?php echo $ticket_list_id ?>" />
-                                        </td>
-                                        <td><?php echo getDatabaseTicketCode($ticket_list_id) ?></td>
-                                        <td><?php echo getDatabaseTicketValue($ticket_list_id) ?></td>
-                                        <td>Utilize este cupom, para receber o desconto de
-                                            [<?php echo getDatabaseTicketValue($ticket_list_id) ?>]</td>
-                                    </tr>
-                                    <?php
+                                    if (isDatabaseCartTicketSelectUsed($ticket_list_id, $in_user_id) === false) {
+                                        ?>
+                                        <tr>
+                                            <td><input <?php echo doCheck(isDatabaseCartTicketSelectNotUsed($ticket_list_id, $cart_id), 1) ?> type="radio" name="ticket_select"
+                                                    value="<?php echo $ticket_list_id ?>" />
+                                            </td>
+                                            <td><?php echo getDatabaseTicketCode($ticket_list_id) ?></td>
+                                            <td><?php echo getDatabaseTicketValue($ticket_list_id) ?></td>
+                                            <td>Utilize este cupom, para receber o desconto de
+                                                [<?php echo getDatabaseTicketValue($ticket_list_id) ?>]</td>
+                                        </tr>
+                                        <?php
+                                    }
                                 }
                             } else { ?>
                                 <tr>
@@ -606,7 +670,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST)) {
                 <div class="modal-footer">
                     <input name="token" type="text"
                         value="<?php echo addGeneralSecurityToken('tokenCartTicketSelect') ?>" hidden>
-                    <input name="cart_id" type="text" value="<?php echo $cart_id ?>" hidden>
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Fechar</button>
                     <button type="submit" class="btn btn-primary">Salvar</button>
                 </div>
@@ -660,11 +723,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST)) {
                                 </tr><?php
                             } ?>
                             <!-- PAGAMENTO FIM -->
-                            <tr>
+                            <!-- <tr>
                                 <th colspan="3">
                                     <center>Pagamento Online</center>
                                 </th>
-                            </tr>
+                            </tr> -->
                         </table>
                     </div>
                 </div>

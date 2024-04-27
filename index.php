@@ -4,7 +4,7 @@ $media = doAvailableGeneral();
 ?>
 <div id="restaurant-info">
     <section id="status">
-        <div id="status-info">
+        <div id="status-info" class="status-select">
             <div id="status-icon" class="status-<?php echo (isOpen()) ? 'open' : 'close'; ?>"></div>
             <div id="three-info">
                 <p><?php echo (isOpen()) ? 'Aberto' : 'Fechado'; ?></p>
@@ -25,7 +25,7 @@ $media = doAvailableGeneral();
             </div>
         </div>
     </section>
-    <section id="pays">
+    <section id="pays" class="status-select">
         <div id="pays-info">
             <div id="pays-icon">
                 <i class="fa-solid fa-credit-card"></i>

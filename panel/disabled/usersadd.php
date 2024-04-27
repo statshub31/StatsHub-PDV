@@ -251,7 +251,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <option value="0">-- Selecione --</option>
             <?php
             $accountCB = doAccountsCBCodeListAvailable();
-            data_dump($accountCB);
             if ($accountCB) {
                 foreach ($accountCB as $data) {
                     ?>

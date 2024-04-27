@@ -3,18 +3,9 @@ include_once __DIR__ . '/layout/php/header.php';
 ?>
 
 <?php
-
 $order_id = getURLLastParam();
-if (isDatabaseRequestOrderExistID($order_id) === false) {
-} else {
-    $cart_id = getDatabaseRequestOrderCartID($order_id);
-    $order_last_log_id = doDatabaseRequestOrderLogsLastLogByOrderID($order_id);
-
-    if (isDatabaseCartUserValidation($in_user_id, $cart_id) === false) {
-        header('Location: /cart');
-    }
-}
-
+$order_last_log_id = doGeneralSecurityOrder($order_id);
+$cart_id = getDatabaseRequestOrderCartID($order_id);
 ?>
 
 <?php
@@ -24,9 +15,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST)) {
 
     // EDIT USER
 
-    // if (getGeneralSecurityToken('tokenAvailable')) {
-    if (1 == 1) {
-        data_dump($_POST);
+    if (getGeneralSecurityToken('tokenAvailable')) {
         if (empty($_POST) === false) {
             $required_fields_status = true;
 
@@ -44,6 +33,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST)) {
                         $errors[] = "Houve um erro ao enviar a avaliação, reinicie a pagina e tente novamente";
                     }
                 }
+
                 if ($_POST['food'] < 0 || $_POST['food'] > 5) {
                     $errors[] = "Houve um erro ao enviar a avaliação, reinicie a pagina e tente novamente";
                 }
@@ -55,6 +45,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST)) {
                 }
                 if ($_POST['costbenefit'] < 0 || $_POST['costbenefit'] > 5) {
                     $errors[] = "Houve um erro ao enviar a avaliação, reinicie a pagina e tente novamente";
+                }
+
+                if (!empty($_POST['comment'])) {
+                    if (doGeneralValidationDescriptionFormat($_POST['comment']) == false) {
+                        $errors[] = "Reveja o comentário, existem caracteres invalido.";
+                    }
+
+                    if(strlen($_POST['comment']) > 100) {
+                        $errors[] = "Está muito cumprido está validação, se limite a 100 caracteres.";
+                    }
                 }
             }
 
@@ -101,7 +101,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST)) {
         }
         ?>
         <div id="order-image">
-            <img src="<?php echo getPathModelImage('statusdelivery'.getDatabaseRequestOrderLogStatusDelivery($order_last_log_id)) ?>"/>
+            <img
+                src="<?php echo getPathModelImage('statusdelivery' . getDatabaseRequestOrderLogStatusDelivery($order_last_log_id)) ?>" />
         </div>
         <br>
         <div>
@@ -156,7 +157,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST)) {
         <hr>
         <label>Pagamento na Entrega</label>
         <label id="order-total">Total <span>R$
-                <?php echo (doCartTotalPrice($cart_id) - doCartTotalPriceDiscount($cart_id)) ?></span></label>
+                <?php echo sprintf("%.2f", (doCartTotalPrice($cart_id) - doCartTotalPriceDiscount($cart_id))) ?></span></label>
     </section>
     <?php
     if (getDatabaseRequestOrderLogStatusDelivery($order_last_log_id) == 5) {
@@ -170,45 +171,53 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST)) {
                         <div id="stars">
                             <section
                                 class="star <?php echo (isDatabaseRequestOrderAvailableFoodAvailable($available_id, 1)) ? 'star colorstar' : ''; ?>">
-                                <input <?php echo doCheck(isDatabaseRequestOrderAvailableFoodAvailable($available_id, 1), 1) ?>
-                                    type="radio" name="food" id="starFood1" value="1" onclick="fillPreviousStars(1, 'Food')"
-                                    hidden>
+                                <input <?php
+                                echo doCheck(isDatabaseRequestOrderAvailableFoodAvailable($available_id, 1), 1)
+                                    ?> type="radio" name="food" id="starFood1" value="1"
+                                    onclick="fillPreviousStars(1, 'Food')" hidden>
                                 <label for="starFood1">
                                     <img src="/layout/images/model/star-a.svg">
                                 </label>
                             </section>
                             <section
                                 class="star <?php echo (isDatabaseRequestOrderAvailableFoodAvailable($available_id, 2)) ? 'star colorstar' : ''; ?>">
-                                <input <?php echo doCheck(isDatabaseRequestOrderAvailableFoodAvailable($available_id, 1), 2) ?>
-                                    type="radio" name="food" id="starFood2" value="2" onclick="fillPreviousStars(2, 'Food')"
-                                    hidden>
+                                <input <?php
+                                echo doCheck(isDatabaseRequestOrderAvailableFoodAvailable($available_id, 1), 2)
+                                    ?> type="radio" name="food" id="starFood2" value="2"
+                                    onclick="fillPreviousStars(2, 'Food')" hidden>
                                 <label for="starFood2">
                                     <img src="/layout/images/model/star-a.svg">
                                 </label>
                             </section>
-                            <section
-                                class="star <?php echo (isDatabaseRequestOrderAvailableFoodAvailable($available_id, 3)) ? 'star colorstar' : ''; ?>">
-                                <input <?php echo doCheck(isDatabaseRequestOrderAvailableFoodAvailable($available_id, 1), 3) ?>
-                                    type="radio" name="food" id="starFood3" value="3" onclick="fillPreviousStars(3, 'Food')"
-                                    hidden>
+                            <section class="star <?php
+                            echo (isDatabaseRequestOrderAvailableFoodAvailable($available_id, 3)) ? 'star colorstar' : '';
+                            ?>">
+                                <input <?php
+                                echo doCheck(isDatabaseRequestOrderAvailableFoodAvailable($available_id, 1), 3)
+                                    ?> type="radio" name="food" id="starFood3" value="3"
+                                    onclick="fillPreviousStars(3, 'Food')" hidden>
                                 <label for="starFood3">
                                     <img src="/layout/images/model/star-a.svg">
                                 </label>
                             </section>
-                            <section
-                                class="star <?php echo (isDatabaseRequestOrderAvailableFoodAvailable($available_id, 4)) ? 'star colorstar' : ''; ?>">
-                                <input <?php echo doCheck(isDatabaseRequestOrderAvailableFoodAvailable($available_id, 1), 4) ?>
-                                    type="radio" name="food" id="starFood4" value="4" onclick="fillPreviousStars(4, 'Food')"
-                                    hidden>
+                            <section class="star <?php
+                            echo (isDatabaseRequestOrderAvailableFoodAvailable($available_id, 4)) ? 'star colorstar' : '';
+                            ?>">
+                                <input <?php
+                                echo doCheck(isDatabaseRequestOrderAvailableFoodAvailable($available_id, 1), 4)
+                                    ?> type="radio" name="food" id="starFood4" value="4"
+                                    onclick="fillPreviousStars(4, 'Food')" hidden>
                                 <label for="starFood4">
                                     <img src="/layout/images/model/star-a.svg">
                                 </label>
                             </section>
-                            <section
-                                class="star <?php echo (isDatabaseRequestOrderAvailableFoodAvailable($available_id, 5)) ? 'star colorstar' : ''; ?>">
-                                <input <?php echo doCheck(isDatabaseRequestOrderAvailableFoodAvailable($available_id, 1), 5) ?>
-                                    type="radio" name="food" id="starFood5" value="5" onclick="fillPreviousStars(5, 'Food')"
-                                    hidden>
+                            <section class="star <?php
+                            echo (isDatabaseRequestOrderAvailableFoodAvailable($available_id, 5)) ? 'star colorstar' : '';
+                            ?>">
+                                <input <?php
+                                echo doCheck(isDatabaseRequestOrderAvailableFoodAvailable($available_id, 1), 5)
+                                    ?> type="radio" name="food" id="starFood5" value="5"
+                                    onclick="fillPreviousStars(5, 'Food')" hidden>
                                 <label for="starFood5">
                                     <img src="/layout/images/model/star-a.svg">
                                 </label>
@@ -218,46 +227,56 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST)) {
                     <section>
                         <label>Embalagem</label>
                         <div id="stars">
-                            <section
-                                class="star <?php echo (isDatabaseRequestOrderAvailableBoxAvailable($available_id, 1)) ? 'star colorstar' : ''; ?>">
-                                <input <?php echo doCheck(isDatabaseRequestOrderAvailableBoxAvailable($available_id, 1), 1) ?>
-                                    type="radio" name="box" id="starBox1" value="1" onclick="fillPreviousStars(1, 'Box')"
+                            <section class="star <?php
+                            echo (isDatabaseRequestOrderAvailableBoxAvailable($available_id, 1)) ? 'star colorstar' : '';
+                            ?>">
+                                <input <?php
+                                echo doCheck(isDatabaseRequestOrderAvailableBoxAvailable($available_id, 1), 1)
+                                    ?> type="radio" name="box" id="starBox1" value="1" onclick="fillPreviousStars(1, 'Box')"
                                     hidden>
                                 <label for="starBox1">
                                     <img src="/layout/images/model/star-a.svg">
                                 </label>
                             </section>
-                            <section
-                                class="star <?php echo (isDatabaseRequestOrderAvailableBoxAvailable($available_id, 2)) ? 'star colorstar' : ''; ?>">
-                                <input <?php echo doCheck(isDatabaseRequestOrderAvailableBoxAvailable($available_id, 1), 2) ?>
-                                    type="radio" name="box" id="starBox2" value="2" onclick="fillPreviousStars(2, 'Box')"
+                            <section class="star <?php
+                            echo (isDatabaseRequestOrderAvailableBoxAvailable($available_id, 2)) ? 'star colorstar' : '';
+                            ?>">
+                                <input <?php
+                                echo doCheck(isDatabaseRequestOrderAvailableBoxAvailable($available_id, 1), 2)
+                                    ?> type="radio" name="box" id="starBox2" value="2" onclick="fillPreviousStars(2, 'Box')"
                                     hidden>
                                 <label for="starBox2">
                                     <img src="/layout/images/model/star-a.svg">
                                 </label>
                             </section>
-                            <section
-                                class="star <?php echo (isDatabaseRequestOrderAvailableBoxAvailable($available_id, 3)) ? 'star colorstar' : ''; ?>">
-                                <input <?php echo doCheck(isDatabaseRequestOrderAvailableBoxAvailable($available_id, 1), 3) ?>
-                                    type="radio" name="box" id="starBox3" value="3" onclick="fillPreviousStars(3, 'Box')"
+                            <section class="star <?php
+                            echo (isDatabaseRequestOrderAvailableBoxAvailable($available_id, 3)) ? 'star colorstar' : '';
+                            ?>">
+                                <input <?php
+                                echo doCheck(isDatabaseRequestOrderAvailableBoxAvailable($available_id, 1), 3)
+                                    ?> type="radio" name="box" id="starBox3" value="3" onclick="fillPreviousStars(3, 'Box')"
                                     hidden>
                                 <label for="starBox3">
                                     <img src="/layout/images/model/star-a.svg">
                                 </label>
                             </section>
-                            <section
-                                class="star <?php echo (isDatabaseRequestOrderAvailableBoxAvailable($available_id, 4)) ? 'star colorstar' : ''; ?>">
-                                <input <?php echo doCheck(isDatabaseRequestOrderAvailableBoxAvailable($available_id, 1), 4) ?>
-                                    type="radio" name="box" id="starBox4" value="4" onclick="fillPreviousStars(4, 'Box')"
+                            <section class="star <?php
+                            echo (isDatabaseRequestOrderAvailableBoxAvailable($available_id, 4)) ? 'star colorstar' : '';
+                            ?>">
+                                <input <?php
+                                echo doCheck(isDatabaseRequestOrderAvailableBoxAvailable($available_id, 1), 4)
+                                    ?> type="radio" name="box" id="starBox4" value="4" onclick="fillPreviousStars(4, 'Box')"
                                     hidden>
                                 <label for="starBox4">
                                     <img src="/layout/images/model/star-a.svg">
                                 </label>
                             </section>
-                            <section
-                                class="star <?php echo (isDatabaseRequestOrderAvailableBoxAvailable($available_id, 5)) ? 'star colorstar' : ''; ?>">
-                                <input <?php echo doCheck(isDatabaseRequestOrderAvailableBoxAvailable($available_id, 1), 5) ?>
-                                    type="radio" name="box" id="starBox5" value="5" onclick="fillPreviousStars(5, 'Box')"
+                            <section class="star <?php
+                            echo (isDatabaseRequestOrderAvailableBoxAvailable($available_id, 5)) ? 'star colorstar' : '';
+                            ?>">
+                                <input <?php
+                                echo doCheck(isDatabaseRequestOrderAvailableBoxAvailable($available_id, 1), 5)
+                                    ?> type="radio" name="box" id="starBox5" value="5" onclick="fillPreviousStars(5, 'Box')"
                                     hidden>
                                 <label for="starBox5">
                                     <img src="/layout/images/model/star-a.svg">
@@ -268,9 +287,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST)) {
                     <section>
                         <label>Tempo de Entrega</label>
                         <div id="stars">
-                            <section
-                                class="star <?php echo (isDatabaseRequestOrderAvailableDeliveryTimeAvailable($available_id, 1)) ? 'star colorstar' : ''; ?>">
-                                <input <?php echo doCheck(isDatabaseRequestOrderAvailableDeliveryTimeAvailable($available_id, 1), 1) ?> type="radio" name="deliverytime" id="starDeliveryTime1" value="1"
+                            <section class="star <?php
+                            echo (isDatabaseRequestOrderAvailableDeliveryTimeAvailable($available_id, 1)) ? 'star colorstar' : '';
+                            ?>">
+                                <input <?php
+                                echo doCheck(isDatabaseRequestOrderAvailableDeliveryTimeAvailable($available_id, 1), 1)
+                                    ?> type="radio" name="deliverytime" id="starDeliveryTime1" value="1"
                                     onclick="fillPreviousStars(1, 'DeliveryTime')" hidden>
                                 <label for="starDeliveryTime1">
                                     <img src="/layout/images/model/star-a.svg">
@@ -278,7 +300,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST)) {
                             </section>
                             <section
                                 class="star <?php echo (isDatabaseRequestOrderAvailableDeliveryTimeAvailable($available_id, 2)) ? 'star colorstar' : ''; ?>">
-                                <input <?php echo doCheck(isDatabaseRequestOrderAvailableDeliveryTimeAvailable($available_id, 1), 2) ?> type="radio" name="deliverytime" id="starDeliveryTime2" value="2"
+                                <input <?php echo doCheck(isDatabaseRequestOrderAvailableDeliveryTimeAvailable($available_id, 1), 2) ?>
+                                    type="radio" name="deliverytime" id="starDeliveryTime2" value="2"
                                     onclick="fillPreviousStars(2, 'DeliveryTime')" hidden>
                                 <label for="starDeliveryTime2">
                                     <img src="/layout/images/model/star-a.svg">
@@ -286,7 +309,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST)) {
                             </section>
                             <section
                                 class="star <?php echo (isDatabaseRequestOrderAvailableDeliveryTimeAvailable($available_id, 3)) ? 'star colorstar' : ''; ?>">
-                                <input <?php echo doCheck(isDatabaseRequestOrderAvailableDeliveryTimeAvailable($available_id, 1), 3) ?> type="radio" name="deliverytime" id="starDeliveryTime3" value="3"
+                                <input <?php echo doCheck(isDatabaseRequestOrderAvailableDeliveryTimeAvailable($available_id, 1), 3) ?>
+                                    type="radio" name="deliverytime" id="starDeliveryTime3" value="3"
                                     onclick="fillPreviousStars(3, 'DeliveryTime')" hidden>
                                 <label for="starDeliveryTime3">
                                     <img src="/layout/images/model/star-a.svg">
@@ -294,7 +318,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST)) {
                             </section>
                             <section
                                 class="star <?php echo (isDatabaseRequestOrderAvailableDeliveryTimeAvailable($available_id, 4)) ? 'star colorstar' : ''; ?>">
-                                <input <?php echo doCheck(isDatabaseRequestOrderAvailableDeliveryTimeAvailable($available_id, 1), 4) ?> type="radio" name="deliverytime" id="starDeliveryTime4" value="4"
+                                <input <?php echo doCheck(isDatabaseRequestOrderAvailableDeliveryTimeAvailable($available_id, 1), 4) ?>
+                                    type="radio" name="deliverytime" id="starDeliveryTime4" value="4"
                                     onclick="fillPreviousStars(4, 'DeliveryTime')" hidden>
                                 <label for="starDeliveryTime4">
                                     <img src="/layout/images/model/star-a.svg">
@@ -302,7 +327,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST)) {
                             </section>
                             <section
                                 class="star <?php echo (isDatabaseRequestOrderAvailableDeliveryTimeAvailable($available_id, 5)) ? 'star colorstar' : ''; ?>">
-                                <input <?php echo doCheck(isDatabaseRequestOrderAvailableDeliveryTimeAvailable($available_id, 1), 5) ?> type="radio" name="deliverytime" id="starDeliveryTime5" value="5"
+                                <input <?php echo doCheck(isDatabaseRequestOrderAvailableDeliveryTimeAvailable($available_id, 1), 5) ?>
+                                    type="radio" name="deliverytime" id="starDeliveryTime5" value="5"
                                     onclick="fillPreviousStars(5, 'DeliveryTime')" hidden>
                                 <label for="starDeliveryTime5">
                                     <img src="/layout/images/model/star-a.svg">
@@ -367,10 +393,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST)) {
                 </div>
 
 
-                <textarea <?php echo (isDatabaseRequestOrderAvailableExistByOrderID($order_id) ? 'disabled' : '') ?> name="comment" class="form-control third-available-frame comments"
+                <textarea <?php echo (isDatabaseRequestOrderAvailableExistByOrderID($order_id) ? 'disabled' : '') ?>
+                    name="comment" class="form-control third-available-frame comments"
                     aria-label="With textarea"><?php echo getDatabaseRequestOrderAvailableComment(getDatabaseRequestOrderAvailableExistByOrderID($order_id)) ?></textarea>
             </div>
-        <?php
+            <?php
     }
     ?>
 
@@ -469,13 +496,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST)) {
                     <section id="ticket">
                         <div>
                             <?php echo getDatabaseTicketCode(getDatabaseCartTicketSelectTicketID(getDatabaseCartTicketSelectCartID($cart_id))) ?>
-                            <small>(Você terá um desconto de
-                                [<?php echo ($discount !== false) ? $discount : 'Você não selecionou nenhum cupom.' ?>])</small>
+                            <small><?php echo ($discount !== false) ? 'Você terá um desconto de [' . doTypeDiscount($discount) . ']' : 'Você não selecionou nenhum cupom.' ?></small>
                         </div>
                     </section>
                     <hr>
                     <section id="pay">
-                        <div><?php echo (getDatabaseRequestOrderPayIDSelect($order_id)); ?>
+                        <div>
+                            <?php echo getDatabaseSettingsPayType(getDatabaseRequestOrderPayIDSelect($order_id)); ?><br>
+                            <?php
+                            if (getDatabaseRequestOrderPayIDSelect($order_id) == getDatabaseSettingsPayMoney(1)) { ?>
+                                <label for="change">Troco para:
+                                    <?php echo getDatabaseRequestOrderChangeOf($order_id) ?></label>
+                            <?php }
+                            ?>
                         </div>
                     </section>
                     <hr>
@@ -485,18 +518,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST)) {
                                 <label class="v">R$ <?php echo getDatabaseSettingsDeliveryFee(1) ?></label>
                             </p>
                             <p class="t">Desconto de Cupom
-                                <label class="v">-<?php
-                                if (doGeneralValidationPriceType($discount)) {
-                                    echo $discount;
-                                } else {
-                                    echo 'R$ ' . (int) $discount;
-                                }
-                                ?></label>
+                                <label class="v">- <?php echo doTypeDiscount($discount) ?></label>
                             </p>
                             <b>
                                 <p class="t">Total do Pedido
                                     <label class="v">R$
-                                        <?php echo (doCartTotalPrice($cart_id) - doCartTotalPriceDiscount($cart_id)) ?></label>
+                                        <?php echo sprintf("%.2f", (doCartTotalPrice($cart_id) - doCartTotalPriceDiscount($cart_id))) ?></label>
                                 </p>
                             </b>
                         </div>
@@ -516,8 +543,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST)) {
         for (let i = 1; i <= selectedStar; i++) {
             document.getElementById('star' + type + i).parentNode.classList.add('colorstar');
         }
-        
-        for (let i = selectedStar+ 1; i <= 5; i++) {
+
+        for (let i = selectedStar + 1; i <= 5; i++) {
             document.getElementById('star' + type + i).parentNode.classList.remove('colorstar');
         }
     }

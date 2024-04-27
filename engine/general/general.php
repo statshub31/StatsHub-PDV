@@ -2,54 +2,68 @@
 // VALIDADORES
 
 
-function doGeneralValidationNameFormat($string) {
+function doGeneralValidationNameFormat($string)
+{
     return preg_match('/^[a-zA-Z ]*$/', $string);
 }
-function doGeneralValidationProductNameFormat($string) {
+function doGeneralValidationProductNameFormat($string)
+{
     return preg_match('/^[a-zA-Z0-9 ]*$/', $string);
 }
 
-function doGeneralValidationProductAlphaNumericFormat($string) {
+function doGeneralValidationProductAlphaNumericFormat($string)
+{
     return preg_match('/^[a-zA-Z0-9 ]*$/', $string);
 }
-function doGeneralValidationUserNameFormat($string) {
+function doGeneralValidationUserNameFormat($string)
+{
     return preg_match('/^[a-zA-Z0-9]*$/', $string);
 }
-function doGeneralValidationPasswordFormat($string) {
+function doGeneralValidationPasswordFormat($string)
+{
     return preg_match('/^[a-zA-Z!@#$%&0-9]*$/', $string);
 }
-function doGeneralValidationCodeFormat($string) {
+function doGeneralValidationCodeFormat($string)
+{
     return preg_match('/^[a-zA-Z0-9]*$/', $string);
 }
 
-function doGeneralValidationDiscountFormat($string) {
+function doGeneralValidationDiscountFormat($string)
+{
     return preg_match('/^[0-9%]*$/', $string);
 }
 
-function doGeneralValidationPhoneFormat($string) {
+function doGeneralValidationPhoneFormat($string)
+{
     return preg_match('/^[0-9]*$/', $string);
 }
 
-function doGeneralValidationNumberFormat($string) {
+function doGeneralValidationNumberFormat($string)
+{
     return preg_match('/^[0-9]*$/', $string);
 }
 
-function doGeneralValidationPriceFormat($string) {
-    return preg_match('/^[0-9.]*$/', $string);
+function doGeneralValidationPriceFormat($string)
+{
+    return preg_match('/^[0-9.,]*$/', $string);
 }
 
-function doGeneralValidationEmailFormat($string) {
+function doGeneralValidationEmailFormat($string)
+{
     return filter_var($string, FILTER_VALIDATE_EMAIL);
 }
 
-function doGeneralCategoryNameFormat($string) {
+function doGeneralCategoryNameFormat($string)
+{
     return preg_match('/^[a-zA-Z ]*$/', $string);
 }
 
-function doGeneralValidationDescriptionFormat($string) {
+function doGeneralValidationDescriptionFormat($string)
+{
     return preg_match('/^[a-zA-Z.,:^~´`éóíóú #$%]*$/', $string);
 }
-function doGeneralValidationPriceType($string) {
+function doGeneralValidationPriceType($string)
+{
     return preg_match('/^.*%$/', $string);
 }
 
@@ -57,17 +71,17 @@ function isCampanhaInURL($param)
 {
     // Obtém a parte da URL após o nome do domínio
     $url = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
-    
+
     // Divide a URL em segmentos
     $parts = explode('/', $url);
-    
+
     // Verifica se algum dos segmentos é "campanha"
     foreach ($parts as $part) {
         if ($part === $param) {
             return true;
         }
     }
-    
+
     return false;
 }
 
@@ -94,7 +108,7 @@ function getURLLastParam()
 function getPathImageFormat($dir, $img)
 {
 
-    if(empty($img)) 
+    if (empty($img))
         return false;
 
     $expr = $_SERVER['DOCUMENT_ROOT'] . $dir . $img . '*';
@@ -162,7 +176,8 @@ function getPathModelImage($img)
     }
 }
 
-function doGeneralRemoveArchives($caminho_pasta, $nome_arquivo) {
+function doGeneralRemoveArchives($caminho_pasta, $nome_arquivo)
+{
     // Obtém uma lista de todos os arquivos no diretório
     $arquivos = scandir($caminho_pasta);
 
@@ -188,15 +203,16 @@ function doGeneralRemoveArchives($caminho_pasta, $nome_arquivo) {
     }
 }
 
-function doGeneralRemoveArchive($caminho_pasta, $nome_arquivo) {
+function doGeneralRemoveArchive($caminho_pasta, $nome_arquivo)
+{
     // Caminho completo para o arquivo
-    
-    $format = getPathImageFormat($caminho_pasta, $nome_arquivo);
-    $caminho_arquivo = $_SERVER['DOCUMENT_ROOT'] . $caminho_pasta . $nome_arquivo.'.'.$format;
 
-    if($format == false)
+    $format = getPathImageFormat($caminho_pasta, $nome_arquivo);
+    $caminho_arquivo = $_SERVER['DOCUMENT_ROOT'] . $caminho_pasta . $nome_arquivo . '.' . $format;
+
+    if ($format == false)
         return false;
-     
+
     // Verifica se o arquivo existe
     if (file_exists($caminho_arquivo)) {
         // Tenta remover o arquivo
@@ -317,9 +333,9 @@ function validateRequiredFields($postData, $requiredFields)
 
 function validateRequiredFilesFields($postData, $requiredFields)
 {
-    
-    foreach($postData as $key => $value) {
-        if(in_array($key, $requiredFields) && $value['size'] <= 0) {
+
+    foreach ($postData as $key => $value) {
+        if (in_array($key, $requiredFields) && $value['size'] <= 0) {
             return false; // Pelo menos um campo obrigatório não está preenchido
         }
     }
@@ -346,7 +362,8 @@ function data_dump($print = false, $var = false, $title = false)
     echo '</pre><br>';
 }
 
-function removerArquivos($caminho_pasta, $nome_arquivo) {
+function removerArquivos($caminho_pasta, $nome_arquivo)
+{
     // Obtém uma lista de todos os arquivos no diretório
     $arquivos = scandir($caminho_pasta);
     // Variável para armazenar o número de arquivos removidos
@@ -357,7 +374,7 @@ function removerArquivos($caminho_pasta, $nome_arquivo) {
         // Verifica se o arquivo corresponde ao nome conhecido
         if (strpos($arquivo, $nome_arquivo) !== false) {
             // Remove o arquivo
-            if (unlink($caminho_pasta.'/'. $arquivo)) {
+            if (unlink($caminho_pasta . '/' . $arquivo)) {
                 $num_arquivos_removidos++;
             }
         }
@@ -371,31 +388,38 @@ function removerArquivos($caminho_pasta, $nome_arquivo) {
     }
 }
 
-function doSelect($f, $d) {
+function doSelect($f, $d)
+{
     return ($f == $d) ? 'selected' : '';
 }
-function doCheck($f, $d) {
+function doCheck($f, $d)
+{
     return ($f == $d) ? 'checked' : '';
 }
 
-function doYN($f) {
+function doYN($f)
+{
     return ($f == 1) ? 'Sim' : 'Não';
 }
 
-function isGeneralExistProduct($table, $n) {
+function isGeneralExistProduct($table, $n)
+{
     return isset($table[$n]);
 }
 
-function doTime($time) {
+function doTime($time)
+{
     return date("H:i", strtotime($time));
 }
 
-function doDate($date) {
+function doDate($date)
+{
     return date("d/m/Y", strtotime($date));
 }
 
 
-function doStyleProgress($n) {
+function doStyleProgress($n)
+{
     $style = array(
         1 => '#ff5722',
         2 => '#e1d702',
@@ -405,10 +429,18 @@ function doStyleProgress($n) {
         6 => '#f44336'
     );
 
-    return (isset($style[$n])) ? $style[$n] : $style[1]; 
+    return (isset($style[$n])) ? $style[$n] : $style[1];
 }
 
 
-function doBRDateTime($date) {
+function doBRDateTime($date)
+{
     return date('d/m/Y H:i', strtotime($date));
+}
+
+
+function doTypeDiscount($discount)
+{
+
+    return (doGeneralValidationPriceType($discount)) ? $discount : 'R$ ' . sprintf("%.2f", (int) $discount);
 }

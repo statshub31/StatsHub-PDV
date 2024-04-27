@@ -281,6 +281,7 @@ create table request_order (
     `address_id_select` int null,
     `ticket_id_select` int null,
     `pay_id` int null,
+    `change_of` float(5, 2) null,
     FOREIGN KEY (`status`) REFERENCES `status`(`id`),
     FOREIGN KEY (`deliveryman`) REFERENCES `users`(`id`),
     FOREIGN KEY (`address_id_select`) REFERENCES `address`(`id`),
@@ -384,8 +385,10 @@ create table user_select (
 create table cart_ticket_select (
     `id` int PRIMARY KEY AUTO_INCREMENT,
     `ticket_id` int not null default 1,
+    `user_id` int not null,
     `cart_id` int null,
     `used` boolean not null default 0,
+    FOREIGN KEY (`user_id`) REFERENCES `users`(`id`),
     FOREIGN KEY (`ticket_id`) REFERENCES `tickets`(`id`),
     FOREIGN KEY (`cart_id`) REFERENCES `carts`(`id`)
 );

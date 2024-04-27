@@ -56,7 +56,17 @@ include_once __DIR__ . '/layout/php/header.php';
                     <h5 class="card-title"><?php echo getDatabaseProductName($product_list_id) ?></h5>
                     <h5 class="category"><?php echo getDatabaseCategoryTitle(getDatabaseProductCategoryID($product_list_id)) ?>
                     </h5>
-                    <p class="card-text"><?php echo getDatabaseProductDescription($product_list_id) ?></p>
+                    <p class="card-text">
+                        <a class="btn btn-primary" data-bs-toggle="collapse" href="#collapseExample" role="button"
+                            aria-expanded="false" aria-controls="collapseExample">
+                            Detalhes
+                        </a>
+                    <div class="collapse" id="collapseExample">
+                        <div class="card card-body w-100">
+                            <?php echo getDatabaseProductDescription($product_list_id) ?>
+                        </div>
+                    </div>
+                    </p>
                 </div>
                 <ul class="list-group list-group-flush">
                     <?php
@@ -106,43 +116,43 @@ include_once __DIR__ . '/layout/php/header.php';
 </script>
 
 <script>
-document.addEventListener('DOMContentLoaded', function () {
-    const navOptions = document.querySelectorAll('#menu-nav .nav-option');
-    const cards = document.querySelectorAll('#menu-list .card');
+    document.addEventListener('DOMContentLoaded', function () {
+        const navOptions = document.querySelectorAll('#menu-nav .nav-option');
+        const cards = document.querySelectorAll('#menu-list .card');
 
-    navOptions.forEach(function (option, index) {
-        option.addEventListener('click', function () {
-            // Remove a classe 'nav-select' de todas as opções de navegação
-            navOptions.forEach(function (opt) {
-                opt.classList.remove('nav-select');
+        navOptions.forEach(function (option, index) {
+            option.addEventListener('click', function () {
+                // Remove a classe 'nav-select' de todas as opções de navegação
+                navOptions.forEach(function (opt) {
+                    opt.classList.remove('nav-select');
+                });
+
+                // Adiciona a classe 'nav-select' à opção de navegação clicada
+                option.classList.add('nav-select');
+
+                const selectedCategory = option.querySelector('h6').textContent.toLowerCase();
+
+                // Se a categoria selecionada for "Tudo", mostra todos os produtos
+                if (selectedCategory === 'tudo') {
+                    cards.forEach(function (card) {
+                        card.style.display = 'block';
+                    });
+                } else {
+                    // Percorre todos os cartões de produtos
+                    cards.forEach(function (card) {
+                        const cardCategory = card.querySelector('.category').textContent.toLowerCase();
+
+                        // Verifica se a categoria do produto corresponde à categoria selecionada
+                        if (cardCategory.includes(selectedCategory)) {
+                            card.style.display = 'block'; // Exibe o produto
+                        } else {
+                            card.style.display = 'none'; // Oculta o produto
+                        }
+                    });
+                }
             });
-
-            // Adiciona a classe 'nav-select' à opção de navegação clicada
-            option.classList.add('nav-select');
-
-            const selectedCategory = option.querySelector('h6').textContent.toLowerCase();
-
-            // Se a categoria selecionada for "Tudo", mostra todos os produtos
-            if (selectedCategory === 'tudo') {
-                cards.forEach(function (card) {
-                    card.style.display = 'block';
-                });
-            } else {
-                // Percorre todos os cartões de produtos
-                cards.forEach(function (card) {
-                    const cardCategory = card.querySelector('.category').textContent.toLowerCase();
-
-                    // Verifica se a categoria do produto corresponde à categoria selecionada
-                    if (cardCategory.includes(selectedCategory)) {
-                        card.style.display = 'block'; // Exibe o produto
-                    } else {
-                        card.style.display = 'none'; // Oculta o produto
-                    }
-                });
-            }
         });
     });
-});
 
 </script>
 
