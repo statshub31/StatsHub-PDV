@@ -141,7 +141,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST)) {
     <!-- <input type="hidden" name="user_id" value="" /> -->
 
     <input name="token" type="text" value="<?php echo addGeneralSecurityToken('tokenUserAdd') ?>" hidden />
+    <a href="/panel/users">
+        <button type="button" class="btn btn-secondary">Voltar</button>
+    </a>
     <button type="submit" class="btn btn-primary">Adicionar</button>
+
 </form>
 <?php
 include_once (realpath(__DIR__ . "/layout/php/footer.php"));

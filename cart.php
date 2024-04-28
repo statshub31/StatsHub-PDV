@@ -63,6 +63,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST)) {
                 'status' => 2
             );
 
+            if($ticket !== false) {
+                doDatabaseTicketUsed($ticket);
+                $value = getDatabaseTicketAmountUsed($ticket);
+
+                if(($value+1) > getDatabaseTicketAmount($id_sanitize)) {
+                    
+                    $ticket_fields = array(
+                        'status' => 7,
+                    );
+
+                    doDatabaseTicketUpdate($ticket, $ticket_fields);
+                }
+            
+            }
+
             if (isset($_POST['change'])) {
                 $request_order_insert_fields['change_of'] = (!empty($_POST['change']) ? $_POST['change'] : NULL);
             }
@@ -128,6 +143,26 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST)) {
             if ($_POST['ticket_select'] != 0) {
                 if (isDatabaseTicketExistID($_POST['ticket_select']) === false) {
                     $errors[] = "Houve um erro ao salvar o cupom, reinicie a pagina e tente novamente";
+                }
+
+                if(isDatabaseTicketExpiration($_POST['ticket_select'])) {
+                    $errors[] = "O cupom inserido se encontra expirado.";
+                    
+                    $ticket_fields = array(
+                        'status' => 7,
+                    );
+
+                    doDatabaseTicketUpdate($ticket, $ticket_fields);
+                }
+
+                if(isDatabaseTicketLimit($_POST['ticket_select'])) {
+                    $errors[] = "O cupom já atingiu a cota disponivel.";
+                    
+                    $ticket_fields = array(
+                        'status' => 7,
+                    );
+
+                    doDatabaseTicketUpdate($ticket, $ticket_fields);
                 }
             }
 

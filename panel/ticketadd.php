@@ -9,9 +9,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST)) {
 
     // REMOVE USER
 
-    // if (getGeneralSecurityToken('tokenAddTicket')) {
-    if (1 == 1) {
-
+    if (getGeneralSecurityToken('tokenAddTicket')) {
         if (empty($_POST) === false) {
             $required_fields_status = true;
             $required_fields = array('code', 'value', 'amount');
@@ -100,7 +98,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST)) {
                 </div>
 
                 <div class="form-group">
-                    <label for="amount">Quantidade:
+                    <label for="amount">Quantidade
+                    <font color="red">*</font>:
                         <small><i class="fa fa-question-circle" aria-hidden="true" data-toggle="tooltip"
                                 data-placement="top"
                                 title="Quantidade de cupons. Caso fique em branco, será ilimitado."></i></small>

@@ -319,6 +319,8 @@ $tokenOrderCancel = addGeneralSecurityToken('tokenOrderCancel');
     </div>
 
     <div class="row">
+    <link href="/front/vendor/datatables/dataTables.bootstrap4.min.css" rel="stylesheet">
+
         <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
             <thead>
                 <tr>
@@ -518,8 +520,7 @@ if (isCampanhaInURL("order")) {
                             </div>
                             <div class="modal-body">
 
-                                <link href="/front/vendor/datatables/dataTables.bootstrap4.min.css" rel="stylesheet">
-                                <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                                <table class="table table-bordered" width="100%" cellspacing="0">
                                     <thead>
                                         <tr>
                                             <th></th>
@@ -656,6 +657,25 @@ if (isCampanhaInURL("order")) {
 
 
 
+
+
+<script>
+    $(document).ready(function () {
+        $('#dataTable').DataTable({
+            "language": {
+                "search": "Pesquisar:",
+                "info": "Mostrando _START_ até _END_ de _TOTAL_ entradas",
+                "lengthMenu": "Mostrar _MENU_",
+                "paginate": {
+                    "previous": "Anterior",
+                    "next": "Próximo"
+                }
+                // Outras opções de linguagem...
+            }
+        });
+    });
+
+</script>
 
 
 

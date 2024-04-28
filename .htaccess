@@ -35,6 +35,8 @@ RewriteRule ^panel/productedit(/.*)?$ panel/productedit.php$1 [L]
 RewriteRule ^panel/additional(/.*)?$ panel/additional.php$1 [L]
 RewriteRule ^panel/additionaladd(/.*)?$ panel/additionaladd.php$1 [L]
 RewriteRule ^panel/reports(/.*)?$ panel/reports.php$1 [L]
+RewriteRule ^panel/orders(/.*)?$ panel/orders.php$1 [L]
+
 
 RewriteRule ^panel/complements(/.*)?$ panel/complements.php$1 [L]
 RewriteRule ^panel/complementadd(/.*)?$ panel/complementadd.php$1 [L]

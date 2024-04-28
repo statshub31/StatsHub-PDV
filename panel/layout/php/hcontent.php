@@ -47,9 +47,9 @@
             </div>
         </div>
 
-        <a class="nav-link" href="/panel/teams">
+        <a class="nav-link" href="/panel/orders">
             <i class="fa fa-user-secret" aria-hidden="true"></i>
-            <span>Equipe</span></a>
+            <span>Pedidos</span></a>
 
         <a class="nav-link" href="/panel/sendemail">
             <i class="fa-solid fa-envelope"></i>

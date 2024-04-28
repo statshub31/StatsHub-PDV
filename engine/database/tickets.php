@@ -84,6 +84,16 @@ function getDatabaseTicketExpiration($id)
     return ($query !== false) ? $query['expiration'] : false;
 }
 
+function isDatabaseTicketExpiration($id)
+{
+    
+    $id_sanitize = sanitize($id);
+
+    $query = getDatabaseTicketsData($id_sanitize, 'expiration');
+
+    return ($query !== false && $query['expiration'] > date("Y-m-d")) ? true : false;
+}
+
 function getDatabaseTicketValue($id)
 {
     
@@ -143,7 +153,6 @@ function doDatabaseTicketsList($status = false)
     
     return doSelectMultiDB("SELECT `id` FROM `tickets`");
 }
-
 
 function doDatabaseTicketInsert($import_data_query)
 {
@@ -228,6 +237,26 @@ function doDatabaseTicketsListByStatus($status = 2)
 {
     $status_sanitize = $status;
     return doSelectMultiDB("SELECT `id` FROM `tickets` where `status` = $status_sanitize");
+}
+
+
+function doDatabaseTicketUsed($id)
+{
+    $id_sanitize = $id;
+    $value = getDatabaseTicketAmountUsed($id_sanitize);
+
+    $update_fields = array(
+        'amount_used' => $value+1
+    );
+    return doDatabaseTicketUpdate($id_sanitize, $update_fields);
+}
+
+function isDatabaseTicketLimit($id)
+{
+    $id_sanitize = $id;
+    $value = getDatabaseTicketAmountUsed($id_sanitize);
+
+    return ($value !== false && ($value+1) > getDatabaseTicketAmount($id_sanitize)) ? true : false;
 }
 
 ?>

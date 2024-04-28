@@ -98,6 +98,12 @@ function doDatabaseRequestOrdersList()
     
     return doSelectMultiDB("SELECT `id` FROM `request_order` where `status`=2 order by `id` asc;");
 }
+
+function doDatabaseRequestOrdersListAll()
+{
+    
+    return doSelectMultiDB("SELECT `id` FROM `request_order` order by `id` desc;");
+}
 function doDatabaseRequestOrderInsert($import_data_query)
 {
     

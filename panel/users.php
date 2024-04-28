@@ -256,116 +256,136 @@ if (isCampanhaInURL("user")) {
         if (isDatabaseUserExistID($user_select_id)) {
             $account_select_id = getDatabaseUserAccountID($user_select_id);
             ?>
-
-            <div class="modal fade show" style="padding-right: 19px; display: block;" id="editAddressModal" tabindex="-1"
-                role="dialog" aria-labelledby="editAddressModalLabel" aria-hidden="true">
-                <div class="modal-dialog" style="max-width: 600px" role="document">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h5 class="modal-title" id="exampleModalLongTitle">Visualização</h5>
-                            <a href="/panel/users">
-                                <button type="button" class="close" aria-label="Close">
-                                    <span aria-hidden="true">&times;</span>
-                                </button>
-                            </a>
-                        </div>
-                        <div class="modal-body">
-
-                            <div id="user_panel">
-                                <section id="user_photo">
-                                    <img src="<?php echo getPathAvatarImage(getDatabaseUserPhotoName($user_select_id)); ?>">
-                                </section>
-                                <section id="user_infos">
-                                    <b><label>Nome:</label></b>
-                                    <span><?php echo getDatabaseUserName($user_select_id); ?></span><br>
-                                    <b><label>Email:</label></b>
-                                    <span><?php echo getDatabaseAccountEmail($account_select_id); ?></span><br>
-                                    <b><label>Celular:</label></b>
-                                    <span><?php echo getDatabaseUserPhone($user_select_id); ?></span><br>
-                                    <b><label>Cargo:</label></b>
-                                    <span><?php echo getDatabaseGroupTitle(getDatabaseAccountGroupID($account_select_id)); ?></span><br>
-                                </section>
+            <div class="modal-open">
+                <div class="modal fade show" style="padding-right: 19px; display: block;" id="editAddressModal" tabindex="-1"
+                    role="dialog" aria-labelledby="editAddressModalLabel" aria-hidden="true">
+                    <div class="modal-dialog" style="max-width: 600px" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="exampleModalLongTitle">Visualização</h5>
+                                <a href="/panel/users">
+                                    <button type="button" class="close" aria-label="Close">
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
+                                </a>
                             </div>
-                            <br>
+                            <div class="modal-body">
 
-                            <div id="user_address">
-                                <table border="1" width="100%">
-                                    <tr>
-                                        <th>#</th>
-                                        <th>Endereço</th>
-                                    </tr>
-                                    <!-- ENDEREÇO INICIO -->
-                                    <?php
-                                    $address_list = doDatabaseAddressListByUserID($user_select_id);
+                                <div id="user_panel">
+                                    <section id="user_photo">
+                                        <img src="<?php echo getPathAvatarImage(getDatabaseUserPhotoName($user_select_id)); ?>">
+                                    </section>
+                                    <section id="user_infos">
+                                        <b><label>Nome:</label></b>
+                                        <span><?php echo getDatabaseUserName($user_select_id); ?></span><br>
+                                        <b><label>Email:</label></b>
+                                        <span><?php echo getDatabaseAccountEmail($account_select_id); ?></span><br>
+                                        <b><label>Celular:</label></b>
+                                        <span><?php echo getDatabaseUserPhone($user_select_id); ?></span><br>
+                                        <b><label>Cargo:</label></b>
+                                        <span><?php echo getDatabaseGroupTitle(getDatabaseAccountGroupID($account_select_id)); ?></span><br>
+                                    </section>
+                                </div>
+                                <br>
 
-                                    if ($address_list) {
-                                        $count = 0;
-                                        foreach ($address_list as $data) {
-                                            $user_address_id = $data['id'];
-                                            ++$count;
-                                            ?>
+                                <div id="user_address">
+                                    <table border="1" width="100%">
+                                        <tr>
+                                            <th>#</th>
+                                            <th>Endereço</th>
+                                        </tr>
+                                        <!-- ENDEREÇO INICIO -->
+                                        <?php
+                                        $address_list = doDatabaseAddressListByUserID($user_select_id);
+
+                                        if ($address_list) {
+                                            $count = 0;
+                                            foreach ($address_list as $data) {
+                                                $user_address_id = $data['id'];
+                                                ++$count;
+                                                ?>
+                                                <tr>
+                                                    <td>#<?php echo $count ?></td>
+                                                    <td><?php echo getDatabaseAddressPublicPlace($user_address_id) ?>,
+                                                        <?php echo getDatabaseAddressNumber($user_address_id) ?>,
+                                                        <?php echo getDatabaseAddressComplement($user_address_id) ?>,
+                                                        <?php echo getDatabaseAddressNeighborhood($user_address_id) ?>,
+                                                        <?php echo getDatabaseAddressCity($user_address_id) ?>-
+                                                        <?php echo getDatabaseAddressState($user_address_id) ?>
+                                                    </td>
+                                                </tr>
+                                                <?php
+
+                                            }
+                                        } else { ?>
+
                                             <tr>
-                                                <td>#<?php echo $count ?></td>
-                                                <td><?php echo getDatabaseAddressPublicPlace($user_address_id) ?>,
-                                                    <?php echo getDatabaseAddressNumber($user_address_id) ?>,
-                                                    <?php echo getDatabaseAddressComplement($user_address_id) ?>,
-                                                    <?php echo getDatabaseAddressNeighborhood($user_address_id) ?>,
-                                                    <?php echo getDatabaseAddressCity($user_address_id) ?>-
-                                                    <?php echo getDatabaseAddressState($user_address_id) ?>
+                                                <td>#</td>
+                                                <td>Não existe nenhum endereço cadastrado.
+                                                </td>
+                                                <td>
                                                 </td>
                                             </tr>
                                             <?php
-
                                         }
-                                    } else { ?>
+                                        ?>
+                                        <!-- ENDEREÇO FIM -->
+                                    </table>
+                                </div>
+                                <br>
+                                <div id="user_history">
+                                    <table class="table table-bordered" id="dataTableDeliverys" width="100%" cellspacing="0">
+                                        <thead>
+                                            <tr>
+                                                <th>#</th>
+                                                <th>Data</th>
+                                                <th>Opções</th>
+                                            </tr>
+                                        </thead>
+                                        <tfoot>
+                                            <tr>
+                                                <th>#</th>
+                                                <th>Data</th>
+                                                <th>Opções</th>
+                                            </tr>
+                                        </tfoot>
+                                        <tbody>
+                                            <!-- INICIO LISTA PEDIDO -->
+                                            <?php
+                                            $cart_list = doDatabaseCartsListByUserIDAllStatus($user_select_id);
+                                            if ($cart_list) {
+                                                foreach ($cart_list as $dataCart) {
+                                                    $cart_list_id = $dataCart['id'];
+                                                    $order_id = getDatabaseRequestOrderByCartID($cart_list_id);
+                                                    $first_status = doDatabaseRequestOrderLogsFirstLogByOrderID($order_id);
+                                                    ?>
+                                                    <tr>
+                                                        <td>#<?php echo $order_id ?></td>
+                                                        <td><?php echo doDate(getDatabaseRequestOrderLogCreated($first_status)) . ' às ' . doTime(getDatabaseRequestOrderLogCreated($first_status)); ?>
+                                                        </td>
+                                                        <td>
+                                                            <a target="on_blank" href="/panel/orders/order/view/<?php echo $order_id ?>">
+                                                                <i class="fa-solid fa-eye"></i>
+                                                            </a>
+                                                        </td>
+                                                    </tr>
+                                                    <?php
 
-                                        <tr>
-                                            <td>#</td>
-                                            <td>Não existe nenhum endereço cadastrado.
-                                            </td>
-                                            <td>
-                                            </td>
-                                        </tr>
-                                        <?php
-                                    }
-                                    ?>
-                                    <!-- ENDEREÇO FIM -->
-                                </table>
+                                                }
+                                            }
+                                            ?>
+                                            <!-- FIM LISTA PEDIDO -->
+                                        </tbody>
+                                    </table>
+                                </div>
+
+
                             </div>
-                            <br>
-                            <div id="user_history">
-                                <table class="table table-bordered" id="dataTableDeliverys" width="100%" cellspacing="0">
-                                    <thead>
-                                        <tr>
-                                            <th>#</th>
-                                            <th>Data</th>
-                                            <th>Opções</th>
-                                        </tr>
-                                    </thead>
-                                    <tfoot>
-                                        <tr>
-                                            <th>#</th>
-                                            <th>Data</th>
-                                            <th>Opções</th>
-                                        </tr>
-                                    </tfoot>
-                                    <tbody>
-                                        <tr>
-                                            <td>#255</td>
-                                            <td>08/04/2024 10:30</td>
-                                            <td><i class="fa-solid fa-eye" data-toggle="modal" data-target="#exampleModal"></i></td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-
-
                         </div>
                     </div>
+
                 </div>
-
             </div>
-
             <div class="modal-backdrop fade show"></div>
             <?php
         } else {
@@ -396,9 +416,11 @@ if (isCampanhaInURL("user")) {
                                 <?php
                                 if (getDatabaseAccountBlock($account_select_id) == 0) {
                                     ?>
-                                    Você está prestes a desativar o usuário <b>[<?php echo getDatabaseUserName($user_select_id) ?>]</b>,
+                                    Você está prestes a aplicar uma restrição ao usuário
+                                    <b>[<?php echo getDatabaseUserName($user_select_id) ?>]</b>,
                                     você tem certeza disso?
-
+                                    <br>
+                                    <br>
                                     <div class="alert alert-danger" role="alert">
                                         Confirmando está ação, o usuário não poderá fazer login ou executar qualquer tarefa.
                                     </div>

@@ -353,6 +353,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST)) {
             }
 
             if ($required_fields_status) {
+                $errors[] = "Está desativado está função.";
+                
                 foreach ($_POST['products'] as $product_remove_id) {
                     if (isDatabaseProductExistID($product_remove_id) === false) {
                         $errors[] = "Houve um erro ao processar solicitação, um ou mais dos produtos é inexistente.";
@@ -411,7 +413,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST)) {
             <option value="1">Remover</option>
             <option value="2">Depromocionar</option>
             <option value="3">Promocionar</option>
-            <option value="4">Des/Isentar de Taxa</option>
             <option value="5">Bloquear</option>
             <option value="6">Desbloquear</option>
         </select>
