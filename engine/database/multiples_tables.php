@@ -346,6 +346,21 @@ function doRemoveCartProductID($cart_product_id)
 }
 
 
+function doRemoveCartsProductID($product_id)
+{
+    $carts = doDatabaseCartsListEnabled();
+
+    if($carts) {
+        foreach($carts as $data) {
+            $cart_id = $data['id'];
+            $cart_product_id = getDatabaseCartProductExistIDByCartAndProductID($cart_id, $product_id);
+            doRemoveCartProductID($cart_product_id);
+        }
+    }
+
+}
+
+
 function doRequestOrderLogInsert($order_id, $status)
 {
 
@@ -667,4 +682,107 @@ function doPrintOrder($order_id)
     echo "var novaJanela = window.open('', '_blank');";
     echo "novaJanela.document.write($conteudoEscapado);";
     echo "</script>";
+}
+
+
+
+function getProductInStock($product_id, $quantity)
+{
+    $product_id_sanitize = sanitize($product_id);
+    $product_stock_status = getDatabaseProductsStockStatus($product_id_sanitize);
+
+    if ($product_stock_status == 1) {
+        $stock_id = getDatabaseStockIDByProductID($product_id_sanitize);
+        $stock_amount = (getDatabaseStockActual($stock_id)- $quantity);
+
+        if ($stock_amount < 0)
+            return false;
+
+    }
+
+    return true;
+}
+
+function isProductInStock($product_id)
+{
+    $product_id_sanitize = sanitize($product_id);
+    $product_stock_status = getDatabaseProductsStockStatus($product_id_sanitize);
+
+    if ($product_stock_status == 1) {
+        $stock_id = getDatabaseStockIDByProductID($product_id_sanitize);
+        $stock_amount = getDatabaseStockActual($stock_id);
+
+        if ($stock_amount <= 0)
+            return false;
+
+    }
+
+    return true;
+}
+
+function doDecreaseStock($order_id)
+{
+    $order_id_sanitize = $order_id;
+    $cart_id = getDatabaseRequestOrderCartID($order_id_sanitize);
+
+    $cart_products_list = doDatabaseCartProductsListByCartID($cart_id);
+
+    if ($cart_products_list) {
+        foreach ($cart_products_list as $data) {
+            // CARRINHO
+            $cart_product_list_id = $data['id'];
+            $product_id = getDatabaseCartProductProductID($cart_product_list_id);
+            $product_amount = getDatabaseCartProductAmount($cart_product_list_id);
+
+            // STOCK
+            $stock_id = getDatabaseStockIDByProductID($product_id);
+            $product_stock_status = getDatabaseProductsStockStatus($product_id);
+            $stock_amount = getDatabaseStockActual($stock_id);
+            $new_stock_amount = ($stock_amount - $product_amount);
+
+            if ($product_stock_status == 1) {
+                $stock_update_fields = array(
+                    'actual' => $new_stock_amount
+                );
+
+                doDatabaseStockUpdate($stock_id, $stock_update_fields);
+
+                if($new_stock_amount <= 0) {
+                    doRemoveCartsProductID($product_id);
+                }
+            }
+        }
+    }
+}
+
+
+function doIncreaseStock($order_id)
+{
+    $order_id_sanitize = $order_id;
+    $cart_id = getDatabaseRequestOrderCartID($order_id_sanitize);
+
+    $cart_products_list = doDatabaseCartProductsListByCartID($cart_id);
+
+    if ($cart_products_list) {
+        foreach ($cart_products_list as $data) {
+            // CARRINHO
+            $cart_product_list_id = $data['id'];
+            $product_id = getDatabaseCartProductProductID($cart_product_list_id);
+            $product_amount = getDatabaseCartProductAmount($cart_product_list_id);
+
+            // STOCK
+            $stock_id = getDatabaseStockIDByProductID($product_id);
+            $product_stock_status = getDatabaseProductsStockStatus($product_id);
+            $stock_amount = getDatabaseStockActual($stock_id);
+            $new_stock_amount = ($stock_amount + $product_amount);
+
+            if ($product_stock_status == 1) {
+                $stock_update_fields = array(
+                    'actual' => $new_stock_amount
+                );
+
+                doDatabaseStockUpdate($stock_id, $stock_update_fields);
+            }
+        }
+    }
 }

@@ -104,6 +104,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST)) {
                 'status' => 6,
                 'reason' => $_POST['reason']
             );
+            
+            doIncreaseStock($_POST['order_id']);
+            destroyGeneralSecurityToken('tokenCartCancelOrderConfirm');
             doDatabaseRequestOrderUpdate($_POST['order_id'], $order_update_fields);
 
         }

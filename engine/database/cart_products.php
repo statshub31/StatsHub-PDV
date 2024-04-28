@@ -160,4 +160,16 @@ function getDatabaseCartProductRowCountByCartID($cart_id)
 
     return ($result !== false) ? $result['rowCount'] : 0;
 }
+
+
+function getDatabaseCartProductExistIDByCartAndProductID($cart_product_id, $product_id)
+{
+    
+    $cart_product_id_sanitize = sanitize($cart_product_id);
+    $product_id_sanitize = sanitize($product_id);
+
+    $query = doSelectSingleDB("SELECT `id` FROM `cart_products` WHERE `id`='".$cart_product_id_sanitize."' and `product_id`='".$product_id_sanitize."';");
+    return ($query !== false) ? $query['id'] : false;
+}
+
 ?>

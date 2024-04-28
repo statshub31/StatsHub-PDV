@@ -66,12 +66,12 @@ function getDatabaseUserSelectByUserID($id)
     return ($query !== false) ? $query['id'] : false;
 }
 
-function isDatabaseUserSelectByUserID($id)
+function isDatabaseUserSelectByUserID($user_id)
 {
     
-    $id_sanitize = sanitize($id);
+    $user_id_sanitize = sanitize($user_id);
 
-    $query = doSelectSingleDB("SELECT `id` FROM `user_select` WHERE `user_id`='".$id_sanitize."';");
+    $query = doSelectSingleDB("SELECT `id` FROM `user_select` WHERE `user_id`='".$user_id_sanitize."';");
     return ($query !== false) ? true : false;
 }
 

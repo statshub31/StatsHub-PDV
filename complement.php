@@ -39,6 +39,14 @@ if (isCampanhaInURL("product")) {
                         $errors[] = "Houve um erro ao adicionar o produto, reinicie a pagina e tente novamente.";
                     }
 
+                    if(isProductInStock($_POST['product_select_id']) === false) {
+                        $errors[] = "Houve um erro ao adicionar o produto, reinicie a pagina e tente novamente.";
+                    }
+
+                    if(getProductInStock($_POST['product_select_id'], $_POST['quantity']) === false) {
+                        $errors[] = "Desculpe-nos, mas só temos a seguinte quantidade [".getDatabaseStockActual(getDatabaseStockIDByProductID($_POST['product_select_id']))."] disponivel.";                        
+                    }
+
                     if (!isset($_POST['complement'])) {
                         $errors[] = "Necessário escolher uma opção para o complemento.";
                     }

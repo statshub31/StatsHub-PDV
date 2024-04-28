@@ -163,7 +163,7 @@ if (isCampanhaInURL("ticket")) {
                 <div class="modal-dialog" style="max-width: 600px" role="document">
                     <div class="modal-content">
                         <div class="modal-header">
-                            <h5 class="modal-title" id="exampleModalLongTitle">Status</h5>
+                            <h5 class="modal-title" id="exampleModalLongTitle">Cancelamento</h5>
                             <a href="/panel/tickets">
                                 <button type="button" class="close" aria-label="Close">
                                     <span aria-hidden="true">&times;</span>
@@ -222,7 +222,7 @@ if (isCampanhaInURL("ticket")) {
                 <div class="modal-dialog" style="max-width: 600px" role="document">
                     <div class="modal-content">
                         <div class="modal-header">
-                            <h5 class="modal-title" id="exampleModalLongTitle">Status</h5>
+                            <h5 class="modal-title" id="exampleModalLongTitle">Visualização</h5>
                             <a href="/panel/tickets">
                                 <button type="button" class="close" aria-label="Close">
                                     <span aria-hidden="true">&times;</span>
@@ -234,33 +234,33 @@ if (isCampanhaInURL("ticket")) {
                             <table border="1" width="100%">
                                 <tr>
                                     <th>Código</th>
-                                    <td><?php echo getDatabaseTicketCode($ticket_list_id); ?></td>
+                                    <td><?php echo getDatabaseTicketCode($ticket_select_id); ?></td>
                                     <th>Quantidade</th>
-                                    <td><?php echo getDatabaseTicketAmount($ticket_list_id); ?></td>
+                                    <td><?php echo getDatabaseTicketAmount($ticket_select_id); ?></td>
                                 </tr>
                                 <tr>
                                     <th>Desconto</th>
-                                    <td><?php echo getDatabaseTicketValue($ticket_list_id); ?></td>
+                                    <td><?php echo doTypeDiscount(getDatabaseTicketValue($ticket_select_id)); ?></td>
                                     <th>Progresso</th>
-                                    <td>20</td>
+                                    <td><?php echo getDatabaseTicketAmountUsed($ticket_select_id) ?></td>
                                 </tr>
                                 <tr>
                                     <th>Status</th>
-                                    <td><?php echo getDatabaseStatusTitle(getDatabaseTicketStatus($ticket_list_id)); ?></td>
+                                    <td><?php echo getDatabaseStatusTitle(getDatabaseTicketStatus($ticket_select_id)); ?></td>
                                     <th>Previsão Expiração</th>
-                                    <td><?php echo getDatabaseTicketExpiration($ticket_list_id); ?></td>
+                                    <td><?php echo doDate(getDatabaseTicketExpiration($ticket_select_id)).' às '.doTime(getDatabaseTicketExpiration($ticket_select_id)); ?></td>
                                 </tr>
                                 <tr>
                                     <th>Criado em</th>
-                                    <td><?php echo getDatabaseTicketCreated($ticket_list_id); ?></td>
+                                    <td><?php echo doDate(getDatabaseTicketCreated($ticket_select_id)).' às '.doTime(getDatabaseTicketCreated($ticket_select_id)); ?></td>
                                     <th>Criado por</th>
-                                    <td><?php echo getDatabaseUserName(getDatabaseTicketCreatedBy($ticket_list_id)); ?></td>
+                                    <td><?php echo getDatabaseUserName(getDatabaseTicketCreatedBy($ticket_select_id)); ?></td>
                                 </tr>
                                 <tr>
                                     <th>Finalizado em</th>
-                                    <td><?php echo getDatabaseTicketEnd($ticket_list_id); ?></td>
+                                    <td><?php echo doDate(getDatabaseTicketEnd($ticket_select_id)).' às '.doTime(getDatabaseTicketEnd($ticket_select_id)); ?></td>
                                     <th>Finalizado por</th>
-                                    <td><?php echo getDatabaseUserName(getDatabaseTicketFinishedBy($ticket_list_id)); ?></td>
+                                    <td><?php echo getDatabaseUserName(getDatabaseTicketFinishedBy($ticket_select_id)); ?></td>
                                 </tr>
                                 <tr>
                                     <th colspan="4">
@@ -268,7 +268,7 @@ if (isCampanhaInURL("ticket")) {
                                     </th>
                                 </tr>
                                 <tr>
-                                    <td colspan="4"><?php echo getDatabaseTicketReason($ticket_list_id); ?></td>
+                                    <td colspan="4"><?php echo getDatabaseTicketReason($ticket_select_id); ?></td>
                                 </tr>
                             </table>
                             <div class="modal-footer">

@@ -51,10 +51,6 @@
             <i class="fa fa-user-secret" aria-hidden="true"></i>
             <span>Pedidos</span></a>
 
-        <a class="nav-link" href="/panel/sendemail">
-            <i class="fa-solid fa-envelope"></i>
-            <span>Email</span></a>
-
         <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#products" aria-expanded="true"
             aria-controls="collapseTwo">
 

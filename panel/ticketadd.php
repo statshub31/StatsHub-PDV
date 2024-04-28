@@ -56,6 +56,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST)) {
                 'code' => $_POST['code'],
                 'value' => $_POST['value'],
                 'amount' => $_POST['amount'],
+                'amount_used' => 0,
                 'expiration' => (!empty($_POST['expiration']) ? $_POST['expiration'] : NULL),
                 'created' => date('Y-m-d H:i:s'),
                 'created_by' => $in_user_id,

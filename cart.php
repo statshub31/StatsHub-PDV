@@ -2,7 +2,6 @@
 include_once __DIR__ . '/layout/php/header.php';
 doGeneralSecurityProtect();
 $cart_id = doGeneralSecurityCart();
-
 ?>
 
 <?php
@@ -11,8 +10,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST)) {
 
     // REQUEST ORDER
     if (getGeneralSecurityToken('tokenRequestOrder')) {
-        if (empty($_POST) === false) {
 
+        if (empty($_POST) === false) {
             if (isDatabaseCartExistIDByUserID($in_user_id) === false) {
                 $errors[] = "Houve um erro ao processar a compra, reinicie a pagina e tente novamente";
             } else {
@@ -49,7 +48,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST)) {
                 'status' => 7
             );
 
-            $main_address = getDatabaseUserSelectAddressID($in_user_id);
+            $main_address = getDatabaseUserSelectAddressByUserID($in_user_id);
             $ticket = getDatabaseCartTicketSelectByCartID($cart_id);
             $pay = getDatabaseUserSelectPayID($cart_id);
 
@@ -92,7 +91,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST)) {
 
             if (isDatabaseCartTicketSelectByCartID($cart_id))
                 doDatabaseCartTicketSelectUpdate($ticket, $cart_ticket_update_fields);
-
+            
+            // STOCK
+            doDecreaseStock($request_order_id_insert);
 
             header('Location: /order/' . $request_order_id_insert);
         }

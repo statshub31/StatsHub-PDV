@@ -77,10 +77,10 @@ function isDatabaseCartEnabled($id)
 }
 
 
-function doDatabaseCartsList($status = false)
+function doDatabaseCartsListEnabled()
 {
     
-    return doSelectMultiDB("SELECT `id` FROM `carts`");
+    return doSelectMultiDB("SELECT `id` FROM `carts` where `status`=2");
 }
 
 function doDatabaseCartsListByUserID($user_id)
