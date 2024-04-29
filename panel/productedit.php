@@ -70,6 +70,16 @@ if (isCampanhaInURL("product")) {
                                 $errors[] = "Escolha outro nome, somente é aceito caracteres alfanumérico.";
                             }
 
+                            if (!empty($_POST['description'])) {
+                                if (doGeneralValidationDescriptionFormat($_POST['description']) == false) {
+                                    $errors[] = "Reveja o comentário, existem caracteres invalido.";
+                                }
+            
+                                if (strlen($_POST['description']) > 255) {
+                                    $errors[] = "Está muito cumprido está validação, se limite a 255 caracteres.";
+                                }
+                            }
+
                             if (isGeneralSecurityManagerAccess() === false) {
                                 $errors[] = "É obrigatório ter um cargo igual ou superior ao de gestor, para executar está ação.";
                             }
@@ -366,7 +376,7 @@ if (isCampanhaInURL("product")) {
                             doDatabaseProductUpdate($_POST['product_select_id'], $product_update_fields);
 
                             // PREÇO
-                            doDatabaseProductPriceTruncateByProductID($_POST['product_select_id']);
+                            doDatabaseProductPriceDisabledByProductID($_POST['product_select_id']);
 
                             // TAM 1
                             if ((!empty($_POST['size-p'])) && (!empty($_POST['price-p']))) {
@@ -494,6 +504,10 @@ if (isCampanhaInURL("product")) {
 
 
 
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.mask/0.9.0/jquery.mask.min.js"
+    integrity="sha512-oJCa6FS2+zO3EitUSj+xeiEN9UTr+AjqlBZO58OPadb2RfqwxHpjTU8ckIC8F4nKvom7iru2s8Jwdo+Z8zm0Vg=="
+    crossorigin="anonymous" referrerpolicy="no-referrer"></script>
             <script>
                 $(document).ready(function () {
                     window.checkboxToggle = function (checkboxId, responseId, className) {
@@ -506,6 +520,24 @@ if (isCampanhaInURL("product")) {
                             $(responseId).show();
                         });
                     }
+                    
+        // Adiciona um evento de input ao campo
+        $(".priceFormat").on('input', function () {
+            // Obtém o valor atual do campo
+            var inputValue = $(this).val();
+
+            // Remove todos os caracteres não numéricos
+            var numericValue = inputValue.replace(/[^0-9]/g, '');
+
+            // Verifica se o valor numérico não está vazio
+            if (numericValue !== '') {
+                // Converte para número e formata com duas casas decimais
+                var formattedValue = (parseFloat(numericValue) / 100).toFixed(2);
+
+                // Define o valor formatado de volta no campo
+                $(this).val(formattedValue);
+            }
+        });
                 });
             </script>
             <link href="/layout/vendor/datatables/dataTables.bootstrap4.min.css" rel="stylesheet">
@@ -701,7 +733,7 @@ if (isCampanhaInURL("product")) {
                                         data-placement="top"
                                         title="Somente será aceito caracteres númerico e virgula, por exemplo: 20,00 | 30,00..."></i></small>
                             </label>
-                            <input name="price-p" type="text" class="form-control w-50" id="price-p"
+                            <input name="price-p" type="text" class="form-control w-50 priceFormat" id="price-p"
                                 value="<?php echo getDatabaseProductPrice($size_price_list[0]['id']) ?>">
                         </div>
                     </fieldset>
@@ -737,7 +769,7 @@ if (isCampanhaInURL("product")) {
                                             data-placement="top"
                                             title="Somente será aceito caracteres númerico e virgula, por exemplo: 20,00 | 30,00..."></i></small>
                                 </label>
-                                <input name="price-m" type="text" class="form-control w-50" id="price-m"
+                                <input name="price-m" type="text" class="form-control w-50 priceFormat" id="price-m"
                                     value="<?php echo (isGeneralExistProduct($size_price_list, 1)) ? getDatabaseProductPrice($size_price_list[1]['id']) : NULL ?>">
                             </div>
                         </fieldset>
@@ -767,7 +799,7 @@ if (isCampanhaInURL("product")) {
                                             data-placement="top"
                                             title="Somente será aceito caracteres númerico e virgula, por exemplo: 20,00 | 30,00..."></i></small>
                                 </label>
-                                <input name="price-g" type="text" class="form-control w-50" id="price-g"
+                                <input name="price-g" type="text" class="form-control w-50 priceFormat" id="price-g"
                                     value="<?php echo (isGeneralExistProduct($size_price_list, 2)) ? getDatabaseProductPrice($size_price_list[2]['id']) : NULL ?>">
                             </div>
                         </fieldset>
@@ -797,7 +829,7 @@ if (isCampanhaInURL("product")) {
                                             data-placement="top"
                                             title="Somente será aceito caracteres númerico e virgula, por exemplo: 20,00 | 30,00..."></i></small>
                                 </label>
-                                <input name="price-xg" type="text" class="form-control w-50" id="price-xg"
+                                <input name="price-xg" type="text" class="form-control w-50 priceFormat" id="price-xg"
                                     value="<?php echo (isGeneralExistProduct($size_price_list, 3)) ? getDatabaseProductPrice($size_price_list[3]['id']) : NULL ?>">
                             </div>
                         </fieldset>

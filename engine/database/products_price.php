@@ -79,7 +79,7 @@ function doDatabaseProductPricesPriceListByProductID($product_id, $status = fals
 {
     $product_id_sanitize = sanitize($product_id);
     
-    return doSelectMultiDB("SELECT `id` FROM `products_price` where `product_id` = '".$product_id_sanitize."' ");
+    return doSelectMultiDB("SELECT `id` FROM `products_price` where `product_id` = '".$product_id_sanitize."' and `disabled`=0;");
 }
 
 function doDatabaseProductPriceInsert($import_data_query)
@@ -172,6 +172,13 @@ function doDatabaseProductPriceTruncateByProductID($product_id)
     doDeleteDB("DELETE FROM `products_price` WHERE `product_id`='".$product_id_sanitize."';");
 }
 
+
+function doDatabaseProductPriceDisabledByProductID($product_id)
+{
+    $product_id_sanitize = sanitize($product_id);
+
+    doUpdateDB("UPDATE `products_price` SET `disabled`=1 WHERE `product_id`='".$product_id_sanitize."' and `disabled`=0;");
+}
 
 function getDatabaseProductPriceByProductID($product_id)
 {

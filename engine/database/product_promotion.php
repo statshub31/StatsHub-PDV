@@ -115,12 +115,12 @@ function getDatabaseProductPromotionStatus($id)
 
 
 
-function isDatabaseProductPromotionExistID($id)
+function isDatabaseProductPromotionExistIDByProductID($product_id)
 {
     
-    $id_sanitize = sanitize($id);
+    $product_id_sanitize = sanitize($product_id);
 
-    $query = doSelectSingleDB("SELECT `id` FROM `product_promotion` WHERE `id`='".$id_sanitize."';");
+    $query = doSelectSingleDB("SELECT `id` FROM `product_promotion` WHERE `product_id`='".$product_id_sanitize."' and `status`=2;");
     return ($query !== false) ? true : false;
 }
 
@@ -140,6 +140,14 @@ function isDatabaseProductPromotionEnabledByProductID($product_id)
 
     $query = doSelectSingleDB("SELECT `id` FROM `product_promotion` WHERE `product_id`='".$product_id_sanitize."' and `status`=2;");
     return ($query !== false) ? true : false;
+}
+function isDatabaseProductPromotionCumulativeEnabled($id)
+{
+    
+    $id_sanitize = sanitize($id);
+
+    $query = doSelectSingleDB("SELECT `cumulative` FROM `product_promotion` WHERE `id`='".$id_sanitize."' and `status`=2;");
+    return ($query !== false && $query['cumulative'] == 1) ? true : false;
 }
 
 function doDatabaseProductPromotionList($status = false)

@@ -33,6 +33,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST)) {
                     $errors[] = "No valor de troco, somente é aceito valores númerico";
                 }
             }
+            
+            if (isDatabaseCartTicketSelectByCartID($cart_id)) {                
+                if(isProductPromotionCumulative($cart_id) === false) {
+                    $errors[] = "Não foi possível inserir o cupom, aparentemente existe um produto em promoção no carrinho. Favor remove-lo.";
+                }
+            }
+            
+            if(isProductUnblocked($cart_id) === false) {
+                $errors[] = "Houve um erro, remove os produtos do carrinho e refaça a compra.";
+            }
 
             if (isDatabaseCartEnabled($cart_id)) {
                 if (isDatabaseCartExistIDByUserID($in_user_id) != $cart_id) {
@@ -144,6 +154,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST)) {
             if ($_POST['ticket_select'] != 0) {
                 if (isDatabaseTicketExistID($_POST['ticket_select']) === false) {
                     $errors[] = "Houve um erro ao salvar o cupom, reinicie a pagina e tente novamente";
+                }
+
+                if(isProductPromotionCumulative($cart_id) === false) {
+                    $errors[] = "Não foi possível inserir o cupom, aparentemente existe um produto em promoção no carrinho.";
                 }
 
                 if(isDatabaseTicketExpiration($_POST['ticket_select'])) {

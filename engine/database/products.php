@@ -205,6 +205,14 @@ function isDatabaseProductEnabled($id)
     return ($query['status'] == 2) ? true : false;
 }
 
+function isDatabaseProductBlocked($id)
+{
+    
+    $id_sanitize = sanitize($id);
+
+    $query = doSelectSingleDB("SELECT `status` FROM `products` WHERE `id`='".$id_sanitize."';");
+    return ($query['status'] == 3) ? true : false;
+}
 
 function isDatabaseProductEnabledByCode($code)
 {

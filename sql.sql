@@ -239,7 +239,7 @@ create table product_promotion (
     `end` datetime NULL,
     `finished_by` int NULL,
     FOREIGN KEY (`product_id`) REFERENCES `products`(`id`),
-    FOREIGN KEY (`promotion_id`) REFERENCES `products_question`(`id`),
+    FOREIGN KEY (`promotion_id`) REFERENCES `promotions`(`id`),
     FOREIGN KEY (`created_by`) REFERENCES `users`(`id`),
     FOREIGN KEY (`finished_by`) REFERENCES `users`(`id`),
     FOREIGN KEY (`status`) REFERENCES `status`(`id`)

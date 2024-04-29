@@ -48,8 +48,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST)) {
                         $errors[] = "O codigo é existente, preencha com outro ou deixe em branco.";
                     }
                 }
+
                 if (doGeneralValidationProductNameFormat($_POST['name']) == false) {
                     $errors[] = "Escolha outro nome, somente é aceito caracteres alfanumérico.";
+                }
+                
+                if (!empty($_POST['description'])) {
+                    if (doGeneralValidationDescriptionFormat($_POST['description']) == false) {
+                        $errors[] = "Reveja o comentário, existem caracteres invalido.";
+                    }
+
+                    if (strlen($_POST['description']) > 255) {
+                        $errors[] = "Está muito cumprido está validação, se limite a 255 caracteres.";
+                    }
                 }
 
                 if (isGeneralSecurityManagerAccess() === false) {
@@ -483,7 +494,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST)) {
 
 
 
-
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.mask/0.9.0/jquery.mask.min.js"
+    integrity="sha512-oJCa6FS2+zO3EitUSj+xeiEN9UTr+AjqlBZO58OPadb2RfqwxHpjTU8ckIC8F4nKvom7iru2s8Jwdo+Z8zm0Vg=="
+    crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 <script>
     $(document).ready(function () {
         window.checkboxToggle = function (checkboxId, responseId, className) {
@@ -496,6 +509,23 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST)) {
                 $(responseId).show();
             });
         }
+        // Adiciona um evento de input ao campo
+        $(".priceFormat").on('input', function () {
+            // Obtém o valor atual do campo
+            var inputValue = $(this).val();
+
+            // Remove todos os caracteres não numéricos
+            var numericValue = inputValue.replace(/[^0-9]/g, '');
+
+            // Verifica se o valor numérico não está vazio
+            if (numericValue !== '') {
+                // Converte para número e formata com duas casas decimais
+                var formattedValue = (parseFloat(numericValue) / 100).toFixed(2);
+
+                // Define o valor formatado de volta no campo
+                $(this).val(formattedValue);
+            }
+        });
     });
 </script>
 <link href="/layout/vendor/datatables/dataTables.bootstrap4.min.css" rel="stylesheet">
@@ -688,7 +718,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST)) {
                             data-placement="top"
                             title="Somente será aceito caracteres númerico e virgula, por exemplo: 20,00 | 30,00..."></i></small>
                 </label>
-                <input name="price-p" type="text" class="form-control w-50" id="price-p" value="">
+                <input name="price-p" type="text" class="form-control w-50 priceFormat" id="price-p" value="">
             </div>
         </fieldset>
         <div id="price-size-status-container">
@@ -722,7 +752,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST)) {
                                 data-placement="top"
                                 title="Somente será aceito caracteres númerico e virgula, por exemplo: 20,00 | 30,00..."></i></small>
                     </label>
-                    <input name="price-m" type="text" class="form-control w-50" id="price-m" value="">
+                    <input name="price-m" type="text" class="form-control w-50 priceFormat" id="price-m" value="">
                 </div>
             </fieldset>
             <fieldset style="display: flex;">
@@ -750,7 +780,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST)) {
                                 data-placement="top"
                                 title="Somente será aceito caracteres númerico e virgula, por exemplo: 20,00 | 30,00..."></i></small>
                     </label>
-                    <input name="price-g" type="text" class="form-control w-50" id="price-g" value="">
+                    <input name="price-g" type="text" class="form-control w-50 priceFormat" id="price-g" value="">
                 </div>
             </fieldset>
             <fieldset style="display: flex;">
@@ -778,7 +808,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST)) {
                                 data-placement="top"
                                 title="Somente será aceito caracteres númerico e virgula, por exemplo: 20,00 | 30,00..."></i></small>
                     </label>
-                    <input name="price-xg" type="text" class="form-control w-50" id="price-xg" value="">
+                    <input name="price-xg" type="text" class="form-control w-50 priceFormat" id="price-xg" value="">
                 </div>
             </fieldset>
         </div>

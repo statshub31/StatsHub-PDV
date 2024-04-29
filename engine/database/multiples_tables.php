@@ -261,8 +261,13 @@ function doCartTotalPriceProduct($cart_product_id)
     $product_id = getDatabaseCartProductProductID($cart_product_id_sanitize);
     $amount = getDatabaseCartProductAmount($cart_product_id_sanitize);
     $price_id = getDatabaseCartProductPriceID($cart_product_id_sanitize);
+    if(isDatabaseProductPromotionEnabledByProductID($product_id)) {
+        $price = doCalcDiscountPromotion($product_id, $price_id);
+    } else {
+        $price = getDatabaseProductPrice($price_id);
+    }
 
-    $total_product_price = (getDatabaseProductPrice($price_id) * $amount);
+    $total_product_price = ($price * $amount);
 
     $list_additional = doDatabaseCartProductAdditionalListByCart($cart_product_id);
     $additional_total = 0;
@@ -343,6 +348,19 @@ function doRemoveCartProductID($cart_product_id)
     doDatabaseCartProductComplementDelete($cart_product_complement_id);
     doDatabaseCartProductAdditionalDeleteByCartProductUnlimited($cart_product_id);
     doDatabaseCartProductDelete($cart_product_id_sanitize);
+}
+
+
+function doRemoveCartAllProduct($cart_id)
+{
+    $cart_product_list = doDatabaseCartProductsListByCartID($cart_id);
+
+    if($cart_product_list) {
+        foreach ($cart_product_list as $data) {
+            $cart_product_id = $data['id'];
+            doRemoveCartProductID($cart_product_id);
+        }
+    }
 }
 
 
@@ -586,7 +604,6 @@ function doPrintOrder($order_id)
         foreach ($cart_list as $data) {
             $cart_product_list_id = $data['id']; // PRODUTO CART
             $cart_product_id = getDatabaseCartProductProductID($cart_product_list_id); // PRODUTO_ID
-            $obs = getDatabaseCartProductObservation($cart_product_list_id);
             $size_id = getDatabaseCartProductPriceID($cart_product_list_id);
             $measure_id = getDatabaseProductSizeMeasureID($size_id);
             $user_id = getDatabaseCartUserID($cart_product_list_id);
@@ -785,4 +802,58 @@ function doIncreaseStock($order_id)
             }
         }
     }
+}
+
+
+function doCalcDiscountPromotion($product_id, $size_id) {
+    $product_id_sanitize = sanitize($product_id);
+    $size_id_sanitize = sanitize($size_id);
+    $promotion_id = getDatabaseProductPromotionByProductID($product_id_sanitize);
+    $discount = getDatabaseProductPromotionType($promotion_id);
+    $total = 0;
+
+    if($promotion_id !== false) {
+        $price = getDatabaseProductPrice($size_id);
+        $discount_value = getDatabaseProductPromotionValue($promotion_id);
+
+        if(isDatabasePromotionPercentual($discount)) {
+            $discount_amount = ($price * $discount_value) / 100;
+            $total = $price - $discount_amount;
+        } 
+
+        if(isDatabasePromotionReais($discount)) {
+            $total = $price - $discount_value;
+        }
+    }
+
+    return $total;
+}
+
+function isProductPromotionCumulative($cart_id) {
+    $cart_list = doDatabaseCartProductsListByCartID($cart_id);
+    
+    foreach ($cart_list as $data) {
+        $cart_product_list_id = $data['id'];
+        $product_id = getDatabaseCartProductProductID($cart_product_list_id);
+        $promotion_id = getDatabaseProductPromotionByProductID($product_id);
+        if ($promotion_id !== false && !isDatabaseProductPromotionCumulativeEnabled($promotion_id)) {
+            return false;
+        }
+    }
+
+    return $cart_list ? true : false;
+}
+
+function isProductUnblocked($cart_id) {
+    $cart_list = doDatabaseCartProductsListByCartID($cart_id);
+    
+    foreach ($cart_list as $data) {
+        $cart_product_list_id = $data['id'];
+        $product_id = getDatabaseCartProductProductID($cart_product_list_id);
+        if(isDatabaseProductBlocked($product_id)) {
+            return false;
+        }
+    }
+
+    return $cart_list ? true : false;
 }

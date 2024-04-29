@@ -434,7 +434,6 @@ if (isCampanhaInURL("additional")) {
         } else {
             // Se o checkbox for desmarcado, você pode enviar um valor vazio ou fazer algo diferente, como resetar o formulário
             // Aqui, vamos simplesmente enviar um valor vazio
-            form.appendChild(hiddenInput);
             form.submit();
         }
     }

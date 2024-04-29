@@ -72,6 +72,18 @@ function doGeneralSecurityCart()
 		}
 	}
 
+	
+	if (isDatabaseCartTicketSelectByCartID($cart_id)) {                
+		if(isProductPromotionCumulative($cart_id) === false) {
+			doDatabaseCartTicketSelectDeleteByCartID($cart_id);
+		}
+	}
+	
+	if(isProductUnblocked($cart_id) === false) {
+		doRemoveCartAllProduct($cart_id);
+	}
+
+
 	return $cart_id;
 }
 

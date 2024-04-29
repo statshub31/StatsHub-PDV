@@ -27,11 +27,11 @@ if (isCampanhaInURL("product")) {
                         $errors[] = "Selecione o tamanho do item.";
                     }
 
-                    if(isOpen() === false) {
+                    if (isOpen() === false) {
                         $errors[] = "O estabelecimento se encontra fechado no momento.";
                     }
-                    
-                    if(isDatabaseProductPriceExistID($_POST['size']) === false) {
+
+                    if (isDatabaseProductPriceExistID($_POST['size']) === false) {
                         $errors[] = "Houve um erro ao adicionar o produto, reinicie a pagina e tente novamente.";
                     }
 
@@ -39,16 +39,27 @@ if (isCampanhaInURL("product")) {
                         $errors[] = "Houve um erro ao adicionar o produto, reinicie a pagina e tente novamente.";
                     }
 
-                    if(isProductInStock($_POST['product_select_id']) === false) {
+                    if (isProductInStock($_POST['product_select_id']) === false) {
                         $errors[] = "Houve um erro ao adicionar o produto, reinicie a pagina e tente novamente.";
                     }
 
-                    if(getProductInStock($_POST['product_select_id'], $_POST['quantity']) === false) {
-                        $errors[] = "Desculpe-nos, mas só temos a seguinte quantidade [".getDatabaseStockActual(getDatabaseStockIDByProductID($_POST['product_select_id']))."] disponivel.";                        
+                    if (getProductInStock($_POST['product_select_id'], $_POST['quantity']) === false) {
+                        $errors[] = "Desculpe-nos, mas só temos a seguinte quantidade [" . getDatabaseStockActual(getDatabaseStockIDByProductID($_POST['product_select_id'])) . "] disponivel.";
+                    }
+                    if (isset($_POST['additional'])) {
+                        foreach ($_POST['additional'] as $verifyAdditional) {
+                            if (isDatabaseAdditionalBlocked($verifyAdditional) || isDatabaseAdditionalExistID($verifyAdditional) === false) {
+                                $errors[] = "Houve um erro ao adicionar o produto, reinicie a pagina e tente novamente.";
+                            }
+                        }
                     }
 
                     if (!isset($_POST['complement'])) {
                         $errors[] = "Necessário escolher uma opção para o complemento.";
+                    } else {
+                        if (isDatabaseComplementBlocked($_POST['complement']) || isDatabaseComplementExistID($_POST['complement']) === false) {
+                            $errors[] = "Houve um erro ao adicionar o produto, reinicie a pagina e tente novamente.";
+                        }
                     }
 
 
@@ -180,7 +191,7 @@ if (isCampanhaInURL("product")) {
                     }
 
 
-                    header('Location: /cart');                    
+                    header('Location: /cart');
                 }
 
 
@@ -205,7 +216,8 @@ if (isCampanhaInURL("product")) {
                 </div>
                 <div class="list-group-item list-quantity">
                     <button type="button" class="btn btn-sm btn-secondary decrease">-</button>
-                    <input type="number" oninput="atualizarTotal()" name="quantity" class="form-control quantity" id="quantity" value="1" required>
+                    <input type="number" oninput="atualizarTotal()" name="quantity" class="form-control quantity" id="quantity"
+                        value="1" required>
                     <button type="button" class="btn btn-sm btn-secondary increase">+</button>
                 </div>
             </div>
@@ -226,10 +238,24 @@ if (isCampanhaInURL("product")) {
                             ?>
                             <div class="size-select">
                                 <input type="radio" name="size" value="<?php echo $price_list_id ?>" class="calc"
-                                    price="<?php echo getDatabaseProductPrice($price_list_id) ?>" required>
+                                    price="<?php echo (isDatabaseProductPromotionExistIDByProductID($product_select_id)) ? sprintf("%.2f", doCalcDiscountPromotion($product_select_id, $price_list_id)) : getDatabaseProductPrice($price_list_id) ?>"
+                                    required>
                                 <label><?php echo getDatabaseProductPriceSize($price_list_id) ?>
                                     (<?php echo getDatabaseMeasureTitle(getDatabaseProductSizeMeasureID($price_list_id)) ?>)</label>
-                                <label class="v">R$ <?php echo getDatabaseProductPrice($price_list_id) ?></label>
+                                <?php
+                                if (isDatabaseProductPromotionExistIDByProductID($product_select_id)) {
+                                    ?>
+                                    <label class="v">
+                                        <small><strike>R$ <?php echo getDatabaseProductPrice($price_list_id) ?></strike> por </small> <b> R$
+                                            <?php echo sprintf("%.2f", doCalcDiscountPromotion($product_select_id, $price_list_id)) ?></b></label>
+
+                                    <?php
+                                } else {
+                                    ?>
+                                    <label class="v">R$ <?php echo getDatabaseProductPrice($price_list_id) ?></label>
+                                    <?php
+                                }
+                                ?>
                                 <br>
                                 <small><?php echo getDatabaseProductPriceDescription($price_list_id) ?></small>
                             </div>
@@ -275,15 +301,17 @@ if (isCampanhaInURL("product")) {
                         foreach ($additional_list as $dataAdditional) {
                             $product_additional_id = $dataAdditional['id'];
                             $additional_id = getDatabaseProductAdditionalAdditionalID($product_additional_id);
-                            ?>
-                            <div class="additional-select">
-                                <input class="calc" type="checkbox" name="additional[]" value="<?php echo $additional_id ?>"
-                                    price="<?php echo getDatabaseAdditionalTotalPrice($additional_id) ?>">
-                                <br>
-                                <small><?php echo getDatabaseAdditionalDescription($additional_id) ?></small>
-                                <label class="v">R$ <?php echo getDatabaseAdditionalTotalPrice($additional_id) ?></label>
-                            </div>
-                            <?php
+                            if (isDatabaseAdditionalBlocked($additional_id) === false) {
+                                ?>
+                                <div class="additional-select">
+                                    <input class="calc" type="checkbox" name="additional[]" value="<?php echo $additional_id ?>"
+                                        price="<?php echo getDatabaseAdditionalTotalPrice($additional_id) ?>">
+                                    <br>
+                                    <small><?php echo getDatabaseAdditionalDescription($additional_id) ?></small>
+                                    <label class="v">R$ <?php echo getDatabaseAdditionalTotalPrice($additional_id) ?></label>
+                                </div>
+                                <?php
+                            }
                         }
                     }
                     ?>
@@ -319,7 +347,7 @@ if (isCampanhaInURL("product")) {
                                 <?php
                                 if (isDatabaseProductQuestionResponseFree($question_list_id)) {
                                     ?>
-                                    <input type="text" name="response<?php echo $question_count ?>" class="form-control" >
+                                    <input type="text" name="response<?php echo $question_count ?>" class="form-control">
 
                                     <?php
 
@@ -338,8 +366,8 @@ if (isCampanhaInURL("product")) {
                                                 <?php
                                             } else {
                                                 ?>
-                                                <input type="radio" name="response<?php echo $question_count ?>"
-                                                    value="<?php echo $response_list_id ?>" required />
+                                                <input type="radio" name="response<?php echo $question_count ?>" value="<?php echo $response_list_id ?>"
+                                                    required />
                                                 <small><?php echo getDatabaseProductQuestionResponseResponse($response_list_id) ?></small><br>
                                                 <?php
                                             }

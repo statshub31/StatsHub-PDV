@@ -60,7 +60,7 @@ function doGeneralCategoryNameFormat($string)
 
 function doGeneralValidationDescriptionFormat($string)
 {
-    return preg_match('/^[a-zA-Z.,:^~´`éóíóú #$%]*$/', $string);
+    return preg_match('/^[0-9a-zA-Záàãâäéèêëíìîïóòõôöúùûüç ,.(),;:!"#$%&=?~^ªº-]*$/', $string);
 }
 function doGeneralValidationPriceType($string)
 {

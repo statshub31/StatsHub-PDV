@@ -179,4 +179,12 @@ function isDatabaseComplementValidationCode($code, $id) {
 	return ($data !== false) ? true : false;
 }
 
+function isDatabaseComplementBlocked($id)
+{
+    
+    $id_sanitize = sanitize($id);
+
+    $query = doSelectSingleDB("SELECT `status` FROM `complements` WHERE `id`='".$id_sanitize."';");
+    return ($query !== false && $query['status'] == 3) ? true : false;
+}
 ?>

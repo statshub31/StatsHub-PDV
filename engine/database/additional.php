@@ -206,4 +206,13 @@ function isDatabaseAdditionalValidationCode($code, $id) {
 	return ($data !== false) ? true : false;
 }
 
+function isDatabaseAdditionalBlocked($id)
+{
+    
+    $id_sanitize = sanitize($id);
+
+    $query = doSelectSingleDB("SELECT `status` FROM `additional` WHERE `id`='".$id_sanitize."';");
+    return ($query !== false && $query['status'] == 3) ? true : false;
+}
+
 ?>
