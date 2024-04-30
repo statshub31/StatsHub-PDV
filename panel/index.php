@@ -104,7 +104,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST)) {
                 'status' => 6,
                 'reason' => $_POST['reason']
             );
-            
+
             doIncreaseStock($_POST['order_id']);
             destroyGeneralSecurityToken('tokenCartCancelOrderConfirm');
             doDatabaseRequestOrderUpdate($_POST['order_id'], $order_update_fields);
@@ -322,7 +322,7 @@ $tokenOrderCancel = addGeneralSecurityToken('tokenOrderCancel');
     </div>
 
     <div class="row">
-    <link href="/front/vendor/datatables/dataTables.bootstrap4.min.css" rel="stylesheet">
+        <link href="/front/vendor/datatables/dataTables.bootstrap4.min.css" rel="stylesheet">
 
         <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
             <thead>
@@ -526,16 +526,10 @@ if (isCampanhaInURL("order")) {
                                 <table class="table table-bordered" width="100%" cellspacing="0">
                                     <thead>
                                         <tr>
-                                            <th></th>
-                                            <th></th>
+                                            <th>Pedido</th>
+                                            <th>Total</th>
                                         </tr>
                                     </thead>
-                                    <tfoot>
-                                        <tr>
-                                            <th></th>
-                                            <th></th>
-                                        </tr>
-                                    </tfoot>
                                     <tbody>
                                         <!-- LISTA CARRINHO START -->
                                         <?php
@@ -546,30 +540,90 @@ if (isCampanhaInURL("order")) {
                                                 $cart_product_list_id = $data['id']; // PRODUTO CART
                                                 $cart_product_id = getDatabaseCartProductProductID($cart_product_list_id); // PRODUTO_ID
                                                 $obs = getDatabaseCartProductObservation($cart_product_list_id);
+                                                $size_id = getDatabaseCartProductPriceID($cart_product_list_id);
+                                                $measure_id = getDatabaseProductSizeMeasureID($size_id);
+                                                $user_id = getDatabaseCartUserID($cart_product_list_id);
+                                                $discount = getDatabaseTicketValue(getDatabaseCartTicketSelectTicketID(getDatabaseCartTicketSelectByCartID($cart_id)));
                                                 ?>
                                                 <tr>
                                                     <td>
-                                                        <div class="cart-product">
-                                                            <section class="product-photo">
-                                                                <img
-                                                                    src="<?php echo getPathProductImage(getDatabaseProductPhotoName($cart_product_id)) ?>">
-                                                            </section>
-                                                            <section class="product-name">
-                                                                <label><?php echo getDatabaseProductName($cart_product_id) ?> </label>
-                                                            </section>
-                                                        </div>
+                                                        <style>
+                                                            .v {
+                                                                float: right;
+                                                            }
+
+                                                            li,
+                                                            ul,
+                                                            ol {
+                                                                margin: 1px;
+                                                            }
+
+                                                            li {
+                                                                width: 100%;
+                                                            }
+
+                                                            .subtopic {
+                                                                font-weight: 600;
+                                                            }
+                                                        </style>
+                                                        <small>
+                                                            (<?php echo getDatabaseCartProductAmount($cart_product_list_id) ?>x)
+                                                            <a data-toggle="tooltip" data-placement="top"
+                                                                title="<?php echo getDatabaseProductDescription($cart_product_id) ?>"
+                                                                href="/panel/products/view/product/<?php echo $cart_product_id ?>">
+                                                                <?php echo getDatabaseProductName($cart_product_id) ?>
+                                                            </a> -
+                                                            <?php echo getDatabaseProductPriceSize($size_id) ?>
+                                                            <?php echo getDatabaseMeasureTitle($measure_id) ?>
+                                                            <nav>
+                                                                <ul class="subtopic"># Complementos</ul>
+                                                                <ol>
+                                                                    <?php
+                                                                    $complement_list = doDatabaseProductsComplementsListByProductID($cart_product_id);
+                                                                    $product_complement_select = getDatabaseCartProductComplementByCartProductID($cart_product_list_id);
+                                                                    $complement_select = getDatabaseCartProductComplementComplementID($product_complement_select);
+
+                                                                    if ($complement_list) {
+                                                                        foreach ($complement_list as $dataComplement) {
+                                                                            $product_complement_id = $dataComplement['id'];
+                                                                            $complement_id = getDatabaseProductComplementComplementID($product_complement_id);
+                                                                            ?>
+                                                                            <?php echo ($complement_select == $complement_id) ? '<li>' . getDatabaseComplementDescription($complement_id) . '</li>' : '' ?>
+                                                                            <?php
+                                                                        }
+                                                                    }
+                                                                    ?>
+                                                                </ol>
+
+                                                            </nav>
+                                                            <br>
+                                                            <nav>
+                                                                <ul class="subtopic"># Adicionais</ul>
+                                                                <ol>
+
+                                                                    <?php
+                                                                    $additional_list = doDatabaseProductsAdditionalListByProductID($cart_product_id);
+                                                                    if ($additional_list) {
+                                                                        foreach ($additional_list as $dataAdditional) {
+                                                                            $product_additional_id = $dataAdditional['id'];
+                                                                            $additional_id = getDatabaseProductAdditionalAdditionalID($product_additional_id);
+                                                                            ?>
+                                                                            <?php echo (isDatabaseCartProductAdditionalExistIDByCartAndAdditionalID($cart_product_list_id, $additional_id) == 1) ? '<li>' . getDatabaseAdditionalDescription($additional_id) . ' <b><span class="subvalue">R$ ' . sprintf("%.2f", getDatabaseAdditionalTotalPrice($additional_id)) . '</span></b></li>' : '' ?>
+                                                                            <?php
+                                                                        }
+                                                                    }
+                                                                    ?>
+                                                                </ol>
+
+                                                            </nav>
+                                                            <span class="subtopic">Observações:</span><br>
+                                                            <?php echo ($obs) ? $obs : 'Vazio'; ?>
+                                                            <br>
+                                                        </small>
                                                     </td>
                                                     <td>
-                                                        Descrição do Produto:
-                                                        <small><?php echo getDatabaseProductDescription($cart_product_id) ?></small><br>
-
-                                                        <small>Observação:
-                                                            <?php echo ($obs) ? $obs : 'Vazio' ?>
-                                                        </small><br>
-                                                        <b>
-                                                            <label class="v">R$
-                                                                <?php echo doCartTotalPriceProduct($cart_product_list_id) ?></label>
-                                                        </b>
+                                                        <b>R$
+                                                            <?php echo sprintf("%.2f", doCartTotalPriceProduct($cart_product_list_id)) ?></b>
                                                     </td>
                                                 </tr>
                                                 <?php
@@ -583,17 +637,41 @@ if (isCampanhaInURL("order")) {
                                 </table>
 
                                 <div>
+                                    <fieldset id="historic">
+                                        <legend>Histórico</legend>
+
+                                        <!-- LOG START -->
+                                        <?php
+                                        $log_list = doDatabaseRequestOrderLogsListByOrderID($order_select_id);
+                                        if ($log_list) {
+                                            foreach ($log_list as $dataLog) {
+                                                $log_list_id = $dataLog['id'];
+                                                ?>
+                                                <p><?php echo doTime(getDatabaseRequestOrderLogCreated($log_list_id)) ?> -
+                                                    <?php echo getDatabaseStatusDeliveryTitle(getDatabaseRequestOrderLogStatusDelivery($log_list_id)); ?>
+                                                </p>
+                                                <?php
+                                            }
+                                        }
+                                        ?>
+                                        <!-- LOG END -->
+                                    </fieldset>
+                                </div>
+                                <hr>
+                                <div>
                                     <section id="address">
-                                        <div><?php
-                                        $main_address_id = getDatabaseUserSelectAddressByUserID($in_user_id);
-                                        echo getDatabaseAddressPublicPlace($main_address_id) . ', ';
-                                        echo getDatabaseAddressNumber($main_address_id) . '(';
-                                        echo getDatabaseAddressComplement($main_address_id) . '), ';
-                                        echo getDatabaseAddressNeighborhood($main_address_id) . ', ';
-                                        echo getDatabaseAddressCity($main_address_id) . ' - ';
-                                        echo getDatabaseAddressState($main_address_id);
-                                        $discount = getDatabaseTicketValue(getDatabaseCartTicketSelectTicketID(getDatabaseCartTicketSelectByCartID($cart_id)));
-                                        ?></div>
+                                        <div>
+                                            <b>Endereço:</b><br><?php
+                                            $main_address_id = getDatabaseUserSelectAddressByUserID($in_user_id);
+                                            echo getDatabaseAddressPublicPlace($main_address_id) . ', ';
+                                            echo getDatabaseAddressNumber($main_address_id) . '(';
+                                            echo getDatabaseAddressComplement($main_address_id) . '), ';
+                                            echo getDatabaseAddressNeighborhood($main_address_id) . ', ';
+                                            echo getDatabaseAddressCity($main_address_id) . ' - ';
+                                            echo getDatabaseAddressState($main_address_id);
+                                            $discount = getDatabaseTicketValue(getDatabaseCartTicketSelectTicketID(getDatabaseCartTicketSelectByCartID($cart_id)));
+                                            ?>
+                                        </div>
                                     </section>
                                     <hr>
                                     <section id="ticket">
@@ -604,29 +682,41 @@ if (isCampanhaInURL("order")) {
                                         </div>
                                     </section>
                                     <hr>
-                                    <section id="pay">
-                                        <div><?php echo (getDatabaseRequestOrderPayIDSelect($order_select_id)); ?>
+                                    <section id="ticket">
+                                        <div>
+                                            <b>Cupom:</b><br>
+                                            <?php echo getDatabaseTicketCode(getDatabaseCartTicketSelectTicketID(getDatabaseCartTicketSelectCartID($cart_id))) ?>
+                                            <small><?php echo ($discount !== false) ? 'O cliente teve um desconto de [' . doTypeDiscount($discount) . ']' : 'O cliente não selecionou nenhum cupom.' ?></small>
                                         </div>
                                     </section>
                                     <hr>
-                                    <section id="ticket">
+
+                                    <section id="pay">
+                                        <div>
+                                            <b>Pagamento no:
+                                            </b>
+                                            <?php echo getDatabaseSettingsPayType(getDatabaseRequestOrderPayIDSelect($order_select_id)); ?><br>
+                                            <?php
+                                            if (getDatabaseRequestOrderPayIDSelect($order_select_id) == getDatabaseSettingsPayMoney(1)) { ?>
+                                                <label for="change">Troco para:
+                                                    <?php echo getDatabaseRequestOrderChangeOf($order_select_id) ?></label>
+                                            <?php }
+                                            ?>
+                                        </div>
+                                    </section>
+                                    <hr>
+                                    <section id="totals">
                                         <div>
                                             <p class="t">Taxa de entrega
                                                 <label class="v">R$ <?php echo getDatabaseSettingsDeliveryFee(1) ?></label>
                                             </p>
                                             <p class="t">Desconto de Cupom
-                                                <label class="v">-<?php
-                                                if (doGeneralValidationPriceType($discount)) {
-                                                    echo $discount;
-                                                } else {
-                                                    echo 'R$ ' . (int) $discount;
-                                                }
-                                                ?></label>
+                                                <label class="v">- <?php echo doTypeDiscount($discount) ?></label>
                                             </p>
                                             <b>
                                                 <p class="t">Total do Pedido
                                                     <label class="v">R$
-                                                        <?php echo (doCartTotalPrice($cart_id) - doCartTotalPriceDiscount($cart_id)) ?></label>
+                                                        <?php echo sprintf("%.2f", (doCartTotalPrice($cart_id) - doCartTotalPriceDiscount($cart_id))) ?></label>
                                                 </p>
                                             </b>
                                         </div>

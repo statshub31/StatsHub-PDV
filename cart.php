@@ -500,7 +500,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST)) {
                             </a>
                         </div>
                         <b>
-                            <label class="v">R$ <?php echo doCartTotalPriceProduct($cart_product_list_id) ?></label>
+                            <label class="v">R$ <?php echo sprintf("%.2f", doCartTotalPriceProduct($cart_product_list_id)) ?></label>
                         </b>
                     </td>
                 </tr>

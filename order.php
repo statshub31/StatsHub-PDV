@@ -423,16 +423,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST)) {
                 <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
                     <thead>
                         <tr>
-                            <th></th>
-                            <th></th>
+                            <th class="none">Produto</th>
+                            <th>Pedido</th>
+                            <th>Descrição</th>
                         </tr>
                     </thead>
-                    <tfoot>
-                        <tr>
-                            <th></th>
-                            <th></th>
-                        </tr>
-                    </tfoot>
                     <tbody>
                         <!-- LISTA CARRINHO START -->
                         <?php
@@ -450,7 +445,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST)) {
 
                                 ?>
                                 <tr>
-                                    <td>
+                                    <td class="none">
                                         <div class="cart-product">
                                             <section class="product-photo">
                                                 <img
@@ -461,68 +456,85 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST)) {
                                             </section>
                                         </div>
                                     </td>
+
+                                    <td>
+                                        <style>
+                                            .v {
+                                                float: right;
+                                            }
+
+                                            li,
+                                            ul,
+                                            ol {
+                                                margin: 1px;
+                                            }
+
+                                            li {
+                                                width: 100%;
+                                            }
+
+                                            .subtopic {
+                                                font-weight: 600;
+                                            }
+                                        </style>
+                                        <small>
+                                            (<?php echo getDatabaseCartProductAmount($cart_product_list_id) ?>x)
+
+                                            <?php echo getDatabaseProductName($cart_product_id) ?> -
+                                            <?php echo getDatabaseProductPriceSize($size_id) ?>
+                                            <?php echo getDatabaseMeasureTitle($measure_id) ?>
+                                            <nav>
+                                                <ul class="subtopic"># Complementos</ul>
+                                                <ol>
+                                                    <?php
+                                                    $complement_list = doDatabaseProductsComplementsListByProductID($cart_product_id);
+                                                    $product_complement_select = getDatabaseCartProductComplementByCartProductID($cart_product_list_id);
+                                                    $complement_select = getDatabaseCartProductComplementComplementID($product_complement_select);
+
+                                                    if ($complement_list) {
+                                                        foreach ($complement_list as $dataComplement) {
+                                                            $product_complement_id = $dataComplement['id'];
+                                                            $complement_id = getDatabaseProductComplementComplementID($product_complement_id);
+                                                            ?>
+                                                            <?php echo ($complement_select == $complement_id) ? '<li>' . getDatabaseComplementDescription($complement_id) . '</li>' : '' ?>
+                                                            <?php
+                                                        }
+                                                    }
+                                                    ?>
+                                                </ol>
+
+                                            </nav>
+                                            <br>
+                                            <nav>
+                                                <ul class="subtopic"># Adicionais</ul>
+                                                <ol>
+
+                                                    <?php
+                                                    $additional_list = doDatabaseProductsAdditionalListByProductID($cart_product_id);
+                                                    if ($additional_list) {
+                                                        foreach ($additional_list as $dataAdditional) {
+                                                            $product_additional_id = $dataAdditional['id'];
+                                                            $additional_id = getDatabaseProductAdditionalAdditionalID($product_additional_id);
+                                                            ?>
+                                                            <?php echo (isDatabaseCartProductAdditionalExistIDByCartAndAdditionalID($cart_product_list_id, $additional_id) == 1) ? '<li>' . getDatabaseAdditionalDescription($additional_id) . ' <b><span class="subvalue">R$ ' . sprintf("%.2f", getDatabaseAdditionalTotalPrice($additional_id)) . '</span></b></li>' : '' ?>
+                                                            <?php
+                                                        }
+                                                    }
+                                                    ?>
+                                                </ol>
+
+                                            </nav>
+                                            <span class="subtopic">Observações:</span><br>
+                                            <?php echo ($obs) ? $obs : 'Vazio'; ?>
+                                            <br>
+                                        </small>
+                                    </td>
                                     <td>
                                         Descrição do Produto:
                                         <small><?php echo getDatabaseProductDescription($cart_product_id) ?></small><br>
 
-                                        <hr>
-                                                        <small>
-                                                            (<?php echo getDatabaseCartProductAmount($cart_product_list_id) ?>x)
-                                                            <?php echo getDatabaseProductName($cart_product_id) ?> -
-                                                            <?php echo getDatabaseProductPriceSize($size_id) ?>
-                                                            <?php echo getDatabaseMeasureTitle($measure_id) ?>
-                                                            <nav>
-                                                                <ul class="subtopic">Complementos</ul>
-                                                                <ol>
-
-                                                                    <?php
-                                                                    $complement_list = doDatabaseProductsComplementsListByProductID($cart_product_id);
-                                                                    $product_complement_select = getDatabaseCartProductComplementByCartProductID($cart_product_list_id);
-                                                                    $complement_select = getDatabaseCartProductComplementComplementID($product_complement_select);
-
-                                                                    if ($complement_list) {
-                                                                        foreach ($complement_list as $dataComplement) {
-                                                                            $product_complement_id = $dataComplement['id'];
-                                                                            $complement_id = getDatabaseProductComplementComplementID($product_complement_id);
-                                                                            ?>
-                                                                            <?php echo ($complement_select == $complement_id) ? '<li>' . getDatabaseComplementDescription($complement_id) . '</li>' : '' ?>
-                                                                            <?php
-                                                                        }
-                                                                    }
-                                                                    ?>
-                                                                </ol>
-
-                                                            </nav>
-
-                                                            <nav>
-                                                                <ul class="subtopic">Adicionais</ul>
-                                                                <ol>
-
-                                                                    <?php
-                                                                    $additional_list = doDatabaseProductsAdditionalListByProductID($cart_product_id);
-                                                                    if ($additional_list) {
-                                                                        foreach ($additional_list as $dataAdditional) {
-                                                                            $product_additional_id = $dataAdditional['id'];
-                                                                            $additional_id = getDatabaseProductAdditionalAdditionalID($product_additional_id);
-                                                                            ?>
-                                                                            <?php echo (isDatabaseCartProductAdditionalExistIDByCartAndAdditionalID($cart_product_list_id, $additional_id) == 1) ? '<li>' . getDatabaseAdditionalDescription($additional_id) . '
-                                 <span class="subvalue">R$ 5.00</span>
-                                 </li>' : '' ?>
-                                                                            <?php
-                                                                        }
-                                                                    }
-                                                                    ?>
-                                                                </ol>
-
-                                                            </nav>
-                                                            <span class="subtopic">Observações:</span><br>
-                                                            <?php echo ($obs) ? $obs : 'Vazio'; ?>
-                                                            <br>
-                                                        </small><br>
-                                        <b>
-                                            <label class="v">R$
-                                                <?php echo doCartTotalPriceProduct($cart_product_list_id) ?></label>
-                                        </b>
+                                        <hr> <b>R$
+                                            <?php echo sprintf("%.2f", doCartTotalPriceProduct($cart_product_list_id)) ?></b>
                                     </td>
                                 </tr>
                                 <?php
@@ -562,6 +574,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST)) {
                     <hr>
                     <section id="pay">
                         <div>
+                            <b>Pagamento no:
+                            </b>
                             <?php echo getDatabaseSettingsPayType(getDatabaseRequestOrderPayIDSelect($order_id)); ?><br>
                             <?php
                             if (getDatabaseRequestOrderPayIDSelect($order_id) == getDatabaseSettingsPayMoney(1)) { ?>

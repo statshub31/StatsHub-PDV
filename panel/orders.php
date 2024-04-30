@@ -136,12 +136,6 @@ if (isCampanhaInURL("order")) {
                                             <th>Total</th>
                                         </tr>
                                     </thead>
-                                    <tfoot>
-                                        <tr>
-                                            <th></th>
-                                            <th></th>
-                                        </tr>
-                                    </tfoot>
                                     <tbody>
                                         <!-- LISTA CARRINHO START -->
                                         <?php
@@ -156,7 +150,6 @@ if (isCampanhaInURL("order")) {
                                                 $measure_id = getDatabaseProductSizeMeasureID($size_id);
                                                 $user_id = getDatabaseCartUserID($cart_product_list_id);
                                                 $discount = getDatabaseTicketValue(getDatabaseCartTicketSelectTicketID(getDatabaseCartTicketSelectByCartID($cart_id)));
-                                                $obs = getDatabaseCartProductObservation($cart_product_list_id);
                                                 ?>
                                                 <tr>
                                                     <td>
@@ -234,7 +227,8 @@ if (isCampanhaInURL("order")) {
                                                             <br>
                                                         </small>
                                                     </td>
-                                                    <td>R$ <?php echo sprintf("%.2f", doCartTotalPriceProduct($cart_product_list_id)) ?>
+                                                    <td>
+                                                        <b>R$ <?php echo sprintf("%.2f", doCartTotalPriceProduct($cart_product_list_id)) ?></b>
                                                     </td>
                                                 </tr>
                                                 <?php
@@ -293,11 +287,12 @@ if (isCampanhaInURL("order")) {
                                     </section>
                                     <hr>
                                     <section id="pay">
-                                        <div><?php echo (getDatabaseRequestOrderPayIDSelect($order_select_id)); ?>
+                                        <div>
+                                            <b>Pagamento no: </b><?php echo getDatabaseSettingsPayType(getDatabaseRequestOrderPayIDSelect($order_select_id)); ?>
                                         </div>
                                     </section>
                                     <hr>
-                                    <section id="ticket">
+                                    <section id="totals">
                                         <div>
                                             <p class="t">Taxa de entrega
                                                 <label class="v">R$ <?php echo getDatabaseSettingsDeliveryFee(1) ?></label>

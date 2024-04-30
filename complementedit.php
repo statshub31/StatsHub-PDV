@@ -253,13 +253,27 @@ if (isCampanhaInURL("product")) {
                         foreach ($price_list as $dataPrice) {
                             $price_list_id = $dataPrice['id'];
                             ?>
+                            
                             <div class="size-select">
-                                <input <?php echo doCheck($product_price_select, $price_list_id) ?> type="radio" name="size"
-                                    value="<?php echo $price_list_id ?>" class="calc"
-                                    price="<?php echo getDatabaseProductPrice($price_list_id) ?>" required>
+                                <input <?php echo doCheck($product_price_select, $price_list_id) ?> type="radio" name="size" value="<?php echo $price_list_id ?>" class="calc"
+                                    price="<?php echo (isDatabaseProductPromotionExistIDByProductID($product_id)) ? sprintf("%.2f", doCalcDiscountPromotion($product_id, $price_list_id)) : getDatabaseProductPrice($price_list_id) ?>"
+                                    required>
                                 <label><?php echo getDatabaseProductPriceSize($price_list_id) ?>
                                     (<?php echo getDatabaseMeasureTitle(getDatabaseProductSizeMeasureID($price_list_id)) ?>)</label>
-                                <label class="v">R$ <?php echo getDatabaseProductPrice($price_list_id) ?></label>
+                                <?php
+                                if (isDatabaseProductPromotionExistIDByProductID($product_id)) {
+                                    ?>
+                                    <label class="v">
+                                        <small><strike>R$ <?php echo getDatabaseProductPrice($price_list_id) ?></strike> por </small> <b> R$
+                                            <?php echo sprintf("%.2f", doCalcDiscountPromotion($product_id, $price_list_id)) ?></b></label>
+
+                                    <?php
+                                } else {
+                                    ?>
+                                    <label class="v">R$ <?php echo getDatabaseProductPrice($price_list_id) ?></label>
+                                    <?php
+                                }
+                                ?>
                                 <br>
                                 <small><?php echo getDatabaseProductPriceDescription($price_list_id) ?></small>
                             </div>

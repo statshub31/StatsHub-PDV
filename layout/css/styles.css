@@ -162,7 +162,7 @@ body {
   }
 
   #user_panel section:nth-child(1) {
-    margin-bottom: 20px;
+    margin-bottom: 70px;
   }
 
   #restaurant-info section:not(:last-child) {
