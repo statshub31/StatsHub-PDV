@@ -79,6 +79,14 @@ function doDatabaseRequestOrderLogCountRowByStatus($equals) {
     ")['total'];
 }
 
+function doDatabaseRequestOrderLogsTruncateByRequestOrderID($request_order_id)
+{
+    
+    $request_order_id_sanitize = sanitize($request_order_id);
+
+    doDeleteDB("DELETE FROM `request_order_logs` WHERE `request_order_id`='".$request_order_id_sanitize."';");
+}
+
 function doDatabaseRequestOrderLogsFirstLogByOrderID($order_id)
 {
     $order_id_sanitize = $order_id;

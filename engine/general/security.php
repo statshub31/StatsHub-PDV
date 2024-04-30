@@ -87,6 +87,19 @@ function doGeneralSecurityCart()
 	return $cart_id;
 }
 
+function doGeneralSecurityComplement($cart_product_id)
+{
+	$cart_product_id_sanitize = $cart_product_id;
+	$account_id = getGeneralSecuritySession('account_id');
+	$user_data = getDatabaseUsersData(getDatabaseUserIDByAccountID($account_id), 'id');
+	$user_id = $user_data['id'];
+
+	if (isCartProductValidationUser($user_id, $cart_product_id_sanitize)  === false) {
+		header('Location: /menu');
+	}
+
+}
+
 function doGeneralSecurityOrder($order_id)
 {
 

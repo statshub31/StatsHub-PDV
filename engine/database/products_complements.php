@@ -158,4 +158,12 @@ function isDatabaseProductComplementValidation($product_id, $complement_id) {
 	return ($data !== false) ? true : false;
 }
 
+function getDatabaseProductComplementowCountByProductID($product_id)
+{
+    $product_id_sanitize = sanitize($product_id);
+
+    $result = doSelectSingleDB("SELECT COUNT(*) AS rowCount FROM `products_complements` where `product_id` = '".$product_id_sanitize."';");
+
+    return ($result !== false) ? $result['rowCount'] : 0;
+}
 ?>

@@ -172,4 +172,12 @@ function getDatabaseCartProductExistIDByCartAndProductID($cart_product_id, $prod
     return ($query !== false) ? $query['id'] : false;
 }
 
+function doDatabaseCartProductsListByProductID($product_id)
+{
+    $product_id_sanitize = $product_id;
+    $query = doSelectMultiDB("SELECT `id` FROM `cart_products` where `product_id` = '".$product_id_sanitize."'");
+    return ($query !== false) ? $query : false;
+}
+
+
 ?>

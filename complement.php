@@ -19,10 +19,13 @@ if (isCampanhaInURL("product")) {
 
 
         if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST)) {
-            // if (getGeneralSecurityToken('incrementedProduct')) {
-            if (1 == 1) {
+            if (getGeneralSecurityToken('incrementedProduct')) {
 
                 if (empty($_POST) === false) {
+                    if (doGeneralValidationNumberFormat($_POST['quantity']) == false) {
+                        $errors[] = "Somente é aceito caracteres númerico na quantidade";
+                    }
+
                     if (!isset($_POST['size'])) {
                         $errors[] = "Selecione o tamanho do item.";
                     }
@@ -46,6 +49,7 @@ if (isCampanhaInURL("product")) {
                     if (getProductInStock($_POST['product_select_id'], $_POST['quantity']) === false) {
                         $errors[] = "Desculpe-nos, mas só temos a seguinte quantidade [" . getDatabaseStockActual(getDatabaseStockIDByProductID($_POST['product_select_id'])) . "] disponivel.";
                     }
+
                     if (isset($_POST['additional'])) {
                         foreach ($_POST['additional'] as $verifyAdditional) {
                             if (isDatabaseAdditionalBlocked($verifyAdditional) || isDatabaseAdditionalExistID($verifyAdditional) === false) {
@@ -54,14 +58,15 @@ if (isCampanhaInURL("product")) {
                         }
                     }
 
-                    if (!isset($_POST['complement'])) {
-                        $errors[] = "Necessário escolher uma opção para o complemento.";
-                    } else {
-                        if (isDatabaseComplementBlocked($_POST['complement']) || isDatabaseComplementExistID($_POST['complement']) === false) {
-                            $errors[] = "Houve um erro ao adicionar o produto, reinicie a pagina e tente novamente.";
+                    if (getDatabaseProductComplementowCountByProductID($_POST['product_select_id']) > 0) {
+                        if (!isset($_POST['complement'])) {
+                            $errors[] = "Necessário escolher uma opção para o complemento.";
+                        } else {
+                            if (isDatabaseComplementBlocked($_POST['complement']) || isDatabaseComplementExistID($_POST['complement']) === false) {
+                                $errors[] = "Houve um erro ao adicionar o produto, reinicie a pagina e tente novamente.";
+                            }
                         }
                     }
-
 
                     if (empty($_POST['product_select_id'])) {
                         $errors[] = "Houve um erro ao adicionar o produto, reinicie a pagina e tente novamente.";
@@ -133,13 +138,14 @@ if (isCampanhaInURL("product")) {
 
                     // ADICIONAR COMPLEMENTO
 
-                    $cart_product_complement_insert_fields = array(
-                        'cart_product_id' => $product_cart_id,
-                        'complement_id' => $_POST['complement']
-                    );
+                    if (getDatabaseProductComplementowCountByProductID($_POST['product_select_id']) > 0) {
+                        $cart_product_complement_insert_fields = array(
+                            'cart_product_id' => $product_cart_id,
+                            'complement_id' => $_POST['complement']
+                        );
 
-                    doDatabaseCartProductComplementInsert($cart_product_complement_insert_fields);
-
+                        doDatabaseCartProductComplementInsert($cart_product_complement_insert_fields);
+                    }
 
                     // ADICIONAR ADICIONAL
                     if (isset($_POST['additional'])) {
@@ -173,6 +179,7 @@ if (isCampanhaInURL("product")) {
                                     'response_text' => $_POST['response' . $count_checked]
                                 );
                                 doDatabaseCartProductQuestionResponseInsert($response_question_product_insert);
+
                             } else {
                                 if (isDatabaseProductQuestionMultipleResponse($_POST['question' . $count_checked])) {
                                     $count_response = 0;
@@ -361,7 +368,7 @@ if (isCampanhaInURL("product")) {
                                             if (isDatabaseProductQuestionMultipleResponse($question_list_id)) {
                                                 ?>
                                                 <input type="checkbox" name="response<?php echo $question_count ?>[]"
-                                                    value="<?php echo $response_list_id ?>" required />
+                                                    value="<?php echo $response_list_id ?>" />
                                                 <small><?php echo getDatabaseProductQuestionResponseResponse($response_list_id) ?></small><br>
                                                 <?php
                                             } else {

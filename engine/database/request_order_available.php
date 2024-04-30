@@ -145,6 +145,15 @@ function doDatabaseRequestOrderAvailableLastAvailableByOrderID($order_id)
     return doSelectSingleDB("SELECT id FROM request_order_available where `request_order_id`='".$order_id_sanitize."' ORDER BY id DESC LIMIT 1")['id'];
 }
 
+function doDatabaseRequestOrderAvailableTruncateByRequestOrderID($request_order_id)
+{
+    
+    $request_order_id_sanitize = sanitize($request_order_id);
+
+    doDeleteDB("DELETE FROM `request_order_available` WHERE `request_order_id`='".$request_order_id_sanitize."';");
+}
+
+
 function doDatabaseRequestOrderAvailableInsert($import_data_query)
 {
     

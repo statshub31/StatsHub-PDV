@@ -1,9 +1,56 @@
 <?php
 
 
-
 function doDatabaseRemoveProduct($product_id)
 {
+    $product_id_sanitize = $product_id;
+    $cart_product_list = doDatabaseCartProductsListByProductID($product_id_sanitize);
+
+
+    data_dump($product_id);
+    if ($cart_product_list) {
+        foreach ($cart_product_list as $data) {
+            $cart_product_id = $data['id'];
+            $cart_id = getDatabaseCartProductCartID($cart_product_id);
+            $request_order_id = getDatabaseRequestOrderCartID($cart_id);
+
+
+            ## REMOVER PEDIDOS ##
+            doDatabaseRequestOrderAvailableTruncateByRequestOrderID($request_order_id);
+            doDatabaseRequestOrderLogsTruncateByRequestOrderID($request_order_id);
+            doDatabaseRequestOrderDelete($request_order_id);
+
+            ## REMOVER CARRINHO ##
+
+            $cart_product_complement_id = getDatabaseCartProductComplementByCartProductID($cart_product_id);
+            doDatabaseCartProductComplementDelete($cart_product_complement_id);
+            doDatabaseCartProductAdditionalDeleteByCartProductUnlimited($cart_product_id);
+
+            // Lista de todas as perguntas
+            $list_question = doDatabaseProductsQuestionsListByProductID(getDatabaseCartProductProductID($cart_product_id));
+
+            if ($list_question !== false) {
+                foreach ($list_question as $data) {
+                    $question_id = $data['id'];
+                    $question_remove_id = getDatabaseCartProductQuestionIDByCartAndQuestID($cart_product_id, $question_id);
+
+                    doDatabaseCartProductQuestionResponseDeleteByQuestionIDUnlimited($question_remove_id);
+                    doDatabaseCartProductQuestionDeleteUnlimited($question_remove_id);
+                }
+            }
+            
+            doDatabaseCartProductDelete($cart_product_id);
+        }
+
+    }
+    doDatabaseTruncateProductTables($product_id);
+}
+
+// Removo um produto por id 
+function doDatabaseTruncateProductTables($product_id)
+{
+    
+    data_dump("2");
     global $image_product_dir;
     $product_id_sanitize = sanitize($product_id);
 
@@ -22,25 +69,13 @@ function doDatabaseRemoveProduct($product_id)
 
 }
 
+// Removo todos os produtos por id 
 function doDatabaseRemoveProducts($products)
 {
     global $image_product_dir;
 
     foreach ($products as $product_id) {
-        $product_id_sanitize = sanitize($product_id);
-
-        $photo_name = getDatabaseProductPhotoName($product_id_sanitize);
-        $question_id = getDatabaseProductQuestionIDByProductID($product_id_sanitize);
-
-        doGeneralRemoveArchive($image_product_dir, $photo_name);
-        doDatabaseLogsStockTruncateByProductID($product_id_sanitize);
-        doDatabaseStockTruncateByProductID($product_id_sanitize);
-        doDatabaseProductQuestionResponseTruncateByProductID($question_id);
-        doDatabaseProductQuestionTruncateByProductID($product_id_sanitize);
-        doDatabaseProductPriceTruncateByProductID($product_id_sanitize);
-        doDatabaseProductComplementTruncateByProductID($product_id_sanitize);
-        doDatabaseProductAdditionalTruncateByProductID($product_id_sanitize);
-        doDatabaseProductDelete($product_id_sanitize);
+        doDatabaseRemoveProduct($product_id);
     }
 }
 
@@ -119,7 +154,7 @@ function doProcessNewQuestion($count)
             }
         }
 
-        // doDatabaseProductQuestionResponseInsertMultipleRow($response_fields[$count]);
+        doDatabaseProductQuestionResponseInsertMultipleRow($response_fields[$count]);
     }
 }
 
@@ -261,7 +296,7 @@ function doCartTotalPriceProduct($cart_product_id)
     $product_id = getDatabaseCartProductProductID($cart_product_id_sanitize);
     $amount = getDatabaseCartProductAmount($cart_product_id_sanitize);
     $price_id = getDatabaseCartProductPriceID($cart_product_id_sanitize);
-    if(isDatabaseProductPromotionEnabledByProductID($product_id)) {
+    if (isDatabaseProductPromotionEnabledByProductID($product_id)) {
         $price = doCalcDiscountPromotion($product_id, $price_id);
     } else {
         $price = getDatabaseProductPrice($price_id);
@@ -331,7 +366,6 @@ function doRemoveCartProductID($cart_product_id)
     $cart_id = getDatabaseCartProductCartID($cart_product_id);
     $cart_product_id_sanitize = sanitize($cart_product_id);
     $cart_product_complement_id = getDatabaseCartProductComplementByCartProductID($cart_product_id_sanitize);
-    // $cart_question = 
 
     // Lista de todas as perguntas
     $list_question = doDatabaseProductsQuestionsListByProductID(getDatabaseCartProductProductID($cart_product_id_sanitize));
@@ -355,7 +389,7 @@ function doRemoveCartAllProduct($cart_id)
 {
     $cart_product_list = doDatabaseCartProductsListByCartID($cart_id);
 
-    if($cart_product_list) {
+    if ($cart_product_list) {
         foreach ($cart_product_list as $data) {
             $cart_product_id = $data['id'];
             doRemoveCartProductID($cart_product_id);
@@ -368,8 +402,8 @@ function doRemoveCartsProductID($product_id)
 {
     $carts = doDatabaseCartsListEnabled();
 
-    if($carts) {
-        foreach($carts as $data) {
+    if ($carts) {
+        foreach ($carts as $data) {
             $cart_id = $data['id'];
             $cart_product_id = getDatabaseCartProductExistIDByCartAndProductID($cart_id, $product_id);
             doRemoveCartProductID($cart_product_id);
@@ -710,7 +744,7 @@ function getProductInStock($product_id, $quantity)
 
     if ($product_stock_status == 1) {
         $stock_id = getDatabaseStockIDByProductID($product_id_sanitize);
-        $stock_amount = (getDatabaseStockActual($stock_id)- $quantity);
+        $stock_amount = (getDatabaseStockActual($stock_id) - $quantity);
 
         if ($stock_amount < 0)
             return false;
@@ -764,7 +798,7 @@ function doDecreaseStock($order_id)
 
                 doDatabaseStockUpdate($stock_id, $stock_update_fields);
 
-                if($new_stock_amount <= 0) {
+                if ($new_stock_amount <= 0) {
                     doRemoveCartsProductID($product_id);
                 }
             }
@@ -805,23 +839,24 @@ function doIncreaseStock($order_id)
 }
 
 
-function doCalcDiscountPromotion($product_id, $size_id) {
+function doCalcDiscountPromotion($product_id, $size_id)
+{
     $product_id_sanitize = sanitize($product_id);
     $size_id_sanitize = sanitize($size_id);
     $promotion_id = getDatabaseProductPromotionByProductID($product_id_sanitize);
     $discount = getDatabaseProductPromotionType($promotion_id);
     $total = 0;
 
-    if($promotion_id !== false) {
+    if ($promotion_id !== false) {
         $price = getDatabaseProductPrice($size_id);
         $discount_value = getDatabaseProductPromotionValue($promotion_id);
 
-        if(isDatabasePromotionPercentual($discount)) {
+        if (isDatabasePromotionPercentual($discount)) {
             $discount_amount = ($price * $discount_value) / 100;
             $total = $price - $discount_amount;
-        } 
+        }
 
-        if(isDatabasePromotionReais($discount)) {
+        if (isDatabasePromotionReais($discount)) {
             $total = $price - $discount_value;
         }
     }
@@ -829,9 +864,10 @@ function doCalcDiscountPromotion($product_id, $size_id) {
     return $total;
 }
 
-function isProductPromotionCumulative($cart_id) {
+function isProductPromotionCumulative($cart_id)
+{
     $cart_list = doDatabaseCartProductsListByCartID($cart_id);
-    
+
     foreach ($cart_list as $data) {
         $cart_product_list_id = $data['id'];
         $product_id = getDatabaseCartProductProductID($cart_product_list_id);
@@ -844,16 +880,27 @@ function isProductPromotionCumulative($cart_id) {
     return $cart_list ? true : false;
 }
 
-function isProductUnblocked($cart_id) {
+function isProductUnblocked($cart_id)
+{
     $cart_list = doDatabaseCartProductsListByCartID($cart_id);
-    
+
     foreach ($cart_list as $data) {
         $cart_product_list_id = $data['id'];
         $product_id = getDatabaseCartProductProductID($cart_product_list_id);
-        if(isDatabaseProductBlocked($product_id)) {
+        if (isDatabaseProductBlocked($product_id)) {
             return false;
         }
     }
 
     return $cart_list ? true : false;
+}
+
+function isCartProductValidationUser($user_id, $cart_product_id)
+{
+    $user_id_sanitize = sanitize($user_id);
+    $cart_product_id_sanitize = sanitize($cart_product_id);
+    $cart_id = getDatabaseCartProductCartID($cart_product_id_sanitize);
+    $user_id_in_cart = getDatabaseCartUserID($cart_id);
+
+    return ($cart_id !== false && $user_id_in_cart == $user_id) ? true : false;
 }

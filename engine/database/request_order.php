@@ -104,6 +104,7 @@ function doDatabaseRequestOrdersListAll()
     
     return doSelectMultiDB("SELECT `id` FROM `request_order` order by `id` desc;");
 }
+
 function doDatabaseRequestOrderInsert($import_data_query)
 {
     
@@ -130,7 +131,7 @@ function doDatabaseRequestOrderDelete($id)
     
     $id_sanitize = sanitize($id);
 
-    doDeleteDB("DELETE FROM `request_order` WHERE `id`='".$id_sanitize."'limit 1;");
+    doDeleteDB("DELETE FROM `request_order` WHERE `id`='".$id_sanitize."' limit 1;");
 }
 
 function doDatabaseRequestOrderUpdate($id, $import_data_query, $empty = true)

@@ -10,44 +10,35 @@ doGeneralSecurityProtect();
 
 // <!-- Modal PRODUCT -->
 if (isCampanhaInURL("product")) {
-    $product_select_id = getURLLastParam();
-    if (isDatabaseCartProductExistID($product_select_id)) {
-        $product_id = getDatabaseCartProductProductID($product_select_id);
-        $product_amount_select = getDatabaseCartProductAmount($product_select_id);
-        $product_price_select = getDatabaseCartProductPriceID($product_select_id);
+    $product_cart_select_id = getURLLastParam();
+    if (isDatabaseCartProductExistID($product_cart_select_id)) {
+        doGeneralSecurityComplement($product_cart_select_id);
+        $product_id = getDatabaseCartProductProductID($product_cart_select_id);
+        if(isDatabaseProductExistID($product_id)) {
+            $product_amount_select = getDatabaseCartProductAmount($product_cart_select_id);
+            $product_price_select = getDatabaseCartProductPriceID($product_cart_select_id);
 
-        $product_complement_select = getDatabaseCartProductComplementByCartProductID($product_select_id);
-        $complement_select = getDatabaseCartProductComplementComplementID($product_complement_select);
-
+            $product_complement_select = getDatabaseCartProductComplementByCartProductID($product_cart_select_id);
+            $complement_select = getDatabaseCartProductComplementComplementID($product_complement_select);
         ?>
         <!-- START -->
         <?PHP
 
 
         if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST)) {
-            // if (getGeneralSecurityToken('editProductCart')) {
-            if (1 == 1) {
+            if (getGeneralSecurityToken('editProductCart')) {
 
                 if (empty($_POST) === false) {
-                    $product_id = getDatabaseCartProductProductID($_POST['product_select_id']);
-
-                    $product_amount_select = getDatabaseCartProductAmount($_POST['product_select_id']);
-                    $product_price_select = getDatabaseCartProductPriceID($_POST['product_select_id']);
-
-                    $product_complement_select = getDatabaseCartProductComplementByCartProductID($_POST['product_select_id']);
-                    $complement_select = getDatabaseCartProductComplementComplementID($product_complement_select);
-
-                    if(isOpen() === false) {
-                        $errors[] = "O estabelecimento se encontra fechado no momento.";
+                    if(doGeneralValidationNumberFormat($_POST['quantity']) == false) {
+                        $errors[] = "Somente é aceito caracteres númerico na quantidade";
                     }
                     
-
-                    if (isDatabaseCartProductExistID($_POST['product_select_id']) === false) {
-                        $errors[] = "Houve um erro ao alterar o produto, reinicie a pagina e tente novamente.";
-                    }
-
                     if (!isset($_POST['size'])) {
                         $errors[] = "Selecione o tamanho do item.";
+                    }
+
+                    if (isOpen() === false) {
+                        $errors[] = "O estabelecimento se encontra fechado no momento.";
                     }
 
                     if (isDatabaseProductPriceExistID($_POST['size']) === false) {
@@ -58,11 +49,31 @@ if (isCampanhaInURL("product")) {
                         $errors[] = "Houve um erro ao alterar o produto, reinicie a pagina e tente novamente.";
                     }
 
-                    if (!isset($_POST['complement'])) {
-                        $errors[] = "Necessário escolher uma opção para o complemento.";
+                    if (isProductInStock($_POST['product_select_id']) === false) {
+                        $errors[] = "Houve um erro ao adicionar o produto, reinicie a pagina e tente novamente.";
                     }
-
-
+                    
+                    if (getProductInStock($_POST['product_select_id'], $_POST['quantity']) === false) {
+                        $errors[] = "Desculpe-nos, mas só temos a seguinte quantidade [" . getDatabaseStockActual(getDatabaseStockIDByProductID($_POST['product_select_id'])) . "] disponivel.";
+                    }
+                    
+                    if (isset($_POST['additional'])) {
+                        foreach ($_POST['additional'] as $verifyAdditional) {
+                            if (isDatabaseAdditionalBlocked($verifyAdditional) || isDatabaseAdditionalExistID($verifyAdditional) === false) {
+                                $errors[] = "Houve um erro ao adicionar o produto, reinicie a pagina e tente novamente.";
+                            }
+                        }
+                    }
+                    
+                    if (getDatabaseProductComplementowCountByProductID($_POST['product_select_id']) > 0) {
+                        if (!isset($_POST['complement'])) {
+                            $errors[] = "Necessário escolher uma opção para o complemento.";
+                        } else {
+                            if (isDatabaseComplementBlocked($_POST['complement']) || isDatabaseComplementExistID($_POST['complement']) === false) {
+                                $errors[] = "Houve um erro ao adicionar o produto, reinicie a pagina e tente novamente.";
+                            }
+                        }
+                    }
                     if (empty($_POST['product_select_id'])) {
                         $errors[] = "Houve um erro ao alterar o produto, reinicie a pagina e tente novamente.";
                     }
@@ -102,6 +113,15 @@ if (isCampanhaInURL("product")) {
                             ++$count_checked;
                         }
                     }
+                    
+
+                    if (isDatabaseCartProductExistID($_POST['product_select_id']) === false) {
+                        $errors[] = "Houve um erro ao alterar o produto, reinicie a pagina e tente novamente.";
+                    }
+
+                    if(isCartProductValidationUser($in_user_id, $_POST['product_select_id']) === false) {
+                        $errors[] = "Houve um erro ao alterar o produto, reinicie a pagina e tente novamente.";
+                    }
 
                 }
 
@@ -115,24 +135,28 @@ if (isCampanhaInURL("product")) {
                         'observation' => $_POST['obs']
                     );
 
-                    doDatabaseCartProductUpdate($product_select_id, $cart_product_insert_fields);
+                    doDatabaseCartProductUpdate($product_cart_select_id, $cart_product_insert_fields);
+
 
                     // ADICIONAR COMPLEMENTO
-                    $cart_product_complement_insert_fields = array(
-                        'complement_id' => $_POST['complement']
-                    );
+                    
+                    if (getDatabaseProductComplementowCountByProductID($_POST['product_select_id']) > 0) {
+                        $cart_product_complement_insert_fields = array(
+                            'complement_id' => $_POST['complement']
+                        );
 
-                    doDatabaseCartProductComplementUpdate($product_complement_select, $cart_product_complement_insert_fields);
+                        doDatabaseCartProductComplementUpdate($product_complement_select, $cart_product_complement_insert_fields);
 
+                }
 
                     // // // ADICIONAR ADICIONAL
-                    doDatabaseCartProductAdditionalDeleteByCartProductUnlimited($product_select_id);
+                    doDatabaseCartProductAdditionalDeleteByCartProductUnlimited($product_cart_select_id);
 
                     
                     if (isset($_POST['additional'])) {
                         foreach ($_POST['additional'] as $additional_select_list_id) {
                             $cart_product_additional_insert_fields[] = array(
-                                'cart_product_id' => $product_select_id,
+                                'cart_product_id' => $product_cart_select_id,
                                 'additional_id' => $additional_select_list_id
                             );
 
@@ -160,13 +184,13 @@ if (isCampanhaInURL("product")) {
                                 $response_question_product_insert = array(
                                     'response_text' => (!empty($_POST['response' . $count_checked])) ? $_POST['response' . $count_checked] : NULL
                                 );
-                                $id_question_update = getDatabaseCartProductQuestionIDByCartAndQuestID($product_select_id, $_POST['question' . $count_checked]);
+                                $id_question_update = getDatabaseCartProductQuestionIDByCartAndQuestID($product_cart_select_id, $_POST['question' . $count_checked]);
                                 doDatabaseCartProductQuestionResponseUpdate($id_question_update, $response_question_product_insert, false);
                             }
                              else {
                                 if (isDatabaseProductQuestionMultipleResponse($_POST['question' . $count_checked])) {
                                     $count_response = 0;
-                                    $id_question_update = getDatabaseCartProductQuestionIDByCartAndQuestID($product_select_id, $_POST['question' . $count_checked]);
+                                    $id_question_update = getDatabaseCartProductQuestionIDByCartAndQuestID($product_cart_select_id, $_POST['question' . $count_checked]);
                                     doDatabaseCartProductQuestionResponseDeleteByQuestionIDUnlimited($id_question_update);
 
                                     while (isset($_POST['response' . $count_checked][$count_response])) {
@@ -195,10 +219,11 @@ if (isCampanhaInURL("product")) {
                 }
             }
         }
-
         ?>
         <!-- FIM -->
-        <form action="/complementedit/product/<?php echo $product_select_id ?>" method="post">
+
+
+        <form action="/complementedit/product/<?php echo $product_cart_select_id ?>" method="post">
             <div class="card" style="width: 100%">
                 <img class="card-img-top" style="height: 15rem"
                     src="<?php echo getPathProductImage(getDatabaseProductPhotoName($product_id)); ?>">
@@ -283,7 +308,7 @@ if (isCampanhaInURL("product")) {
                             $additional_id = getDatabaseProductAdditionalAdditionalID($product_additional_id);
                             ?>
                             <div class="additional-select">
-                                <input <?php echo doCheck(isDatabaseCartProductAdditionalExistIDByCartAndAdditionalID($product_select_id, $additional_id), 1) ?> class="calc" type="checkbox" name="additional[]"
+                                <input <?php echo doCheck(isDatabaseCartProductAdditionalExistIDByCartAndAdditionalID($product_cart_select_id, $additional_id), 1) ?> class="calc" type="checkbox" name="additional[]"
                                     value="<?php echo $additional_id ?>"
                                     price="<?php echo getDatabaseAdditionalTotalPrice($additional_id) ?>">
                                 <br>
@@ -308,7 +333,7 @@ if (isCampanhaInURL("product")) {
                         $question_count = 1;
                         foreach ($question_list as $dataQuestion) {
                             $question_list_id = $dataQuestion['id'];
-                            $question_response_select = getDatabaseCartProductQuestionIDByCartAndQuestID($product_select_id, $question_list_id);
+                            $question_response_select = getDatabaseCartProductQuestionIDByCartAndQuestID($product_cart_select_id, $question_list_id);
                             $response_text = getDatabaseCartProductQuestionResponseText($question_response_select);
                             ?>
                             <div class="question-select">
@@ -343,12 +368,13 @@ if (isCampanhaInURL("product")) {
                                             if (isDatabaseProductQuestionMultipleResponse($question_list_id)) {
                                                 ?>
                                                 <input <?php echo doCheck(doDatabaseCartProductQuestionResponseIDExistByCartAndQuestID($question_response_select, $response_list_id), 1) ?> type="checkbox"
-                                                    name="response<?php echo $question_count ?>[]" value="<?php echo $response_list_id ?>" required/>
+                                                    name="response<?php echo $question_count ?>[]" value="<?php echo $response_list_id ?>"/>
                                                 <small><?php echo getDatabaseProductQuestionResponseResponse($response_list_id) ?></small><br>
                                                 <?php
                                             } else {
                                                 ?>
-                                                <input <?php echo doCheck($response_select, $response_list_id) ?> type="radio"
+                                                
+                                                <input <?php echo doCheck(doDatabaseCartProductQuestionResponseIDExistByCartAndQuestID($question_response_select, $response_list_id), 1) ?> type="radio"
                                                     name="response<?php echo $question_count ?>" value="<?php echo $response_list_id ?>" required/>
                                                 <small><?php echo getDatabaseProductQuestionResponseResponse($response_list_id) ?></small><br>
                                                 <?php
@@ -371,7 +397,7 @@ if (isCampanhaInURL("product")) {
                     <div class="form-floating">
                         <label for="floatingTextarea">Observações</label>
                         <textarea class="form-control" name="obs" placeholder="Exemplo: Sem cebola..."
-                            id="floatingTextarea"><?php echo getDatabaseCartProductObservation($product_select_id) ?></textarea>
+                            id="floatingTextarea"><?php echo getDatabaseCartProductObservation($product_cart_select_id) ?></textarea>
                     </div>
                 </section>
 
@@ -380,11 +406,11 @@ if (isCampanhaInURL("product")) {
                 <b>
                     <p class="t">Total do Pedido
                         <label class="v">R$ <span
-                                id="total"><?php echo doCartTotalPriceProduct($product_select_id) ?></span></label>
+                                id="total"><?php echo doCartTotalPriceProduct($product_cart_select_id) ?></span></label>
                     </p>
                 </b>
                 <div>
-                    <input name="product_select_id" type="text" value="<?php echo $product_select_id ?>" hidden>
+                    <input name="product_select_id" type="text" value="<?php echo $product_cart_select_id ?>" hidden>
                     <input name="token" type="text" value="<?php echo addGeneralSecurityToken('editProductCart') ?>" hidden>
                     <button type="submit" class="btn btn-primary">Salvar</button>
                     <a href="#" class="card-link"><i class="fa-solid fa-star"></i></a>
@@ -447,6 +473,7 @@ if (isCampanhaInURL("product")) {
 
         </script>
         <?php
+        }
     }
 
 }
