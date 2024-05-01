@@ -683,8 +683,10 @@ div .quantity {
 #order-status-delivery,
 #order-info {
   position: relative;
+  display: table;
   border: 1px solid var(--border-color);
   padding: 15px;
+  width: 100%;
   border-radius: 10px;
   background: #ffffff;
   margin-bottom: 20px;
@@ -750,8 +752,9 @@ div .quantity {
 }
 
 #order-total {
-  position: absolute;
-  right: 25px;
+  /* position: absolute; */
+  /* right: 25px; */
+  float: right;
   font-weight: bold;
 }
 

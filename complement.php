@@ -181,7 +181,7 @@ if (isCampanhaInURL("product")) {
                                 doDatabaseCartProductQuestionResponseInsert($response_question_product_insert);
 
                             } else {
-                                if (isDatabaseProductQuestionMultipleResponse($_POST['question' . $count_checked])) {
+                                // if (isDatabaseProductQuestionMultipleResponse($_POST['question' . $count_checked])) {
                                     $count_response = 0;
                                     while (isset($_POST['response' . $count_checked][$count_response])) {
                                         $response_question_product_insert[] = array(
@@ -190,8 +190,9 @@ if (isCampanhaInURL("product")) {
                                         );
                                         ++$count_response;
                                     }
+
                                     doDatabaseCartProductQuestionResponseInsertMultipleRow($response_question_product_insert);
-                                }
+                                // }
                             }
                             ++$count_checked;
                         }

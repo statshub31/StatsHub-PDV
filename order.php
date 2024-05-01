@@ -151,11 +151,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST)) {
 
     </section>
     <section id="order-info">
-        <label>Detalhes do Pedido:</label>
+        <label>Detalhes do Pedido:</label><br>
         <button type="button" class="btn btn-info" data-toggle="modal" data-target="#orderInfoModal">Ver mais</button>
         <label id="order-number">#<?php echo $order_id ?></label>
         <hr>
-        <label>Pagamento na Entrega</label>
+        <label>Pagamento na Entrega</label><br>
         <label id="order-total">Total <span>R$
                 <?php echo sprintf("%.2f", (doCartTotalPrice($cart_id) - doCartTotalPriceDiscount($cart_id))) ?></span></label>
     </section>
@@ -394,7 +394,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST)) {
 
 
                 <textarea <?php echo (isDatabaseRequestOrderAvailableExistByOrderID($order_id) ? 'disabled' : '') ?>
-                    name="comment" class="form-control third-available-frame comments"
+                    name="comment" style="min-height: 300px;" class="form-control third-available-frame comments"
                     aria-label="With textarea"><?php echo getDatabaseRequestOrderAvailableComment(getDatabaseRequestOrderAvailableExistByOrderID($order_id)) ?></textarea>
             </div>
             <?php
@@ -626,8 +626,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST)) {
     function atualizarPagina() {
         location.reload();
     }
-
-    setInterval(atualizarPagina, 15 * 1000);
+    
+    if (getDatabaseRequestOrderLogStatusDelivery($order_last_log_id) != 5) {
+        setInterval(atualizarPagina, 10 * 1000);
+    }
 
 </script>
 

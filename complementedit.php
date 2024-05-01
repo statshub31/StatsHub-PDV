@@ -188,7 +188,7 @@ if (isCampanhaInURL("product")) {
                                 doDatabaseCartProductQuestionResponseUpdate($id_question_update, $response_question_product_insert, false);
                             }
                              else {
-                                if (isDatabaseProductQuestionMultipleResponse($_POST['question' . $count_checked])) {
+                                // if (isDatabaseProductQuestionMultipleResponse($_POST['question' . $count_checked])) {
                                     $count_response = 0;
                                     $id_question_update = getDatabaseCartProductQuestionIDByCartAndQuestID($product_cart_select_id, $_POST['question' . $count_checked]);
                                     doDatabaseCartProductQuestionResponseDeleteByQuestionIDUnlimited($id_question_update);
@@ -201,7 +201,7 @@ if (isCampanhaInURL("product")) {
                                         ++$count_response;
                                     }
                                     doDatabaseCartProductQuestionResponseInsertMultipleRow($response_question_product_insert);
-                                }
+                                // }
                             }
                             ++$count_checked;
                         }
@@ -387,7 +387,6 @@ if (isCampanhaInURL("product")) {
                                                 <?php
                                             } else {
                                                 ?>
-                                                
                                                 <input <?php echo doCheck(doDatabaseCartProductQuestionResponseIDExistByCartAndQuestID($question_response_select, $response_list_id), 1) ?> type="radio"
                                                     name="response<?php echo $question_count ?>" value="<?php echo $response_list_id ?>" required/>
                                                 <small><?php echo getDatabaseProductQuestionResponseResponse($response_list_id) ?></small><br>
