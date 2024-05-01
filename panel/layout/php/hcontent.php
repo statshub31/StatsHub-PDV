@@ -73,10 +73,11 @@
             <a class="nav-link" href="/panel/categorys">
             <i class="fa-solid fa-chart-line"></i>
             <span>Categorias</span></a>
-
-        <a class="nav-link" href="/panel/reports">
+        <!-- <a class="nav-link" href="/panel/reports"> -->
+        <a class="nav-link" href="#">
             <i class="fa-solid fa-chart-line"></i>
-            <span>Relatórios</span></a>
+            <span>Relatórios (DESATIVADO)</span>
+        </a >
 
         <a class="nav-link" href="/panel/availables">
             <i class="fa-solid fa-star"></i>

@@ -6,8 +6,6 @@ function doDatabaseRemoveProduct($product_id)
     $product_id_sanitize = $product_id;
     $cart_product_list = doDatabaseCartProductsListByProductID($product_id_sanitize);
 
-
-    data_dump($product_id);
     if ($cart_product_list) {
         foreach ($cart_product_list as $data) {
             $cart_product_id = $data['id'];
@@ -50,7 +48,6 @@ function doDatabaseRemoveProduct($product_id)
 function doDatabaseTruncateProductTables($product_id)
 {
     
-    data_dump("2");
     global $image_product_dir;
     $product_id_sanitize = sanitize($product_id);
 

@@ -7,7 +7,6 @@ include_once (realpath(__DIR__ . "/layout/php/header.php"));
 <?php
 // <!-- INICIO DA VALIDAÇÃO PHP -->
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST)) {
-
     // STOCK PRODUCTS
     // if (getGeneralSecurityToken('tokenSettings')) {
     if (1 == 1) {
@@ -91,6 +90,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST)) {
 
                 if (doGeneralValidationDescriptionFormat($_POST['description']) == false) {
                     $errors[] = "O campo descrição possui caracteres invalido.";
+                }
+
+                if(doGeneralValidationNumberFormat($_POST['cnpj']) == false) {
+                    $errors[] = "Caracteres invalido no número do CNPJ, é obrigatório o preenchimento de número e 14 digitos.";
+                }
+
+                if(strlen($_POST['cnpj']) > 14) {
+                    $errors[] = "É obrigatório o preenchimento de número e 14 digitos.";
                 }
 
 
@@ -274,8 +281,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST)) {
                     'login_name' => (isset($login_newName)) ? $login_newName : NULL
                 );
 
-                foreach($images_fields_insert as $image => $value) {
-                    if(empty($value))
+                foreach ($images_fields_insert as $image => $value) {
+                    if (empty($value))
                         unset($images_fields_insert[$image]);
                 }
 
@@ -292,6 +299,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST)) {
                 $info_fields_insert = array(
                     'title' => $_POST['title'],
                     'description' => (!empty($_POST['description'])) ? $_POST['description'] : NULL,
+                    'cnpj' => (!empty($_POST['cnpj'])) ? $_POST['cnpj'] : NULL,
+                    'main_color' => (!empty($_POST['main_color'])) ? $_POST['main_color'] : NULL,
                 );
 
                 if (getDatabaseSettingsInfoRowCount() > 0) {
@@ -330,7 +339,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST)) {
                     'disabled' => (!isset($_POST['pay-pix'])) ? 1 : 0,
                     'pay_key' => (isset($_POST['pay-pix'])) ? $_POST['pix-key'] : NULL,
                 );
-                
+
                 doDatabaseSettingsPayUpdate(getDatabaseSettingsPayMoney(), $money_field);
                 doDatabaseSettingsPayUpdate(getDatabaseSettingsPayCredit(), $credit_field);
                 doDatabaseSettingsPayUpdate(getDatabaseSettingsPayDebit(), $debit_field);
@@ -524,6 +533,24 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST)) {
                 value="<?php echo getDatabaseSettingsInfoDescription(1) ?>">
         </div>
 
+
+        <div class="form-group">
+            <label for="main_color">Cor Primaria
+                <small><i class="fa fa-question-circle" aria-hidden="true" data-toggle="tooltip" data-placement="top"
+                        title="Cor principal da plataforma"></i></small>
+            </label>
+            <input name="main_color" type="color" class="form-control w-20" id="main_color" value="<?php echo getDatabaseSettingsInfoMainColor(1) ?>">
+        </div>
+
+        <div class="form-group">
+            <label for="cnpj">CNPJ
+                <small><i class="fa fa-question-circle" aria-hidden="true" data-toggle="tooltip" data-placement="top"
+                        title="CNPJ da empresa"></i></small>
+            </label>
+            <input name="cnpj" type="text" class="form-control" id="cnpj"
+                value="<?php echo getDatabaseSettingsInfoCNPJ(1) ?>">
+        </div>
+
     </div>
 
     <div id="delivery" class="content">
@@ -665,8 +692,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST)) {
                     title="Caso habilite está função, será mostrado para o cliente a opção de pagamento em dinheiro."></i></small>
             <div class="vc-toggle-container">
                 <label class="vc-switch">
-                    <input <?php echo doCheck(isDatabaseSettingsPayMoneyEnabled(), 1) ?> type="checkbox" name="pay-money"
-                        id="pay-money" class="vc-switch-input">
+                    <input <?php echo doCheck(isDatabaseSettingsPayMoneyEnabled(), 1) ?> type="checkbox"
+                        name="pay-money" id="pay-money" class="vc-switch-input">
                     <span data-on="Sim" data-off="Não" class="vc-switch-label"></span>
                     <span class="vc-handle"></span>
                 </label>
@@ -678,8 +705,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST)) {
                     title="Caso habilite está função, será mostrado para o cliente a opção de pagamento com cartão de crédito."></i></small>
             <div class="vc-toggle-container">
                 <label class="vc-switch">
-                    <input <?php echo doCheck(isDatabaseSettingsPayCreditEnabled(), 1) ?> type="checkbox" name="pay-credit"
-                        id="pay-credit" class="vc-switch-input">
+                    <input <?php echo doCheck(isDatabaseSettingsPayCreditEnabled(), 1) ?> type="checkbox"
+                        name="pay-credit" id="pay-credit" class="vc-switch-input">
                     <span data-on="Sim" data-off="Não" class="vc-switch-label"></span>
                     <span class="vc-handle"></span>
                 </label>
@@ -691,8 +718,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST)) {
                     title="Caso habilite está função, será mostrado para o cliente a opção de pagamento com cartão de debito."></i></small>
             <div class="vc-toggle-container">
                 <label class="vc-switch">
-                    <input <?php echo doCheck(isDatabaseSettingsPayDebitEnabled(), 1) ?> type="checkbox" name="pay-debit"
-                        id="pay-debit" class="vc-switch-input">
+                    <input <?php echo doCheck(isDatabaseSettingsPayDebitEnabled(), 1) ?> type="checkbox"
+                        name="pay-debit" id="pay-debit" class="vc-switch-input">
                     <span data-on="Sim" data-off="Não" class="vc-switch-label"></span>
                     <span class="vc-handle"></span>
                 </label>

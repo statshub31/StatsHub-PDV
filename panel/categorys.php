@@ -196,7 +196,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST)) {
                     <td>
                         <i class="fa-solid <?php echo getDatabaseIconTitle(getDatabaseCategoryIconID($category_list_id)); ?>"></i>
                     </td>
-                    <td>50</td>
+                    <td><?php echo getDatabaseProductRowCountTypeByTypeID($category_list_id); ?></td>
                     <td>
                         <a href="/panel/categorys/category/edit/<?php echo $category_list_id ?>">
                             <i class="fa fa-edit" aria-hidden="true"></i>

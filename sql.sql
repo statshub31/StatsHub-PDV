@@ -415,15 +415,12 @@ create table settings_images (
 
 
 
-
-
-
-
-
 create table settings_info (
     `id` int PRIMARY KEY AUTO_INCREMENT,
     `title` varchar(255) null,
-    `description` varchar(255) null
+    `description` varchar(255) null,
+    `main_color` varchar(10) null default '#000000',
+    `cnpj` varchar(15) null
 );
 
 

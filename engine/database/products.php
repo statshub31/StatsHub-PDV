@@ -234,5 +234,13 @@ function isDatabaseProductValidationCode($code, $id) {
 	return ($data !== false) ? true : false;
 }
 
+function getDatabaseProductRowCountTypeByTypeID($type_id)
+{
+    $type_id_sanitize = sanitize($type_id);
+
+    $result = doSelectSingleDB("SELECT COUNT(*) AS rowCount FROM `products` where `category_id` = '".$type_id_sanitize."';");
+
+    return ($result !== false) ? $result['rowCount'] : 0;
+}
 
 ?>

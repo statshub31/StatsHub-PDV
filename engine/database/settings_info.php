@@ -38,6 +38,27 @@ function getDatabaseSettingsInfoDescription($id)
     return ($query !== false) ? $query['description'] : false;
 }
 
+function getDatabaseSettingsInfoMainColor($id)
+{
+    
+    $id_sanitize = sanitize($id);
+
+    $query = getDatabaseSettingsInfosData($id_sanitize, 'main_color');
+    return ($query !== false) ? $query['main_color'] : false;
+}
+
+
+
+function getDatabaseSettingsInfoCNPJ($id)
+{
+    
+    $id_sanitize = sanitize($id);
+
+    $query = getDatabaseSettingsInfosData($id_sanitize, 'cnpj');
+    return ($query !== false) ? $query['cnpj'] : false;
+}
+
+
 function doDatabaseSettingsInfoInsert($import_data_query)
 {
     
