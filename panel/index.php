@@ -657,15 +657,23 @@ if (isCampanhaInURL("order")) {
                                 <div>
                                     <section id="address">
                                         <div>
-                                            <b>Endereço:</b><br><?php
-                                            $main_address_id = getDatabaseUserSelectAddressByUserID($in_user_id);
-                                            echo getDatabaseAddressPublicPlace($main_address_id) . ', ';
-                                            echo getDatabaseAddressNumber($main_address_id) . '(';
-                                            echo getDatabaseAddressComplement($main_address_id) . '), ';
-                                            echo getDatabaseAddressNeighborhood($main_address_id) . ', ';
-                                            echo getDatabaseAddressCity($main_address_id) . ' - ';
-                                            echo getDatabaseAddressState($main_address_id);
+                                            <b>Endereço:</b><br>
+                                            
+                                            <?php
                                             $discount = getDatabaseTicketValue(getDatabaseCartTicketSelectTicketID(getDatabaseCartTicketSelectByCartID($cart_id)));
+                                            $order_main_address_id = getDatabaseRequestOrderAddressIDSelect($order_select_id);
+
+                                            if (isDatabaseRequestOrderSelectAddress($order_select_id)) {
+                                                echo getDatabaseAddressPublicPlace($order_main_address_id) . ', ';
+                                                echo getDatabaseAddressNumber($order_main_address_id) . '(';
+                                                echo getDatabaseAddressComplement($order_main_address_id) . '), ';
+                                                echo getDatabaseAddressNeighborhood($order_main_address_id) . ', ';
+                                                echo getDatabaseAddressCity($order_main_address_id) . ' - ';
+                                                echo getDatabaseAddressState($order_main_address_id);
+                                            } else {
+                                                echo 'Retirada no Local';
+                                            }
+
                                             ?>
                                         </div>
                                     </section>

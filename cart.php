@@ -20,8 +20,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST)) {
                 }
             }
 
-            if(getDatabaseSettingsDeliveryOrderMin(1) > doCartTotalPrice($cart_id)) {
-                $errors[] = "O pedido mínimo para o restaurante é de [R$ ".getDatabaseSettingsDeliveryOrderMin(1)."].";
+            if (getDatabaseSettingsDeliveryOrderMin(1) > doCartTotalPrice($cart_id)) {
+                $errors[] = "O pedido mínimo para o restaurante é de [R$ " . getDatabaseSettingsDeliveryOrderMin(1) . "].";
             }
 
             if (isOpen() === false) {
@@ -526,8 +526,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST)) {
     <section id="address">
         <div><?php
         $discount = getDatabaseTicketValue(getDatabaseCartTicketSelectTicketID(getDatabaseCartTicketSelectByCartID($cart_id)));
-        echoUserMainAddress($in_user_id);
-        ?></div>
+
+        if (isDatabaseUserSelectAddressByUserID($in_user_id)) {
+            $main_address_id = getDatabaseUserSelectAddressByUserID($in_user_id);
+            echo getDatabaseAddressPublicPlace($main_address_id) . ', ';
+            echo getDatabaseAddressNumber($main_address_id) . '(';
+            echo getDatabaseAddressComplement($main_address_id) . '), ';
+            echo getDatabaseAddressNeighborhood($main_address_id) . ', ';
+            echo getDatabaseAddressCity($main_address_id) . ' - ';
+            echo getDatabaseAddressState($main_address_id);
+        } else {
+            echo 'Retirada no Local';
+        }
+        ?>
+        </div>
         <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#addressModal">Alterar</button>
     </section>
     <hr>

@@ -903,20 +903,6 @@ function isCartProductValidationUser($user_id, $cart_product_id)
 }
 
 
-function echoUserMainAddress($user_id) {
-    if (isDatabaseUserSelectAddressByUserID($user_id)) {
-        $main_address_id = getDatabaseUserSelectAddressByUserID($user_id);
-        echo getDatabaseAddressPublicPlace($main_address_id) . ', ';
-        echo getDatabaseAddressNumber($main_address_id) . '(';
-        echo getDatabaseAddressComplement($main_address_id) . '), ';
-        echo getDatabaseAddressNeighborhood($main_address_id) . ', ';
-        echo getDatabaseAddressCity($main_address_id) . ' - ';
-        echo getDatabaseAddressState($main_address_id);
-    } else {
-        echo 'Retirada no Local';
-    }
-}
-
 
 function echoModelDelivery($user_id) {
     if (isDatabaseUserSelectAddressByUserID($user_id)) {

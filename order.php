@@ -553,7 +553,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST)) {
                             <b>Endereço:</b><br>
                             <?php
                             $discount = getDatabaseTicketValue(getDatabaseCartTicketSelectTicketID(getDatabaseCartTicketSelectByCartID($cart_id)));
-                            echoUserMainAddress($in_user_id);
+                            $order_main_address_id = getDatabaseRequestOrderAddressIDSelect($order_id);
+
+                            if (isDatabaseRequestOrderSelectAddress($order_id)) {
+                                echo getDatabaseAddressPublicPlace($order_main_address_id) . ', ';
+                                echo getDatabaseAddressNumber($order_main_address_id) . '(';
+                                echo getDatabaseAddressComplement($order_main_address_id) . '), ';
+                                echo getDatabaseAddressNeighborhood($order_main_address_id) . ', ';
+                                echo getDatabaseAddressCity($order_main_address_id) . ' - ';
+                                echo getDatabaseAddressState($order_main_address_id);
+                            } else {
+                                echo 'Retirada no Local';
+                            }
+                            
                             ?>
                         </div>
                     </section>
@@ -620,7 +632,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST)) {
     function atualizarPagina() {
         location.reload();
     }
-    
+
     if (getDatabaseRequestOrderLogStatusDelivery($order_last_log_id) != 5) {
         setInterval(atualizarPagina, 10 * 1000);
     }

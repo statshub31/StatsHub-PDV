@@ -1,7 +1,5 @@
 <?php
 include_once (realpath(__DIR__ . "/layout/php/header.php"));
-
-$order_id = getURLLastParam();
 ?>
 
 <div class="d-sm-flex align-items-center justify-content-between mb-4">
@@ -232,7 +230,8 @@ if (isCampanhaInURL("order")) {
                                                         </small>
                                                     </td>
                                                     <td>
-                                                        <b>R$ <?php echo sprintf("%.2f", doCartTotalPriceProduct($cart_product_list_id)) ?></b>
+                                                        <b>R$
+                                                            <?php echo sprintf("%.2f", doCartTotalPriceProduct($cart_product_list_id)) ?></b>
                                                     </td>
                                                 </tr>
                                                 <?php
@@ -250,7 +249,7 @@ if (isCampanhaInURL("order")) {
 
                                         <!-- LOG START -->
                                         <?php
-                                        $log_list = doDatabaseRequestOrderLogsListByOrderID($order_id);
+                                        $log_list = doDatabaseRequestOrderLogsListByOrderID($order_select_id);
                                         if ($log_list) {
                                             foreach ($log_list as $dataLog) {
                                                 $log_list_id = $dataLog['id'];
@@ -269,16 +268,22 @@ if (isCampanhaInURL("order")) {
                                 <div>
                                     <section id="address">
                                         <div>
-                                            <b>Endereço:</b><br><?php
-                                            $main_address_id = getDatabaseUserSelectAddressByUserID($in_user_id);
-                                            echo getDatabaseAddressPublicPlace($main_address_id) . ', ';
-                                            echo getDatabaseAddressNumber($main_address_id) . '(';
-                                            echo getDatabaseAddressComplement($main_address_id) . '), ';
-                                            echo getDatabaseAddressNeighborhood($main_address_id) . ', ';
-                                            echo getDatabaseAddressCity($main_address_id) . ' - ';
-                                            echo getDatabaseAddressState($main_address_id);
-                                            
+                                            <b>Endereço:</b><br>
+
+                                            <?php
                                             $discount = getDatabaseTicketValue(getDatabaseCartTicketSelectTicketID(getDatabaseCartTicketSelectByCartID($cart_id)));
+                                            $order_main_address_id = getDatabaseRequestOrderAddressIDSelect($order_select_id);
+
+                                            if (isDatabaseRequestOrderSelectAddress($order_select_id)) {
+                                                echo getDatabaseAddressPublicPlace($order_main_address_id) . ', ';
+                                                echo getDatabaseAddressNumber($order_main_address_id) . '(';
+                                                echo getDatabaseAddressComplement($order_main_address_id) . '), ';
+                                                echo getDatabaseAddressNeighborhood($order_main_address_id) . ', ';
+                                                echo getDatabaseAddressCity($order_main_address_id) . ' - ';
+                                                echo getDatabaseAddressState($order_main_address_id);
+                                            } else {
+                                                echo 'Retirada no Local';
+                                            }
 
                                             ?>
                                         </div>
@@ -294,7 +299,8 @@ if (isCampanhaInURL("order")) {
                                     <hr>
                                     <section id="pay">
                                         <div>
-                                            <b>Pagamento no: </b><?php echo getDatabaseSettingsPayType(getDatabaseRequestOrderPayIDSelect($order_select_id)); ?>
+                                            <b>Pagamento no:
+                                            </b><?php echo getDatabaseSettingsPayType(getDatabaseRequestOrderPayIDSelect($order_select_id)); ?>
                                         </div>
                                     </section>
                                     <hr>
