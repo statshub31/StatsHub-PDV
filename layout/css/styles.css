@@ -620,6 +620,10 @@ div .quantity {
   display: block !important;
 }
 
+.horary {
+  float: right;
+}
+
 #time-info {
   display: flex;
   flex-wrap: wrap;

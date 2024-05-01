@@ -3,7 +3,7 @@ include_once __DIR__ . '/layout/php/header.php';
 $media = doAvailableGeneral();
 ?>
 <div id="restaurant-info">
-    <section id="status">
+    <section id="status" data-toggle="modal" data-target="#horarysModal">
         <div id="status-info" class="status-select">
             <div id="status-icon" class="status-<?php echo (isOpen()) ? 'open' : 'close'; ?>"></div>
             <div id="three-info">
@@ -25,7 +25,7 @@ $media = doAvailableGeneral();
             </div>
         </div>
     </section>
-    <section id="pays" class="status-select">
+    <section id="pays" data-toggle="modal" data-target="#paysModal" class="status-select">
         <div id="pays-info">
             <div id="pays-icon">
                 <i class="fa-solid fa-credit-card"></i>
@@ -38,57 +38,83 @@ $media = doAvailableGeneral();
 
 </div>
 <br>
-
-<div id="week-horary">
-    <center>
-        <h6>Horário Local</h6>
-    </center>
-    <hr>
-    <p>Domingo
-        <label><?php echo isOpenByDay(7) ? doTime(getDatabaseSettingsHoraryDayStart(1, 7)) . ' às ' . doTime(getDatabaseSettingsHoraryDayEnd(1, 7)) : 'Fechado'; ?></label>
-    </p>
-    <p>Segunda-Feira
-        <label><?php echo isOpenByDay(1) ? doTime(getDatabaseSettingsHoraryDayStart(1, 1)) . ' às ' . doTime(getDatabaseSettingsHoraryDayEnd(1, 1)) : 'Fechado'; ?></label>
-    </p>
-    <p>Terça-Feira
-        <label><?php echo isOpenByDay(2) ? doTime(getDatabaseSettingsHoraryDayStart(1, 2)) . ' às ' . doTime(getDatabaseSettingsHoraryDayEnd(1, 2)) : 'Fechado'; ?></label>
-    </p>
-    <p>Quarta-Feira
-        <label><?php echo isOpenByDay(3) ? doTime(getDatabaseSettingsHoraryDayStart(1, 3)) . ' às ' . doTime(getDatabaseSettingsHoraryDayEnd(1, 3)) : 'Fechado'; ?></label>
-    </p>
-    <p>Quinta-Feira
-        <label><?php echo isOpenByDay(4) ? doTime(getDatabaseSettingsHoraryDayStart(1, 4)) . ' às ' . doTime(getDatabaseSettingsHoraryDayEnd(1, 4)) : 'Fechado'; ?></label>
-    </p>
-    <p>Sexta-Feira
-        <label><?php echo isOpenByDay(5) ? doTime(getDatabaseSettingsHoraryDayStart(1, 5)) . ' às ' . doTime(getDatabaseSettingsHoraryDayEnd(1, 5)) : 'Fechado'; ?></label>
-    </p>
-    <p>Sabado
-        <label><?php echo isOpenByDay(6) ? doTime(getDatabaseSettingsHoraryDayStart(1, 6)) . ' às ' . doTime(getDatabaseSettingsHoraryDayEnd(1, 6)) : 'Fechado'; ?></label>
-    </p>
+<div class="modal fade" id="horarysModal" tabindex="-1" role="dialog" aria-labelledby="horarysModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="horarysModalLabel">Horários</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p>Domingo
+                    <label
+                        class="horary"><?php echo isOpenByDay(7) ? doTime(getDatabaseSettingsHoraryDayStart(1, 7)) . ' às ' . doTime(getDatabaseSettingsHoraryDayEnd(1, 7)) : 'Fechado'; ?></label>
+                </p>
+                <p>Segunda-Feira
+                    <label
+                        class="horary"><?php echo isOpenByDay(1) ? doTime(getDatabaseSettingsHoraryDayStart(1, 1)) . ' às ' . doTime(getDatabaseSettingsHoraryDayEnd(1, 1)) : 'Fechado'; ?></label>
+                </p>
+                <p>Terça-Feira
+                    <label
+                        class="horary"><?php echo isOpenByDay(2) ? doTime(getDatabaseSettingsHoraryDayStart(1, 2)) . ' às ' . doTime(getDatabaseSettingsHoraryDayEnd(1, 2)) : 'Fechado'; ?></label>
+                </p>
+                <p>Quarta-Feira
+                    <label
+                        class="horary"><?php echo isOpenByDay(3) ? doTime(getDatabaseSettingsHoraryDayStart(1, 3)) . ' às ' . doTime(getDatabaseSettingsHoraryDayEnd(1, 3)) : 'Fechado'; ?></label>
+                </p>
+                <p>Quinta-Feira
+                    <label
+                        class="horary"><?php echo isOpenByDay(4) ? doTime(getDatabaseSettingsHoraryDayStart(1, 4)) . ' às ' . doTime(getDatabaseSettingsHoraryDayEnd(1, 4)) : 'Fechado'; ?></label>
+                </p>
+                <p>Sexta-Feira
+                    <label
+                        class="horary"><?php echo isOpenByDay(5) ? doTime(getDatabaseSettingsHoraryDayStart(1, 5)) . ' às ' . doTime(getDatabaseSettingsHoraryDayEnd(1, 5)) : 'Fechado'; ?></label>
+                </p>
+                <p>Sabado
+                    <label
+                        class="horary"><?php echo isOpenByDay(6) ? doTime(getDatabaseSettingsHoraryDayStart(1, 6)) . ' às ' . doTime(getDatabaseSettingsHoraryDayEnd(1, 6)) : 'Fechado'; ?></label>
+                </p>
+            </div>
+        </div>
+    </div>
 </div>
 
-<div id="pays-type">
-    <center>
-        <h6>Formas de Pagamento</h6>
-        <hr>
-        <?php
-        $list_pay = doDatabaseSettingsPayListByStatus();
+<br>
+<div class="modal fade" id="paysModal" tabindex="-1" role="dialog" aria-labelledby="paysModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="paysModalLabel">Formas de Pagamento</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
 
-        if ($list_pay) {
-            foreach ($list_pay as $data) {
-                $list_pay_id = $data['id'];
-                ?>
-                <i class="fa-solid <?php echo getDatabaseIconTitle(getDatabaseSettingsPayIcon($list_pay_id)) ?>"></i>
-                <?php echo getDatabaseSettingsPayType($list_pay_id) ?> |
                 <?php
-            }
-        } else {
-            ?>
-            Nenhum método de pagamento cadastrado.
-            <?php
-        }
-        ?>
-    </center>
+                $list_pay = doDatabaseSettingsPayListByStatus();
+
+                if ($list_pay) {
+                    foreach ($list_pay as $data) {
+                        $list_pay_id = $data['id'];
+                        ?>
+                        <i class="fa-solid <?php echo getDatabaseIconTitle(getDatabaseSettingsPayIcon($list_pay_id)) ?>"></i>
+                        <?php echo getDatabaseSettingsPayType($list_pay_id) ?> |
+                        <?php
+                    }
+                } else {
+                    ?>
+                    Nenhum método de pagamento cadastrado.
+                    <?php
+                }
+                ?>
+            </div>
+        </div>
+    </div>
 </div>
 <br>
 
