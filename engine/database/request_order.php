@@ -190,4 +190,13 @@ function getDatabaseRequestOrderByCartID($cart_id) {
 	
 	return ($data !== false) ? $data['id'] : false;
 }
+
+function isDatabaseRequestOrderSelectAddress($id)
+{
+    
+    $id_sanitize = sanitize($id);
+
+    $query = doSelectSingleDB("SELECT `address_id_select` FROM `request_order` WHERE `id`='".$id_sanitize."';");
+    return ($query !== false && $query['address_id_select'] != '') ? true : false;
+}
 ?>

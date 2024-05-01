@@ -320,7 +320,6 @@ function doGeneralCreateArrayFromValues($array)
     return $newArray;
 }
 
-
 function validateRequiredFields($postData, $requiredFields)
 {
     foreach ($postData as $key => $value) {

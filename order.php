@@ -155,7 +155,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST)) {
         <button type="button" class="btn btn-info" data-toggle="modal" data-target="#orderInfoModal">Ver mais</button>
         <label id="order-number">#<?php echo $order_id ?></label>
         <hr>
-        <label>Pagamento na Entrega</label><br>
+        <label><?php echoModelDelivery($in_user_id); ?></label><br>
         <label id="order-total">Total <span>R$
                 <?php echo sprintf("%.2f", (doCartTotalPrice($cart_id) - doCartTotalPriceDiscount($cart_id))) ?></span></label>
     </section>
@@ -552,14 +552,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST)) {
                         <div>
                             <b>Endereço:</b><br>
                             <?php
-                            $main_address_id = getDatabaseUserSelectAddressByUserID($in_user_id);
-                            echo getDatabaseAddressPublicPlace($main_address_id) . ', ';
-                            echo getDatabaseAddressNumber($main_address_id) . '(';
-                            echo getDatabaseAddressComplement($main_address_id) . '), ';
-                            echo getDatabaseAddressNeighborhood($main_address_id) . ', ';
-                            echo getDatabaseAddressCity($main_address_id) . ' - ';
-                            echo getDatabaseAddressState($main_address_id);
                             $discount = getDatabaseTicketValue(getDatabaseCartTicketSelectTicketID(getDatabaseCartTicketSelectByCartID($cart_id)));
+                            echoUserMainAddress($in_user_id);
                             ?>
                         </div>
                     </section>

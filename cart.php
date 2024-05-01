@@ -20,10 +20,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST)) {
                 }
             }
 
-            if(isOpen() === false) {
+            if (isOpen() === false) {
                 $errors[] = "O estabelecimento se encontra fechado no momento.";
             }
-            
+
             if (getDatabaseUserSelectPayID(getDatabaseUserSelectByUserID($in_user_id)) == getDatabaseSettingsPayMoney(1)) {
                 if (empty($_POST['change'])) {
                     $errors[] = "Forneça o valor para troco, caso não necessite digite 0.";
@@ -33,14 +33,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST)) {
                     $errors[] = "No valor de troco, somente é aceito valores númerico";
                 }
             }
-            
-            if (isDatabaseCartTicketSelectByCartID($cart_id)) {                
-                if(isProductPromotionCumulative($cart_id) === false) {
+
+            if (isDatabaseCartTicketSelectByCartID($cart_id)) {
+                if (isProductPromotionCumulative($cart_id) === false) {
                     $errors[] = "Não foi possível inserir o cupom, aparentemente existe um produto em promoção no carrinho. Favor remove-lo.";
                 }
             }
-            
-            if(isProductUnblocked($cart_id) === false) {
+
+            if (isProductUnblocked($cart_id) === false) {
                 $errors[] = "Houve um erro, remove os produtos do carrinho e refaça a compra.";
             }
 
@@ -72,19 +72,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST)) {
                 'status' => 2
             );
 
-            if($ticket !== false) {
+            if ($ticket !== false) {
                 doDatabaseTicketUsed($ticket);
                 $value = getDatabaseTicketAmountUsed($ticket);
 
-                if(($value+1) > getDatabaseTicketAmount($id_sanitize)) {
-                    
+                if (($value + 1) > getDatabaseTicketAmount($id_sanitize)) {
+
                     $ticket_fields = array(
                         'status' => 7,
                     );
 
                     doDatabaseTicketUpdate($ticket, $ticket_fields);
                 }
-            
+
             }
 
             if (isset($_POST['change'])) {
@@ -101,7 +101,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST)) {
 
             if (isDatabaseCartTicketSelectByCartID($cart_id))
                 doDatabaseCartTicketSelectUpdate($ticket, $cart_ticket_update_fields);
-            
+
             // STOCK
             doDecreaseStock($request_order_id_insert);
 
@@ -156,13 +156,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST)) {
                     $errors[] = "Houve um erro ao salvar o cupom, reinicie a pagina e tente novamente";
                 }
 
-                if(isProductPromotionCumulative($cart_id) === false) {
+                if (isProductPromotionCumulative($cart_id) === false) {
                     $errors[] = "Não foi possível inserir o cupom, aparentemente existe um produto em promoção no carrinho.";
                 }
 
-                if(isDatabaseTicketExpiration($_POST['ticket_select'])) {
+                if (isDatabaseTicketExpiration($_POST['ticket_select'])) {
                     $errors[] = "O cupom inserido se encontra expirado.";
-                    
+
                     $ticket_fields = array(
                         'status' => 7,
                     );
@@ -170,9 +170,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST)) {
                     doDatabaseTicketUpdate($ticket, $ticket_fields);
                 }
 
-                if(isDatabaseTicketLimit($_POST['ticket_select'])) {
+                if (isDatabaseTicketLimit($_POST['ticket_select'])) {
                     $errors[] = "O cupom já atingiu a cota disponivel.";
-                    
+
                     $ticket_fields = array(
                         'status' => 7,
                     );
@@ -227,12 +227,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST)) {
                 $errors[] = "Necessário selecionar um endereço.";
             }
 
-            if (isDatabaseAddressExistID($_POST['address']) === false) {
-                $errors[] = "Houve um erro ao salvar endereço, reinicie a pagina e tente novamente";
-            }
+            if ($_POST['address'] != 0) {
+                if (isDatabaseAddressExistID($_POST['address']) === false) {
+                    $errors[] = "Houve um erro ao salvar endereço, reinicie a pagina e tente novamente";
+                }
 
-            if (doDatabaseAddressValidateUser($in_user_id, $_POST['address']) === false) {
-                $errors[] = "Houve um erro ao salvar o endereço, o mesmo não foi encontrado.";
+                if (doDatabaseAddressValidateUser($in_user_id, $_POST['address']) === false) {
+                    $errors[] = "Houve um erro ao salvar o endereço, o mesmo não foi encontrado.";
+                }
             }
 
         }
@@ -241,12 +243,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST)) {
         if (empty($errors)) {
             $address_add_fields = array(
                 'user_id' => $in_user_id,
-                'address_id' => $_POST['address']
+                'address_id' => ($_POST['address'] != 0) ? $_POST['address'] : NULL
             );
 
             if (isDatabaseUserSelectByUserID($in_user_id)) {
                 $main = getDatabaseUserSelectByUserID($in_user_id);
-                doDatabaseUserSelectUpdate($main, $address_add_fields);
+                doDatabaseUserSelectUpdate($main, $address_add_fields, false, true);
             } else {
                 doDatabaseUserSelectInsert($address_add_fields);
             }
@@ -500,7 +502,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST)) {
                             </a>
                         </div>
                         <b>
-                            <label class="v">R$ <?php echo sprintf("%.2f", doCartTotalPriceProduct($cart_product_list_id)) ?></label>
+                            <label class="v">R$
+                                <?php echo sprintf("%.2f", doCartTotalPriceProduct($cart_product_list_id)) ?></label>
                         </b>
                     </td>
                 </tr>
@@ -518,14 +521,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST)) {
 <div>
     <section id="address">
         <div><?php
-        $main_address_id = getDatabaseUserSelectAddressByUserID($in_user_id);
-        echo getDatabaseAddressPublicPlace($main_address_id) . ', ';
-        echo getDatabaseAddressNumber($main_address_id) . '(';
-        echo getDatabaseAddressComplement($main_address_id) . '), ';
-        echo getDatabaseAddressNeighborhood($main_address_id) . ', ';
-        echo getDatabaseAddressCity($main_address_id) . ' - ';
-        echo getDatabaseAddressState($main_address_id);
         $discount = getDatabaseTicketValue(getDatabaseCartTicketSelectTicketID(getDatabaseCartTicketSelectByCartID($cart_id)));
+        echoUserMainAddress($in_user_id);
         ?></div>
         <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#addressModal">Alterar</button>
     </section>
@@ -644,6 +641,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST)) {
                                 <?php
                             }
                             ?>
+
+                            <tr>
+                                <td><input <?php echo doCheck(getDatabaseUserSelectAddressByUserID($in_user_id), NULL) ?> type="radio" name="address" value="0"></td>
+                                <td colspan="2">Retirada no Local
+                                </td>
+                            </tr>
                             <!-- ENDEREÇO FIM -->
                         </table>
                     </div>
@@ -744,7 +747,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST)) {
                     <div id="user_pay">
                         <table border="1" width="100%">
                             <tr>
-                                <th colspan="3">Pagamento Presencial</th>
+                                <th colspan="3">
+                                    <center>
+                                        Pagamento Presencial
+                                    </center>
+                                </th>
                             </tr>
                             <tr>
                                 <th></th>
@@ -773,6 +780,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST)) {
                                 </tr><?php
                             } ?>
                             <!-- PAGAMENTO FIM -->
+                            <!-- 
+                            <tr>
+                                <th colspan="3">
+                                    <center>Outras opções</center>
+                                </th>
+                            </tr>
+                            <tr>
+                                <td><input type="radio" name="method_pay" value="" /></td>
+                                <td colspan="2">Retirada no Estabalecimento</td>
+                            </tr> -->
                             <!-- <tr>
                                 <th colspan="3">
                                     <center>Pagamento Online</center>

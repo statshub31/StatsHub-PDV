@@ -259,7 +259,7 @@ function getColumnsWithoutId($tableName)
 	return $columns;
 }
 
-function doMysqlConvertUpdateArray($keys, $values)
+function doMysqlConvertUpdateArray($keys, $values, $NULL = false)
 {
 	$formattedString = '';
 
@@ -277,7 +277,10 @@ function doMysqlConvertUpdateArray($keys, $values)
 		echo "Erro: Os arrays têm tamanhos diferentes.";
 	}
 
-	return $formattedString;
+	if($NULL)
+		return str_replace("''", "NULL", $formattedString);
+	else 
+		return $formattedString;
 }
 
 

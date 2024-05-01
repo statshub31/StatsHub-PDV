@@ -40,7 +40,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST)) {
             if ($required_fields_status) {
                 $order_last_log_id = doDatabaseRequestOrderLogsLastLogByOrderID($_POST['order_id']);
 
-                if (getDatabaseRequestOrderLogStatusDelivery($order_last_log_id) == 3) {
+                if (getDatabaseRequestOrderLogStatusDelivery($order_last_log_id) == 3 && isDatabaseRequestOrderSelectAddress($_POST['order_id'])) {
                     if (isDatabaseUserExistID($_POST['deliveryman']) === false || (empty($_POST['deliveryman']))) {
                         $errors[] = "É necessário selecionar o motoboy que vai fazer a entrega, o mesmo precisa estar registrado.";
                     }
@@ -59,7 +59,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST)) {
                 doPrintOrder($_POST['order_id']);
             }
 
-            if ($new_order_status_id == 4) {
+            if ($new_order_status_id == 4 && isDatabaseRequestOrderSelectAddress($_POST['order_id'])) {
                 $order_update_fields = array(
                     'deliveryman' => $_POST['deliveryman']
                 );
@@ -368,12 +368,16 @@ $tokenOrderCancel = addGeneralSecurityToken('tokenOrderCancel');
                             <td><?php echo doBRDateTime(getDatabaseRequestOrderLogCreated($order_first_log_id)) ?></td>
                             <td>
                                 <?php
-                                echo getDatabaseAddressPublicPlace($order_main_address_id) . ', ';
-                                echo getDatabaseAddressNumber($order_main_address_id) . '(';
-                                echo getDatabaseAddressComplement($order_main_address_id) . '), ';
-                                echo getDatabaseAddressNeighborhood($order_main_address_id) . ', ';
-                                echo getDatabaseAddressCity($order_main_address_id) . ' - ';
-                                echo getDatabaseAddressState($order_main_address_id);
+                                if (isDatabaseRequestOrderSelectAddress($order_list_id)) {
+                                    echo getDatabaseAddressPublicPlace($order_main_address_id) . ', ';
+                                    echo getDatabaseAddressNumber($order_main_address_id) . '(';
+                                    echo getDatabaseAddressComplement($order_main_address_id) . '), ';
+                                    echo getDatabaseAddressNeighborhood($order_main_address_id) . ', ';
+                                    echo getDatabaseAddressCity($order_main_address_id) . ' - ';
+                                    echo getDatabaseAddressState($order_main_address_id);
+                                } else {
+                                    echo 'Retirada no Local';
+                                }
                                 ?>
                             </td>
                             <td>
@@ -412,41 +416,48 @@ $tokenOrderCancel = addGeneralSecurityToken('tokenOrderCancel');
                                         <!-- VALIDA SE TEM PERMISSÃO PARA Visualização -->
                                         <?php
                                         if (isGeneralSecurityManagerAccess()) {
-                                            ?>
-                                            <div class="input-group mb-3">
-                                                <div class="input-group-prepend">
-                                                    <label class="input-group-text" for="group_id">Motoboy <small><i
-                                                                class="fa fa-question-circle" aria-hidden="true" data-toggle="tooltip"
-                                                                data-placement="top"
-                                                                title="Necessário selecionar quem vai entregar."></i></small></label>
-                                                </div>
-                                                <select name="deliveryman" class="custom-select" id="deliveryman">
-                                                    <!-- LISTA DE PERMISSÕES -->
-                                                    <?php
-                                                    $deliveryman_list = doDeliveryManList();
-                                                    if ($deliveryman_list) {
-                                                        foreach ($deliveryman_list as $dataDeliveryMan) {
-                                                            $deliveryman_list_id = $dataDeliveryMan['id'];
-                                                            ?>
-                                                            <option value="<?php echo $deliveryman_list_id ?>">
-                                                                <?php echo getDatabaseUserName($deliveryman_list_id) ?>
-                                                            </option>
-                                                            <?php
+                                            if (isDatabaseRequestOrderSelectAddress($_POST['order_id'])) {
+                                                ?>
+                                                <div class="input-group mb-3">
+                                                    <div class="input-group-prepend">
+                                                        <label class="input-group-text" for="group_id">Motoboy <small><i
+                                                                    class="fa fa-question-circle" aria-hidden="true" data-toggle="tooltip"
+                                                                    data-placement="top"
+                                                                    title="Necessário selecionar quem vai entregar."></i></small></label>
+                                                    </div>
+                                                    <select name="deliveryman" class="custom-select" id="deliveryman">
+                                                        <!-- LISTA DE PERMISSÕES -->
+                                                        <?php
+                                                        $deliveryman_list = doDeliveryManList();
+                                                        if ($deliveryman_list) {
+                                                            foreach ($deliveryman_list as $dataDeliveryMan) {
+                                                                $deliveryman_list_id = $dataDeliveryMan['id'];
+                                                                ?>
+                                                                <option value="<?php echo $deliveryman_list_id ?>">
+                                                                    <?php echo getDatabaseUserName($deliveryman_list_id) ?>
+                                                                </option>
+                                                                <?php
 
+                                                            }
                                                         }
-                                                    }
-                                                    ?>
-                                                    <!-- LISTA DE PERMISSÕES FIM -->
-                                                </select>
+                                                        ?>
+                                                        <!-- LISTA DE PERMISSÕES FIM -->
+                                                    </select>
 
-                                            </div>
-                                            <?php
+                                                </div>
+                                                <?php
+                                                ?>
+
+                                                <!-- VALIDA SE TEM PERMISSÃO PARA Visualização -->
+                                                <button type="submit" class="btn btn-dark">Sair para Entrega</button>
+                                                <?php
+                                            } else {
+                                                ?>
+                                                <button type="submit" class="btn btn-dark">Liberar Pedido</button>
+                                                <?php
+                                            }
                                         }
-                                        ?>
 
-                                        <!-- VALIDA SE TEM PERMISSÃO PARA Visualização -->
-                                        <button type="submit" class="btn btn-dark">Sair para Entrega</button>
-                                        <?php
                                     }
                                     if (getDatabaseRequestOrderLogStatusDelivery($order_last_log_id) == 4) {
                                         ?>
