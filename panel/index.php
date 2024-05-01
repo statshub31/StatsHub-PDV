@@ -19,7 +19,7 @@ include_once (realpath(__DIR__ . "/layout/php/header.php"));
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST)) {
 
 
-    // REMOVE USER
+    // STATUS ORDER
 
     if (getGeneralSecurityToken('tokenOrder')) {
 
@@ -51,26 +51,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST)) {
 
 
         if (empty($errors)) {
-            $new_order_status_id = getDatabaseRequestOrderLogStatusDelivery($order_last_log_id) + 1;
-
-            doRequestOrderLogInsert($_POST['order_id'], $new_order_status_id);
-
-            if ($new_order_status_id == 3) {
-                doPrintOrder($_POST['order_id']);
-            }
-
-            if ($new_order_status_id == 4 && isDatabaseRequestOrderSelectAddress($_POST['order_id'])) {
-                $order_update_fields = array(
-                    'deliveryman' => $_POST['deliveryman']
-                );
-                doDatabaseRequestOrderUpdate($_POST['order_id'], $order_update_fields);
-            }
-
-            if ($new_order_status_id == 5) {
-                $order_update_fields = array(
-                    'status' => 7
-                );
-                doDatabaseRequestOrderUpdate($_POST['order_id'], $order_update_fields);
+            if(isset($_POST['deliveryman'])) {
+                doUpdateOrderDeliveryStatus($_POST['order_id'], $_POST['deliveryman']);
+            } else {
+                doUpdateOrderDeliveryStatus($_POST['order_id']);
             }
 
         }
@@ -403,20 +387,21 @@ $tokenOrderCancel = addGeneralSecurityToken('tokenOrderCancel');
                             <td>
                                 <form action="/panel/index" method="POST">
                                     <input name="order_id" type="text" value="<?php echo $order_list_id ?>" hidden />
+                                    <input name="token" type="text" value="<?php echo $tokenOrder ?>" hidden />
                                     <?php
+
                                     if (getDatabaseRequestOrderLogStatusDelivery($order_last_log_id) == 2) {
                                         ?>
-                                        <input name="token" type="text" value="<?php echo $tokenOrder ?>" hidden />
                                         <button type="submit" class="btn btn-warning">Aceitar Pedido</button>
                                         <?php
                                     }
+
                                     if (getDatabaseRequestOrderLogStatusDelivery($order_last_log_id) == 3) {
                                         ?>
-                                        <input name="token" type="text" value="<?php echo $tokenOrder ?>" hidden />
                                         <!-- VALIDA SE TEM PERMISSÃO PARA Visualização -->
                                         <?php
                                         if (isGeneralSecurityManagerAccess()) {
-                                            if (isDatabaseRequestOrderSelectAddress($_POST['order_id'])) {
+                                            if (isDatabaseRequestOrderSelectAddress($order_list_id)) {
                                                 ?>
                                                 <div class="input-group mb-3">
                                                     <div class="input-group-prepend">
@@ -459,7 +444,7 @@ $tokenOrderCancel = addGeneralSecurityToken('tokenOrderCancel');
                                         }
 
                                     }
-                                    if (getDatabaseRequestOrderLogStatusDelivery($order_last_log_id) == 4) {
+                                    if (getDatabaseRequestOrderLogStatusDelivery($order_last_log_id) == 4 || getDatabaseRequestOrderLogStatusDelivery($order_last_log_id) == 7) {
                                         ?>
                                         <input name="token" type="text" value="<?php echo $tokenOrder ?>" hidden />
                                         <button type="submit" class="btn btn-success">Confirmar Entrega</button>

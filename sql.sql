@@ -528,7 +528,14 @@ create table status_delivery (
 );
 
 
-INSERT INTO `status_delivery`(`title`) VALUES ('Aguardando Pagamento'), ('Aguardando Confirmação do Pedido'), ('Pedindo em Preparo'), ('Pedido saiu para entrega'), ('Pedido Cancelado pelo Restaurante'), ('Pedido Cancelado pelo Cliente');
+INSERT INTO `status_delivery`(`title`) VALUES 
+('Aguardando Pagamento'), 
+('Aguardando Confirmação do Pedido'), 
+('Pedindo em Preparo'), 
+('Pedido saiu para entrega'), 
+('Pedido Entregue'), 
+('Pedido Cancelado'), 
+('Pedido Pronto');
 
 
 create table requests_status (

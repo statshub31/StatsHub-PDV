@@ -425,7 +425,8 @@ function doStyleProgress($n)
         3 => '#4caf50',
         4 => '#009688',
         5 => '#8bc34a',
-        6 => '#f44336'
+        6 => '#f44336',
+        7 => '#009688'
     );
 
     return (isset($style[$n])) ? $style[$n] : $style[1];

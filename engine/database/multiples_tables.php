@@ -926,3 +926,43 @@ function echoModelDelivery($user_id) {
     }
 }
 
+function doUpdateOrderDeliveryStatus($order_id, $deliverman_id = false) {
+    $order_id_sanitize = sanitize($order_id);
+    $deliverman_id_sanitize = sanitize($deliverman_id);
+    $order_last_log_id = doDatabaseRequestOrderLogsLastLogByOrderID($order_id_sanitize);
+    
+    $actual_order_status_id = getDatabaseRequestOrderLogStatusDelivery($order_last_log_id);
+
+    if($actual_order_status_id == 1) {
+        doRequestOrderLogInsert($order_id, 2);
+    }
+
+    if($actual_order_status_id == 2) {
+        doRequestOrderLogInsert($order_id, 3);
+    }
+
+    if($actual_order_status_id == 3) {
+        if(isDatabaseRequestOrderSelectAddress($order_id)) {
+            $order_update_fields = array(
+                'deliveryman' => $deliverman_id_sanitize
+            );
+            doDatabaseRequestOrderUpdate($order_id, $order_update_fields);
+            doRequestOrderLogInsert($order_id, 4);
+        } else {
+            doRequestOrderLogInsert($order_id, 7);
+        }
+    }
+
+
+    if(($actual_order_status_id == 4) || ($actual_order_status_id == 7)) {
+        doRequestOrderLogInsert($order_id, 5);
+        
+        $order_update_fields = array(
+            'status' => 7
+        );
+        doDatabaseRequestOrderUpdate($_POST['order_id'], $order_update_fields);
+    }
+
+
+
+}
