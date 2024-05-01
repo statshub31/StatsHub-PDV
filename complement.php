@@ -23,37 +23,37 @@ if (isCampanhaInURL("product")) {
 
                 if (empty($_POST) === false) {
                     if (doGeneralValidationNumberFormat($_POST['quantity']) == false) {
-                        $errors[] = "Somente é aceito caracteres númerico na quantidade";
+                        $errors[] = "Somente são aceitos caracteres numéricos na quantidade.";
                     }
 
                     if (!isset($_POST['size'])) {
-                        $errors[] = "Selecione o tamanho do item.";
+                        $errors[] = "Por favor, selecione o tamanho do item.";
                     }
 
                     if (isOpen() === false) {
-                        $errors[] = "O estabelecimento se encontra fechado no momento.";
+                        $errors[] = "O estabelecimento está fechado no momento.";
                     }
 
                     if (isDatabaseProductPriceExistID($_POST['size']) === false) {
-                        $errors[] = "Houve um erro ao adicionar o produto, reinicie a pagina e tente novamente.";
+                        $errors[] = "Houve um erro ao adicionar o produto. Por favor, atualize a página e tente novamente.";
                     }
 
                     if (!isset($_POST['product_select_id'])) {
-                        $errors[] = "Houve um erro ao adicionar o produto, reinicie a pagina e tente novamente.";
+                        $errors[] = "Houve um erro ao adicionar o produto. Por favor, atualize a página e tente novamente.";
                     }
 
                     if (isProductInStock($_POST['product_select_id']) === false) {
-                        $errors[] = "Houve um erro ao adicionar o produto, reinicie a pagina e tente novamente.";
+                        $errors[] = "Houve um erro ao adicionar o produto. Por favor, atualize a página e tente novamente.";
                     }
 
                     if (getProductInStock($_POST['product_select_id'], $_POST['quantity']) === false) {
-                        $errors[] = "Desculpe-nos, mas só temos a seguinte quantidade [" . getDatabaseStockActual(getDatabaseStockIDByProductID($_POST['product_select_id'])) . "] disponivel.";
+                        $errors[] = "Desculpe-nos, mas só temos a seguinte quantidade disponível: [" . getDatabaseStockActual(getDatabaseStockIDByProductID($_POST['product_select_id'])) . "].";
                     }
 
                     if (isset($_POST['additional'])) {
                         foreach ($_POST['additional'] as $verifyAdditional) {
                             if (isDatabaseAdditionalBlocked($verifyAdditional) || isDatabaseAdditionalExistID($verifyAdditional) === false) {
-                                $errors[] = "Houve um erro ao adicionar o produto, reinicie a pagina e tente novamente.";
+                                $errors[] = "Houve um erro ao adicionar o produto. Por favor, atualize a página e tente novamente.";
                             }
                         }
                     }
@@ -63,13 +63,13 @@ if (isCampanhaInURL("product")) {
                             $errors[] = "Necessário escolher uma opção para o complemento.";
                         } else {
                             if (isDatabaseComplementBlocked($_POST['complement']) || isDatabaseComplementExistID($_POST['complement']) === false) {
-                                $errors[] = "Houve um erro ao adicionar o produto, reinicie a pagina e tente novamente.";
+                                $errors[] = "Houve um erro ao adicionar o produto. Por favor, atualize a página e tente novamente.";
                             }
                         }
                     }
 
                     if (empty($_POST['product_select_id'])) {
-                        $errors[] = "Houve um erro ao adicionar o produto, reinicie a pagina e tente novamente.";
+                        $errors[] = "Houve um erro ao adicionar o produto. Por favor, atualize a página e tente novamente.";
                     }
 
                     if (isDatabaseProductQuestionExistQuestion($_POST['product_select_id'])) {
@@ -77,11 +77,11 @@ if (isCampanhaInURL("product")) {
                         $total_questions = getDatabaseProductQuestionRowCountByProductID($_POST['product_select_id']);
                         while ($count_checked <= $total_questions) {
                             if (isDatabaseProductQuestionExistID($_POST['question' . $count_checked]) === false) {
-                                $errors[] = "Houve um erro ao adicionar o produto, reinicie a pagina e tente novamente.";
+                                $errors[] = "Houve um erro ao adicionar o produto. Por favor, atualize a página e tente novamente.";
                             }
 
                             if (isDatabaseProductQuestionValidationProduct($_POST['product_select_id'], $_POST['question' . $count_checked]) === false) {
-                                $errors[] = "Houve um erro ao adicionar o produto, reinicie a pagina e tente novamente.";
+                                $errors[] = "Houve um erro ao adicionar o produto. Por favor, atualize a página e tente novamente.";
                             }
 
                             if (isDatabaseProductQuestionResponseFree($_POST['question' . $count_checked])) {
@@ -91,14 +91,14 @@ if (isCampanhaInURL("product")) {
                             } else {
 
                                 if (!isset($_POST['response' . $count_checked])) {
-                                    $errors[] = "Obrigatório selecionar ao menos uma resposta para as perguntas de seleção";
+                                    $errors[] = "É obrigatório selecionar ao menos uma resposta para as perguntas de seleção.";
                                 }
 
                                 if (isDatabaseProductQuestionMultipleResponse($_POST['question' . $count_checked])) {
                                     $count_response = 0;
                                     while (isset($_POST['response' . $count_checked][$count_response])) {
                                         if (isDatabaseProductQuestionResponseValidation($_POST['question' . $count_checked], $_POST['response' . $count_checked][$count_response]) === false) {
-                                            $errors[] = "Houve um erro ao adicionar o produto, reinicie a pagina e tente novamente.";
+                                            $errors[] = "Houve um erro ao adicionar o produto. Por favor, atualize a página e tente novamente.";
                                         }
                                         ++$count_response;
                                     }
@@ -412,7 +412,6 @@ if (isCampanhaInURL("product")) {
                     <input name="product_select_id" type="text" value="<?php echo $product_select_id ?>" hidden>
                     <input name="token" type="text" value="<?php echo addGeneralSecurityToken('incrementedProduct') ?>" hidden>
                     <button type="submit" class="btn btn-primary">Adicionar ao Carrinho</button>
-                    <a href="#" class="card-link"><i class="fa-solid fa-star"></i></a>
                 </div>
             </div>
         </form>
@@ -471,6 +470,8 @@ if (isCampanhaInURL("product")) {
 
         </script>
         <?php
+    } else {
+        header('Location: /menu');
     }
 
 }

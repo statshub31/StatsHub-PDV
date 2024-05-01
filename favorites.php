@@ -1,5 +1,6 @@
 <?php
 include_once __DIR__ . '/layout/php/header.php';
+doGeneralSecurityProtect();
 ?>
 
 <!-- FAVORITE PRODUCT START -->
@@ -13,7 +14,7 @@ if (isCampanhaInURL("favorite")) {
 
         if($favorite_id !== false) {
             doDatabaseProductFavoriteDelete($favorite_id);
-            header('Location: /menu');
+            header('Location: /favorites');
         } else {
             $insert_favorite_fields = array(
                 'product_id' => $product_select_id,
@@ -67,11 +68,11 @@ if (isCampanhaInURL("favorite")) {
 
 <div id="menu-list">
     <?php
-    $product_list = doDatabaseProductsList();
+    $product_list = doDatabaseProductsFavoritesListByUserID($in_user_id);
 
     if ($product_list) {
         foreach ($product_list as $data) {
-            $product_list_id = $data['id'];
+            $product_list_id = getDatabaseProductFavoriteProductID($data['id']);
             if (isProductInStock($product_list_id) && isDatabaseProductBlocked($product_list_id) === false) {
                 ?>
 
@@ -136,7 +137,7 @@ if (isCampanhaInURL("favorite")) {
                     <div class="card-body">
                         <a href="/complement/product/<?php echo $product_list_id ?>" class="card-link"><i
                                 class="fa-solid fa-cart-shopping"></i></a>
-                        <a <?php echo isDatabaseProductFavoriteExistIDByUserAndProductID($product_list_id, $in_user_id) ? 'style="color: #e2d500;"' : 'style="color: #8f8f87;"'; ?> href="/menu/favorite/<?php echo $product_list_id ?>" class="card-link">
+                        <a <?php echo isDatabaseProductFavoriteExistIDByUserAndProductID($product_list_id, $in_user_id) ? 'style="color: #e2d500;"' : 'style="color: #8f8f87;"'; ?> href="/favorites/favorite/<?php echo $product_list_id ?>" class="card-link">
                             <i class="fa-solid fa-star"></i>
                         </a>
                     </div>
@@ -146,7 +147,7 @@ if (isCampanhaInURL("favorite")) {
         }
 
     } else {
-        echo "Nenhum produto cadastrado.";
+        echo "Nenhum produto favoritado.";
     }
     ?>
 </div>

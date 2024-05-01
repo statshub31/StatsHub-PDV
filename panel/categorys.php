@@ -22,19 +22,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST)) {
 
             if ($required_fields_status) {
                 if (doGeneralCategoryNameFormat($_POST['category']) === false) {
-                    $errors[] = "Verifique o nome da categoria informado, somente é aceito caracteres alfabetico.";
+                    $errors[] = "Verifique o nome da categoria informado. Apenas são aceitos caracteres alfabéticos.";
                 }
 
                 if (isDatabaseCategoryExistTitle($_POST['category'])) {
-                    $errors[] = "Está categoria já é existente, crie outra.";
+                    $errors[] = "Esta categoria já existe. Por favor, crie outra.";
                 }
 
                 if (strlen($_POST['category']) > 50) {
-                    $errors[] = "Tamanho máximo para nome é de 50 caracteres";
+                    $errors[] = "O tamanho máximo para o nome é de 50 caracteres.";
                 }
 
                 if(isDatabaseIconExistID($_POST['icon']) === false) {
-                    $errors[] = "Houve um erro no icone selecionado, tente novamente.";
+                    $errors[] = "Houve um erro no ícone selecionado. Por favor, tente novamente.";
                 }
 
                 if (isGeneralSecurityManagerAccess() === false) {
@@ -73,7 +73,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST)) {
 
             if ($required_fields_status) {
                 if (isDatabaseCategoryExistID($_POST['category_select_id']) === false) {
-                    $errors[] = "Houve um erro ao processar solicitação, categoria é inexistente.";
+                    $errors[] = "Houve um erro ao processar a solicitação. A categoria é inexistente.";
                 }
 
                 if (isGeneralSecurityManagerAccess() === false) {
@@ -108,21 +108,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST)) {
             if ($required_fields_status) {
 
                 if (isDatabaseCategoryExistID($_POST['category_select_id']) === false) {
-                    $errors[] = "Houve um erro ao processar solicitação, categoria é inexistente.";
+                    $errors[] = "Houve um erro ao processar a solicitação. A categoria é inexistente.";
                 }
 
                 if (isDatabaseCategoryExistTitle($_POST['category'])) {
                     if(isDatabaseCategoryTitleValidation($_POST['category'], $_POST['category_select_id']) === false) {
-                        $errors[] = "Escolha outro nome para a categoria, pois este já é existente.";
+                        $errors[] = "Escolha outro nome para a categoria, pois este já existe.";
                     }
                 }
 
                 if (strlen($_POST['category']) > 50) {
-                    $errors[] = "Tamanho máximo para nome é de 50 caracteres";
+                    $errors[] = "O tamanho máximo para o nome é de 50 caracteres.";
                 }
 
                 if(isDatabaseIconExistID($_POST['icon']) === false) {
-                    $errors[] = "Houve um erro no icone selecionado, tente novamente.";
+                    $errors[] = "Houve um erro no ícone selecionado. Por favor, tente novamente.";
                 }
 
                 if (isGeneralSecurityManagerAccess() === false) {

@@ -56,7 +56,7 @@ include_once (__DIR__ . "/../../engine/init.php");
                 <a href="/cart">
                     <i class="fa-solid fa-cart-shopping"></i>
                 </a>
-                <a href="/favorite">
+                <a href="/favorites">
                     <i class="fa-solid fa-star"></i>
                 </a>
                 <a href="/menu">
@@ -71,7 +71,7 @@ include_once (__DIR__ . "/../../engine/init.php");
             <a href="/cart">
                 <i class="fa-solid fa-cart-shopping"></i>
             </a>
-            <a href="/favorite">
+            <a href="/favorites">
                 <i class="fa-solid fa-star"></i>
             </a>
             <a href="/index">

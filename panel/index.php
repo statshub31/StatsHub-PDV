@@ -347,7 +347,7 @@ $tokenOrderCancel = addGeneralSecurityToken('tokenOrderCancel');
                         $percentual = getOrderProgressBarValue($order_list_id);
                         ?>
                         <tr>
-                            <td>#<?php echo $order_list_id ?></td>
+                            <td><?php echo $order_list_id ?></td>
                             <td><?php echo getDatabaseUserName($order_user_id) ?></td>
                             <td><?php echo doBRDateTime(getDatabaseRequestOrderLogCreated($order_first_log_id)) ?></td>
                             <td>
@@ -760,7 +760,8 @@ if (isCampanhaInURL("order")) {
                     "next": "Próximo"
                 }
                 // Outras opções de linguagem...
-            }
+            },
+            "order": [[0, 'asc']] // Ordenar pela primeira coluna em ordem ascendente
         });
     });
 

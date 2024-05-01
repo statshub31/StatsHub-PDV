@@ -13,40 +13,44 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST)) {
 
         if (empty($_POST) === false) {
             if (isDatabaseCartExistIDByUserID($in_user_id) === false) {
-                $errors[] = "Houve um erro ao processar a compra, reinicie a pagina e tente novamente";
+                $errors[] = "Ocorreu um erro ao processar a compra. Por favor, atualize a página e tente novamente.";
             } else {
                 if (getDatabaseCartProductRowCountByCartID($cart_id) <= 0) {
-                    $errors[] = "Houve um erro ao processar a compra, reinicie a pagina e tente novamente";
+                    $errors[] = "Ocorreu um erro ao processar a compra. Por favor, atualize a página e tente novamente.";
                 }
             }
 
+            if(getDatabaseSettingsDeliveryOrderMin(1) > doCartTotalPrice($cart_id)) {
+                $errors[] = "O pedido mínimo para o restaurante é de [R$ ".getDatabaseSettingsDeliveryOrderMin(1)."].";
+            }
+
             if (isOpen() === false) {
-                $errors[] = "O estabelecimento se encontra fechado no momento.";
+                $errors[] = "O estabelecimento está fechado no momento.";
             }
 
             if (getDatabaseUserSelectPayID(getDatabaseUserSelectByUserID($in_user_id)) == getDatabaseSettingsPayMoney(1)) {
                 if (empty($_POST['change'])) {
-                    $errors[] = "Forneça o valor para troco, caso não necessite digite 0.";
+                    $errors[] = "Forneça o valor para troco. Se não for necessário, digite 0.";
                 }
 
                 if (doGeneralValidationPriceFormat($_POST['change']) == false) {
-                    $errors[] = "No valor de troco, somente é aceito valores númerico";
+                    $errors[] = "No valor de troco, apenas valores numéricos são aceitos.";
                 }
             }
 
             if (isDatabaseCartTicketSelectByCartID($cart_id)) {
                 if (isProductPromotionCumulative($cart_id) === false) {
-                    $errors[] = "Não foi possível inserir o cupom, aparentemente existe um produto em promoção no carrinho. Favor remove-lo.";
+                    $errors[] = "Não foi possível inserir o cupom, pois parece haver um produto em promoção no carrinho.";
                 }
             }
 
             if (isProductUnblocked($cart_id) === false) {
-                $errors[] = "Houve um erro, remove os produtos do carrinho e refaça a compra.";
+                $errors[] = "Houve um erro. Por favor, remova os produtos do carrinho e refaça a compra.";
             }
 
             if (isDatabaseCartEnabled($cart_id)) {
                 if (isDatabaseCartExistIDByUserID($in_user_id) != $cart_id) {
-                    $errors[] = "Houve um erro ao salvar o método de pagamento, reinicie a pagina e tente novamente";
+                    $errors[] = "Houve um erro ao salvar o método de pagamento. Por favor, atualize a página e tente novamente.";
                 }
             }
 
@@ -113,11 +117,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST)) {
     if (getGeneralSecurityToken('tokenCartMainPay')) {
         if (empty($_POST) === false) {
             if (!isset($_POST['method_pay'])) {
-                $errors[] = "Necessário selecionar um método de pagamento.";
+                $errors[] = "É necessário selecionar um método de pagamento.";
             }
 
             if (isDatabaseSettingsPayExist($_POST['method_pay']) === false) {
-                $errors[] = "Houve um erro ao salvar o método de pagamento, reinicie a pagina e tente novamente";
+                $errors[] = "Houve um erro ao salvar o método de pagamento. Por favor, atualize a página e tente novamente.";
             }
 
         }
@@ -147,21 +151,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST)) {
         if (empty($_POST) === false) {
             // Validação se o ID está preenchido
             if (!isset($_POST['ticket_select'])) {
-                $errors[] = "Necessário selecionar um cupom.";
+                $errors[] = "É necessário selecionar um cupom.";
             }
 
             // Validação que se foi selecionado um ID e for diferente de Nenhum, validamos se o cupom realmente existe.
             if ($_POST['ticket_select'] != 0) {
                 if (isDatabaseTicketExistID($_POST['ticket_select']) === false) {
-                    $errors[] = "Houve um erro ao salvar o cupom, reinicie a pagina e tente novamente";
+                    $errors[] = "Houve um erro ao salvar o cupom. Por favor, atualize a página e tente novamente.";
                 }
 
                 if (isProductPromotionCumulative($cart_id) === false) {
-                    $errors[] = "Não foi possível inserir o cupom, aparentemente existe um produto em promoção no carrinho.";
+                    $errors[] = "Não foi possível inserir o cupom, pois parece haver um produto em promoção no carrinho.";
                 }
 
                 if (isDatabaseTicketExpiration($_POST['ticket_select'])) {
-                    $errors[] = "O cupom inserido se encontra expirado.";
+                    $errors[] = "O cupom inserido está expirado.";
 
                     $ticket_fields = array(
                         'status' => 7,
@@ -171,7 +175,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST)) {
                 }
 
                 if (isDatabaseTicketLimit($_POST['ticket_select'])) {
-                    $errors[] = "O cupom já atingiu a cota disponivel.";
+                    $errors[] = "O cupom já atingiu a cota disponível.";
 
                     $ticket_fields = array(
                         'status' => 7,
@@ -183,12 +187,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST)) {
 
             // Validamos se o carrinho existe
             if (isDatabaseCartExistIDByUserID($in_user_id) === false) {
-                $errors[] = "Houve um erro ao salvar o cupom, reinicie a pagina e tente novamente";
+                $errors[] = "Houve um erro ao salvar o cupom. Por favor, atualize a página e tente novamente.";
             }
 
             // Valida se o cupom já foi usado
             if (isDatabaseCartTicketSelectUsed($_POST['ticket_select'], $in_user_id)) {
-                $errors[] = "Houve um erro ao salvar o cupom, reinicie a pagina e tente novamente";
+                $errors[] = "Houve um erro ao salvar o cupom. Por favor, atualize a página e tente novamente.";
             }
 
 
@@ -224,16 +228,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST)) {
     if (getGeneralSecurityToken('tokenCartMainAddress')) {
         if (empty($_POST) === false) {
             if (!isset($_POST['address'])) {
-                $errors[] = "Necessário selecionar um endereço.";
+                $errors[] = "É necessário selecionar um endereço.";
             }
 
             if ($_POST['address'] != 0) {
                 if (isDatabaseAddressExistID($_POST['address']) === false) {
-                    $errors[] = "Houve um erro ao salvar endereço, reinicie a pagina e tente novamente";
+                    $errors[] = "Houve um erro ao salvar o endereço. Por favor, atualize a página e tente novamente.";
                 }
 
                 if (doDatabaseAddressValidateUser($in_user_id, $_POST['address']) === false) {
-                    $errors[] = "Houve um erro ao salvar o endereço, o mesmo não foi encontrado.";
+                    $errors[] = "Houve um erro ao salvar o endereço. O endereço não foi encontrado.";
                 }
             }
 
@@ -272,11 +276,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST)) {
 
             if ($required_fields_status) {
                 if (isDatabaseCartProductExistID($_POST['cart_product_id']) === false) {
-                    $errors[] = "Houve um erro ao remover o produto, o mesmo não foi encontrado.";
+                    $errors[] = "Houve um erro ao remover o produto. O produto não foi encontrado.";
                 }
 
                 if (doCartProductIDIsUserID($_POST['cart_product_id'], $in_user_id) === false) {
-                    $errors[] = "Houve um erro ao remover o produto, o mesmo não foi encontrado.";
+                    $errors[] = "Houve um erro ao remover o produto. O produto não foi encontrado.";
                 }
             }
 
@@ -311,11 +315,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST)) {
 
             if ($required_fields_status) {
                 if (is_numeric(sanitizeSpecial($_POST['zip_code'])) === false) {
-                    $errors[] = "Houve um erro ao validar o cep, confirme se o mesmo está correto.";
+                    $errors[] = "Houve um erro ao validar o CEP. Por favor, confirme se o mesmo está correto.";
                 }
 
                 if (getDatabaseAddressCoutRowByUserID($in_user_id) > 4) {
-                    $errors[] = "Você atingiu a capacidade máxima de endereços permitido.";
+                    $errors[] = "Você atingiu a capacidade máxima de endereços permitida.";
                 }
             }
         }
@@ -354,11 +358,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST)) {
 
             if ($required_fields_status) {
                 if (is_numeric(sanitizeSpecial($_POST['zip_code'])) === false) {
-                    $errors[] = "Houve um erro ao validar o cep, confirme se o mesmo está correto.";
+                    $errors[] = "Houve um erro ao validar o CEP. Por favor, confirme se o mesmo está correto.";
                 }
 
                 if (doDatabaseAddressValidateUser($in_user_id, $_POST['address_id']) === false) {
-                    $errors[] = "Houve um erro ao editar o endereço, o mesmo não é existente para o seu cadastro.";
+                    $errors[] = "Houve um erro ao editar o endereço. O endereço não existe no seu cadastro.";
                 }
             }
 
@@ -397,7 +401,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST)) {
 
             if ($required_fields_status) {
                 if (doDatabaseAddressValidateUser($in_user_id, $_POST['address_id']) === false) {
-                    $errors[] = "Houve um erro ao remover o endereço, o mesmo não é existente para o seu cadastro.";
+                    $errors[] = "Houve um erro ao remover o endereço. O endereço não existe no seu cadastro.";
                 }
             }
 
@@ -543,7 +547,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST)) {
                 if (getDatabaseUserSelectPayID(getDatabaseUserSelectByUserID($in_user_id)) == getDatabaseSettingsPayMoney(1)) { ?>
                     <div class="form-group">
                         <label for="change">Troco para:</label>
-                        <input type="text" name="change" class="form-control priceFormat" id="change" value="">
+                        <input type="text" name="change" class="form-control priceFormat" id="change" value="" required>
                     </div>
                 <?php }
                 ?>
@@ -814,7 +818,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST)) {
 <!-- CART -->
 <!--  -->
 
-<!-- Modal Address Edit -->
+<!-- REMOVER PRODUCT -->
 <?php
 if (isCampanhaInURL("product")) {
     if (isCampanhaInURL("remove")) {

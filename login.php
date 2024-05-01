@@ -21,10 +21,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST)) {
             if ($required_fields_status) {
                 $login = getDatabaseAccountLoginValidation($_POST['username'], $_POST['password']);
                 if ($login === false) {
-                    $errors[] = "Usuário e senha, não é reconhecido em nosso banco de dados.";
+                    $errors[] = "Usuário e senha não são reconhecidos em nosso banco de dados.";
                 } else {
                     if (isDatabaseAccountBlock($login)) {
-                        $errors[] = "Não é possível o login para está conta, a mesma está bloqueada.";
+                        $errors[] = "Não é possível fazer login nesta conta, pois ela está bloqueada.";
                     }
                 }
 
@@ -57,54 +57,54 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST)) {
 
             if ($required_fields_status) {
                 if (doGeneralValidationUserNameFormat($_POST['username']) == false) {
-                    $errors[] = "Verificar o campo [usuário], o mesmo possui caracteres invalido. Somente é aceito caracteres alfanuméricos.";
+                    $errors[] = "Verifique o campo [usuário]. Ele possui caracteres inválidos. Somente são aceitos caracteres alfanuméricos.";
                 }
 
                 if (isDatabaseAccountByUsername($_POST['username'])) {
-                    $errors[] = "Verificar o campo [usuário], pois o mesmo já é utilizado por outro membro.";
+                    $errors[] = "Verifique o campo [usuário], pois ele já está sendo utilizado por outro membro.";
                 }
 
                 if (doGeneralValidationPasswordFormat($_POST['password']) == false) {
-                    $errors[] = "Verificar o campo [senha], o mesmo possui caracteres invalido. Somente é aceito caracteres [a-z, A-Z, 0-9, !, @, #, $].";
+                    $errors[] = "Verifique o campo [senha]. Ele possui caracteres inválidos. Somente são aceitos caracteres [a-z, A-Z, 0-9, !, @, #, $].";
                 }
 
                 if (doGeneralValidationNameFormat($_POST['name']) == false) {
-                    $errors[] = "Verificar o campo [nome], o mesmo possui caracteres invalido. Somente é aceito caracteres alfabético.";
+                    $errors[] = "Verifique o campo [nome]. Ele possui caracteres inválidos. Somente são aceitos caracteres alfabéticos.";
                 }
 
                 if (doGeneralValidationEmailFormat($_POST['email']) == false) {
-                    $errors[] = "Verificar o campo [email], o mesmo está num formato inelegivel.";
+                    $errors[] = "Verifique o campo [email]. Ele está em um formato inválido.";
                 }
 
                 if (isDatabaseAccountByEmail($_POST['email'])) {
-                    $errors[] = "Verificar o campo [email], pois o mesmo já é utilizado por outro membro.";
+                    $errors[] = "Verifique o campo [email], pois ele já está sendo utilizado por outro membro.";
                 }
 
                 if (isDatabaseUserByPhone($_POST['phone'])) {
-                    $errors[] = "Verificar o campo [telefone], pois o mesmo já é utilizado por outro membro.";
+                    $errors[] = "Verifique o campo [telefone], pois ele já está sendo utilizado por outro membro.";
                 }
 
                 if (doGeneralValidationPhoneFormat($_POST['phone']) == false) {
-                    $errors[] = "Verificar o campo [telefone], ele está com caracteres invalido, somente é aceito números de 0 a 9.";
+                    $errors[] = "Verifique o campo [telefone]. Ele contém caracteres inválidos. Apenas são aceitos números de 0 a 9.";
                 }
 
                 if (strlen($_POST['username']) < 5) {
-                    $errors[] = "Verificar o campo [usuário], a quantidade de caracteres tem que ser maior que 05.";
+                    $errors[] = "Verifique o campo [usuário]. A quantidade de caracteres deve ser maior que 5.";
                 }
 
                 if (strlen($_POST['username']) > 15) {
-                    $errors[] = "Verificar o campo [usuário], a quantidade de caracteres tem que ser maior que 15.";
+                    $errors[] = "Verifique o campo [usuário]. A quantidade de caracteres deve ser maior que 15.";
                 }
                 if (strlen($_POST['password']) < 8) {
-                    $errors[] = "Verificar o campo [senha], a quantidade de caracteres tem que ser maior que 08.";
+                    $errors[] = "Verifique o campo [senha]. A quantidade de caracteres deve ser maior que 8.";
                 }
 
                 if (strlen($_POST['password']) > 20) {
-                    $errors[] = "Verificar o campo [senha], a quantidade de caracteres tem que ser maior que 20.";
+                    $errors[] = "Verifique o campo [senha]. A quantidade de caracteres deve ser maior que 20.";
                 }
 
                 if (isset($_POST['rules']) && empty($_POST['rules'])) {
-                    $errors[] = "Obrigatório estar de acordo com as regras.";
+                    $errors[] = "É obrigatório concordar com as regras.";
                 }
 
             }
@@ -133,7 +133,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST)) {
             );
 
             doDatabaseUserInsert($user_database_field);
-            echo doAlertSuccess("O cadastro foi efetuado com sucesso.");
+            echo doAlertSuccess("O cadastro foi realizado com sucesso.");
         }
     }
 

@@ -26,34 +26,34 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST)) {
 
             if ($required_fields_status) {
                 if (isDatabaseRequestOrderExistID($_POST['order_id']) === false) {
-                    $errors[] = "Houve um erro ao enviar a avaliação, reinicie a pagina e tente novamente";
+                    $errors[] = "Houve um erro ao enviar a avaliação. Por favor, recarregue a página e tente novamente.";
                 } else {
                     $cart_id = getDatabaseRequestOrderCartID($_POST['order_id']);
                     if (isDatabaseCartUserValidation($in_user_id, $cart_id) === false) {
-                        $errors[] = "Houve um erro ao enviar a avaliação, reinicie a pagina e tente novamente";
+                        $errors[] = "Houve um erro ao enviar a avaliação. Por favor, recarregue a página e tente novamente.";
                     }
                 }
 
                 if ($_POST['food'] < 0 || $_POST['food'] > 5) {
-                    $errors[] = "Houve um erro ao enviar a avaliação, reinicie a pagina e tente novamente";
+                    $errors[] = "Houve um erro ao enviar a avaliação. Por favor, recarregue a página e tente novamente.";
                 }
                 if ($_POST['box'] < 0 || $_POST['box'] > 5) {
-                    $errors[] = "Houve um erro ao enviar a avaliação, reinicie a pagina e tente novamente";
+                    $errors[] = "Houve um erro ao enviar a avaliação. Por favor, recarregue a página e tente novamente.";
                 }
                 if ($_POST['deliverytime'] < 0 || $_POST['deliverytime'] > 5) {
-                    $errors[] = "Houve um erro ao enviar a avaliação, reinicie a pagina e tente novamente";
+                    $errors[] = "Houve um erro ao enviar a avaliação. Por favor, recarregue a página e tente novamente.";
                 }
                 if ($_POST['costbenefit'] < 0 || $_POST['costbenefit'] > 5) {
-                    $errors[] = "Houve um erro ao enviar a avaliação, reinicie a pagina e tente novamente";
+                    $errors[] = "Houve um erro ao enviar a avaliação. Por favor, recarregue a página e tente novamente.";
                 }
 
                 if (!empty($_POST['comment'])) {
                     if (doGeneralValidationDescriptionFormat($_POST['comment']) == false) {
-                        $errors[] = "Reveja o comentário, existem caracteres invalido.";
+                        $errors[] = "Reveja o comentário, existem caracteres inválidos.";
                     }
 
                     if (strlen($_POST['comment']) > 100) {
-                        $errors[] = "Está muito cumprido está validação, se limite a 100 caracteres.";
+                        $errors[] = "Esta validação está muito longa. Limite-a a 100 caracteres.";
                     }
                 }
             }
@@ -73,7 +73,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST)) {
             );
 
             doDatabaseRequestOrderAvailableInsert($available_insert_fields);
-            doAlertSuccess("As informações de usuário, foram alteradas!!");
+            doAlertSuccess("Sua avaliação foi enviada com sucesso. Obrigado pela participação!");
         }
     }
 

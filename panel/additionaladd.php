@@ -9,7 +9,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST)) {
 
     // ADD COMPLEMENTO
     if (getGeneralSecurityToken('tokenAddAdditional')) {
-
         if (empty($_POST) === false) {
             $required_fields_status = true;
             $required_fields = array('category', 'description', 'cost-price', 'sale-price');
@@ -22,21 +21,25 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST)) {
             if ($required_fields_status) {
 
                 if (isDatabaseCategoryExistID($_POST['category']) === false) {
-                    $errors[] = "Houve um erro ao processar solicitação, categoria é inexistente.";
+                    $errors[] = "Houve um erro ao processar a solicitação. A categoria é inexistente.";
                 }
 
                 if (!empty($_POST['code'])) {
                     if (isDatabaseAdditionalEnabledByCode($_POST['code'])) {
-                        $errors[] = "O codigo é existente, preencha com outro ou deixe em branco.";
+                        $errors[] = "O código já existe. Preencha com outro ou deixe em branco.";
                     }
                 }
 
+                if($_POST['cost-price'] > $_POST['sale-price']) {
+                    $errors[] = "Deve haver algum engano, o preço de custo está maior que o de venda.";
+                }
+
                 if (doGeneralValidationPriceFormat($_POST['cost-price']) == false) {
-                    $errors[] = "No valor de custo, somente é aceito valores númerico";
+                    $errors[] = "No campo de custo, apenas são aceitos valores numéricos.";
                 }
 
                 if (doGeneralValidationPriceFormat($_POST['sale-price']) == false) {
-                    $errors[] = "No valor de desconto, somente é aceito valores númerico";
+                    $errors[] = "No campo de desconto, apenas são aceitos valores numéricos.";
                 }
 
                 if (isGeneralSecurityManagerAccess() === false) {
@@ -74,7 +77,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST)) {
 // <!-- FINAL DA VALIDAÇÃO PHP -->
 ?>
 
-
 <form action="/panel/additionaladd" method="post">
 
     <div id="product-add-info" class="content">
@@ -111,12 +113,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST)) {
                 <div class="form-group">
                     <label for="cost-price">Preço de Custo:</label>
                     <font color="red">*</font>
-                    <input type="text" name="cost-price" class="form-control" id="cost-price" value="">
+                    <input type="text" name="cost-price" class="form-control priceFormat" id="cost-price" value="">
                 </div>
                 <div class="form-group">
                     <label for="sale-price">Preço de Venda:</label>
                     <font color="red">*</font>
-                    <input type="text" name="sale-price" class="form-control" id="sale-price" value="">
+                    <input type="text" name="sale-price" class="form-control priceFormat" id="sale-price" value="">
                 </div>
             </section>
             <section id="product-left">
@@ -138,6 +140,31 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST)) {
     <button type="submit" class="btn btn-primary">Adicionar</button>
 </form>
 
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.mask/0.9.0/jquery.mask.min.js"
+    integrity="sha512-oJCa6FS2+zO3EitUSj+xeiEN9UTr+AjqlBZO58OPadb2RfqwxHpjTU8ckIC8F4nKvom7iru2s8Jwdo+Z8zm0Vg=="
+    crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script>
+    $(document).ready(function () {
+        // Adiciona um evento de input ao campo
+        $(".priceFormat").on('input', function () {
+            // Obtém o valor atual do campo
+            var inputValue = $(this).val();
+
+            // Remove todos os caracteres não numéricos
+            var numericValue = inputValue.replace(/[^0-9]/g, '');
+
+            // Verifica se o valor numérico não está vazio
+            if (numericValue !== '') {
+                // Converte para número e formata com duas casas decimais
+                var formattedValue = (parseFloat(numericValue) / 100).toFixed(2);
+
+                // Define o valor formatado de volta no campo
+                $(this).val(formattedValue);
+            }
+        });
+    });
+</script>
 <?php
 include_once (realpath(__DIR__ . "/layout/php/footer.php"));
 ?>

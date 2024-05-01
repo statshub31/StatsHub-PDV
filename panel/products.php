@@ -354,7 +354,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST)) {
 
             if ($required_fields_status) {
                 $errors[] = "Está desativado está função.";
-                
+
                 foreach ($_POST['products'] as $product_remove_id) {
                     if (isDatabaseProductExistID($product_remove_id) === false) {
                         $errors[] = "Houve um erro ao processar solicitação, um ou mais dos produtos é inexistente.";
@@ -556,10 +556,21 @@ if (isCampanhaInURL("product")) {
                                     <span><?php echo getDatabaseCategoryTitle(getDatabaseProductCategoryID($product_select_id)) ?></span><br>
                                 </section>
                                 <section style="width: 40%">
-                                    <b><label>Estoque Atual:</label></b>
-                                    <span><?php echo getDatabaseStockActual($product_select_stock_id); ?></span><br>
-                                    <b><label>Estoque Minimo:</label></b>
-                                    <span><?php echo getDatabaseStockMin($product_select_stock_id); ?></span><br>
+                                    <?php
+                                    if (isDatabaseProductStockEnabled($product_select_id)) {
+                                        ?>
+                                        <b><label>Estoque Atual:</label></b>
+                                        <span><?php echo getDatabaseStockActual($product_select_stock_id); ?></span><br>
+                                        <b><label>Estoque Minimo:</label></b>
+                                        <span><?php echo getDatabaseStockMin($product_select_stock_id); ?></span><br>
+
+                                        <?php
+                                    } else {
+                                        ?>
+                                        <b><label>Estoque Desabilitado.</label></b>
+                                        <?php
+                                    }
+                                    ?>
                                 </section>
                                 <section style="width: 100%">
                                     <b><label>Descrição:</label></b>

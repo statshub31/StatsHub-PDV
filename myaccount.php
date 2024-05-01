@@ -24,59 +24,59 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST)) {
 
             if ($required_fields_status) {
                 if (doGeneralValidationUserNameFormat($_POST['username']) == false) {
-                    $errors[] = "Verificar o campo [usuário], o mesmo possui caracteres invalido. Somente é aceito caracteres alfanuméricos.";
+                    $errors[] = "Verifique o campo [usuário]. Ele possui caracteres inválidos. Somente são aceitos caracteres alfanuméricos.";
                 }
 
 
                 if (isDatabaseAccountExistUserName($_POST['username'])) {
                     if (isDatabaseAccountUsernameValidation($_POST['username'], $in_user_id) === false) {
-                        $errors[] = "Verificar o campo [usuário], pois o mesmo já é utilizado por outro membro.";
+                        $errors[] = "Verifique o campo [usuário], pois ele já está sendo utilizado por outro membro.";
                     }
                 }
 
                 if (!empty($_POST['password'])) {
                     if (doGeneralValidationPasswordFormat($_POST['password']) == false) {
-                        $errors[] = "Verificar o campo [senha], o mesmo possui caracteres invalido. Somente é aceito caracteres [a-z, A-Z, 0-9, !, @, #, $].";
+                        $errors[] = "Verifique o campo [senha]. Ele possui caracteres inválidos. Somente são aceitos caracteres [a-z, A-Z, 0-9, !, @, #, $].";
                     }
                     if (strlen($_POST['password']) < 8) {
-                        $errors[] = "Verificar o campo [senha], a quantidade de caracteres tem que ser maior que 08.";
+                        $errors[] = "Verifique o campo [senha]. A quantidade de caracteres deve ser maior que 8.";
                     }
 
                     if (strlen($_POST['password']) > 20) {
-                        $errors[] = "Verificar o campo [senha], a quantidade de caracteres tem que ser maior que 20.";
+                        $errors[] = "Verifique o campo [senha]. A quantidade de caracteres deve ser maior que 20.";
                     }
                 }
 
                 if (doGeneralValidationNameFormat($_POST['name']) == false) {
-                    $errors[] = "Verificar o campo [nome], o mesmo possui caracteres invalido. Somente é aceito caracteres alfabético.";
+                    $errors[] = "Verifique o campo [nome]. Ele possui caracteres inválidos. Somente são aceitos caracteres alfabéticos.";
                 }
 
                 if (doGeneralValidationEmailFormat($_POST['email']) == false) {
-                    $errors[] = "Verificar o campo [email], o mesmo está num formato inelegivel.";
+                    $errors[] = "Verifique o campo [email]. Ele está em um formato inadequado.";
                 }
 
                 if (isDatabaseAccountExistEmail($_POST['email'])) {
                     if (isDatabaseAccountEmailValidation($_POST['email'], $in_account_id) === false) {
-                        $errors[] = "Verificar o campo [email], pois o mesmo já é utilizado por outro membro.";
+                        $errors[] = "Verifique o campo [email], pois ele já está sendo utilizado por outro membro.";
                     }
                 }
 
                 if (isDatabaseUserExistPhone($_POST['phone'])) {
                     if (isDatabaseUserPhoneValidation($_POST['phone'], $in_user_id) === false) {
-                        $errors[] = "Verificar o campo [telefone], pois o mesmo já é utilizado por outro membro.";
+                        $errors[] = "Verifique o campo [telefone], pois ele já está sendo utilizado por outro membro.";
                     }
                 }
 
                 if (doGeneralValidationPhoneFormat($_POST['phone']) == false) {
-                    $errors[] = "Verificar o campo [telefone], ele está com caracteres invalido, somente é aceito números de 0 a 9.";
+                    $errors[] = "Verifique o campo [telefone]. Ele contém caracteres inválidos. Apenas são aceitos números de 0 a 9.";
                 }
 
                 if (strlen($_POST['username']) < 5) {
-                    $errors[] = "Verificar o campo [usuário], a quantidade de caracteres tem que ser maior que 05.";
+                    $errors[] = "Verifique o campo [usuário]. A quantidade de caracteres deve ser maior que 5.";
                 }
 
                 if (strlen($_POST['username']) > 15) {
-                    $errors[] = "Verificar o campo [usuário], a quantidade de caracteres tem que ser maior que 15.";
+                    $errors[] = "Verifique o campo [usuário]. A quantidade de caracteres deve ser maior que 15.";
                 }
 
 
@@ -130,9 +130,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST)) {
 
                 doDatabaseAccountUpdate($in_account_id, $account_update_field);
                 doDatabaseUserUpdate($in_user_id, $user_update_field);
-                doAlertSuccess("As informações de usuário, foram alteradas!!");
+                doAlertSuccess("As informações do usuário foram alteradas com sucesso!");
             } else {
-                $errors[] = "Houve um erro ao encaminhar a imagem para o servidor, tente novamente.";
+                $errors[] = "Houve um erro ao enviar a imagem para o servidor. Por favor, tente novamente.";
             }
         }
     }
@@ -154,11 +154,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST)) {
 
             if ($required_fields_status) {
                 if (is_numeric(sanitizeSpecial($_POST['zip_code'])) === false) {
-                    $errors[] = "Houve um erro ao validar o cep, confirme se o mesmo está correto.";
+                    $errors[] = "Houve um erro ao validar o CEP. Por favor, confirme se o mesmo está correto.";
                 }
 
                 if (getDatabaseAddressCoutRowByUserID($in_user_id) > 4) {
-                    $errors[] = "Você atingiu a capacidade máxima de endereços permitido.";
+                    $errors[] = "Você atingiu a capacidade máxima de endereços permitida.";
                 }
             }
         }
@@ -177,7 +177,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST)) {
             );
 
             doDatabaseAddressInsert($address_add_fields);
-            doAlertSuccess("As informações foram alteradas com sucesso!!");
+            doAlertSuccess("As informações foram alteradas com sucesso!");
             // Coloque o código que deve ser executado após as verificações bem-sucedidas aqui
         }
     }
@@ -197,11 +197,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST)) {
 
             if ($required_fields_status) {
                 if (is_numeric(sanitizeSpecial($_POST['zip_code'])) === false) {
-                    $errors[] = "Houve um erro ao validar o cep, confirme se o mesmo está correto.";
+                    $errors[] = "Houve um erro ao validar o CEP. Por favor, confirme se o mesmo está correto.";
                 }
 
                 if (doDatabaseAddressValidateUser($in_user_id, $_POST['address_id']) === false) {
-                    $errors[] = "Houve um erro ao editar o endereço, o mesmo não é existente para o seu cadastro.";
+                    $errors[] = "Houve um erro ao editar o endereço. O endereço não existe em seu cadastro.";
                 }
             }
 
@@ -221,7 +221,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST)) {
             );
 
             doDatabaseAddressUpdate($_POST['address_id'], $address_add_fields);
-            doAlertSuccess("O Endereço, foi cadastrado!!");
+            doAlertSuccess("O endereço foi cadastrado com sucesso!");
             // Coloque o código que deve ser executado após as verificações bem-sucedidas aqui
         }
     }
@@ -240,7 +240,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST)) {
 
             if ($required_fields_status) {
                 if (doDatabaseAddressValidateUser($in_user_id, $_POST['address_id']) === false) {
-                    $errors[] = "Houve um erro ao remover o endereço, o mesmo não é existente para o seu cadastro.";
+                    $errors[] = "Houve um erro ao remover o endereço. O endereço não existe em seu cadastro.";
                 }
             }
 
@@ -249,7 +249,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST)) {
 
         if (empty($errors)) {
             doDatabaseAddressDelete($_POST['address_id']);
-            doAlertSuccess("O Endereço, foi removido do seu cadastro!!");
+            doAlertSuccess("O endereço foi removido do seu cadastro com sucesso!");
             // Coloque o código que deve ser executado após as verificações bem-sucedidas aqui
         }
     }
@@ -414,7 +414,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST)) {
                     $first_status = doDatabaseRequestOrderLogsFirstLogByOrderID($order_id);
                     ?>
                     <tr>
-                        <td>#<?php echo $order_id ?></td>
+                        <td><?php echo $order_id ?></td>
                         <td><?php echo doDate(getDatabaseRequestOrderLogCreated($first_status)) . ' às ' . doTime(getDatabaseRequestOrderLogCreated($first_status)); ?>
                         </td>
                         <td>
@@ -707,7 +707,8 @@ if (isCampanhaInURL("address")) {
                     "next": " Próximo"
                 }
                 // Outras opções de linguagem...
-            }
+            },
+            "order": [[0, 'desc']] // Ordenar pela primeira coluna em ordem ascendente
         });
 
         $('#inputAvatarImage').change(function () {

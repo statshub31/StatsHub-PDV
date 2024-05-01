@@ -49,7 +49,7 @@ RewriteRule ^cart(/.*)?$ cart.php$1 [L]
 RewriteRule ^login(/.*)?$ login.php$1 [L]
 RewriteRule ^myaccount(/.*)?$ myaccount.php$1 [L]
 RewriteRule ^logout(/.*)?$ logout.php$1 [L]
-RewriteRule ^favorite(/.*)?$ favorite.php$1 [L]
+RewriteRule ^favorites(/.*)?$ favorites.php$1 [L]
 RewriteRule ^teste(/.*)?$ teste.php$1 [L]
 
 # Redirecionar todas as outras solicitações para index.php

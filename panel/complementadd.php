@@ -23,12 +23,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST)) {
             if ($required_fields_status) {
 
                 if (isDatabaseCategoryExistID($_POST['category']) === false) {
-                    $errors[] = "Houve um erro ao processar solicitação, categoria é inexistente.";
+                    $errors[] = "Houve um erro ao processar a solicitação. A categoria é inexistente.";
                 }
 
                 if (!empty($_POST['code'])) {
                     if (isDatabaseComplementEnabledByCode($_POST['code'])) {
-                        $errors[] = "O codigo é existente, preencha com outro ou deixe em branco.";
+                        $errors[] = "O código já existe. Preencha com outro ou deixe em branco.";
                     }
                 }
 

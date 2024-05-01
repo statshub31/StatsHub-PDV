@@ -24,7 +24,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST)) {
 
             if ($required_fields_status) {
                 if (isDatabaseAdditionalExistID($_POST['additional_select_id']) === false) {
-                    $errors[] = "Houve um erro ao processar solicitação, adicional é inexistente.";
+                    $errors[] = "Houve um erro ao processar a solicitação. O adicional é inexistente.";
                 }
 
                 if (isGeneralSecurityManagerAccess() === false) {
@@ -68,7 +68,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST)) {
 
             if ($required_fields_status) {
                 if (isDatabaseAdditionalExistID($_POST['additional_select_id']) === false) {
-                    $errors[] = "Houve um erro ao processar solicitação, o adicional é inexistente.";
+                    $errors[] = "Houve um erro ao processar a solicitação. O adicional é inexistente.";
                 }
 
                 if (isGeneralSecurityManagerAccess() === false) {
@@ -81,7 +81,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST)) {
 
         if (empty($errors)) {
             doDatabaseAdditionalDelete($_POST['additional_select_id']);
-            doAlertSuccess("O Additionalo foi removido com sucesso.");
+            doAlertSuccess("O adicional foi removido com sucesso.");
         }
     }
 
@@ -100,28 +100,33 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST)) {
 
             if ($required_fields_status) {
                 if (isDatabaseAdditionalExistID($_POST['additional_select_id']) === false) {
-                    $errors[] = "Houve um erro ao processar solicitação, o adicional é inexistente.";
+                    $errors[] = "Houve um erro ao processar a solicitação. O adicional é inexistente.";
                 }
 
 
                 if (isDatabaseCategoryExistID($_POST['category']) === false) {
-                    $errors[] = "Houve um erro ao processar solicitação, categoria é inexistente.";
+                    $errors[] = "Houve um erro ao processar a solicitação. A categoria é inexistente.";
                 }
 
                 if (!empty($_POST['code'])) {
                     if (isDatabaseAdditionalEnabledByCode($_POST['code'])) {
                         if (isDatabaseAdditionalValidationCode($_POST['code'], $_POST['additional_select_id']) === false) {
-                            $errors[] = "O codigo é existente, preencha com outro ou deixe em branco.";
+                            $errors[] = "O código já existe. Preencha com outro ou deixe em branco.";
                         }
                     }
                 }
 
+
+                if($_POST['cost-price'] > $_POST['sale-price']) {
+                    $errors[] = "Deve haver algum engano, o preço de custo está maior que o de venda.";
+                }
+                
                 if (doGeneralValidationPriceFormat($_POST['cost-price']) == false) {
-                    $errors[] = "No valor de custo, somente é aceito valores númerico";
+                    $errors[] = "No campo de custo, apenas são aceitos valores numéricos.";
                 }
 
                 if (doGeneralValidationPriceFormat($_POST['sale-price']) == false) {
-                    $errors[] = "No valor de desconto, somente é aceito valores númerico";
+                    $errors[] = "No campo de desconto, apenas são aceitos valores numéricos.";
                 }
 
 

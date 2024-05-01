@@ -51,7 +51,7 @@ $order_id = getURLLastParam();
                         $percentual = getOrderProgressBarValue($order_list_id);
                         ?>
                         <tr>
-                            <td>#<?php echo $order_list_id ?></td>
+                            <td><?php echo $order_list_id ?></td>
                             <td>
                                 <a target="on_blank" href="users/view/user/<?php echo $order_user_id ?>">
                                     <?php echo getDatabaseUserName($order_user_id) ?>
@@ -60,12 +60,16 @@ $order_id = getURLLastParam();
                             <td><?php echo doBRDateTime(getDatabaseRequestOrderLogCreated($order_first_log_id)) ?></td>
                             <td>
                                 <?php
-                                echo getDatabaseAddressPublicPlace($order_main_address_id) . ', ';
-                                echo getDatabaseAddressNumber($order_main_address_id) . '(';
-                                echo getDatabaseAddressComplement($order_main_address_id) . '), ';
-                                echo getDatabaseAddressNeighborhood($order_main_address_id) . ', ';
-                                echo getDatabaseAddressCity($order_main_address_id) . ' - ';
-                                echo getDatabaseAddressState($order_main_address_id);
+                                if (isDatabaseRequestOrderSelectAddress($order_list_id)) {
+                                    echo getDatabaseAddressPublicPlace($order_main_address_id) . ', ';
+                                    echo getDatabaseAddressNumber($order_main_address_id) . '(';
+                                    echo getDatabaseAddressComplement($order_main_address_id) . '), ';
+                                    echo getDatabaseAddressNeighborhood($order_main_address_id) . ', ';
+                                    echo getDatabaseAddressCity($order_main_address_id) . ' - ';
+                                    echo getDatabaseAddressState($order_main_address_id);
+                                } else {
+                                    echo 'Retirada no Local';
+                                }
                                 ?>
                             </td>
                             <td>
@@ -273,7 +277,9 @@ if (isCampanhaInURL("order")) {
                                             echo getDatabaseAddressNeighborhood($main_address_id) . ', ';
                                             echo getDatabaseAddressCity($main_address_id) . ' - ';
                                             echo getDatabaseAddressState($main_address_id);
+                                            
                                             $discount = getDatabaseTicketValue(getDatabaseCartTicketSelectTicketID(getDatabaseCartTicketSelectByCartID($cart_id)));
+
                                             ?>
                                         </div>
                                     </section>
@@ -350,7 +356,8 @@ if (isCampanhaInURL("order")) {
                     "next": "Próximo"
                 }
                 // Outras opções de linguagem...
-            }
+            },
+            "order": [[0, 'desc']] // Ordenar pela primeira coluna em ordem ascendente
         });
     });
 
