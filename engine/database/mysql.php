@@ -16,7 +16,7 @@ if (!function_exists("elapsedTime")) {
 }
 
 // $connect = new mysqli($config['sqlHost'], $config['sqlUser'], $config['sqlPassword'], $config['sqlDatabase']);
-$connect = new mysqli('localhost', 'root', '', 'stpdv');
+$connect = new mysqli('localhost', 'root', '', 'stpdv_teste');
 
 function doTruncateTableDB($table)
 {

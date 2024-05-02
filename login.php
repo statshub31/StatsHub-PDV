@@ -191,7 +191,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST)) {
                         <input type="password" name="password" placeholder="Senha" class="login__input">
                     </div>
 
-                    <a href="#" class="login__forgot">Esqueceu sua senha?</a>
+                    <!-- <a href="#" class="login__forgot">Esqueceu sua senha?</a> -->
 
                     <input name="token" type="text" value="<?php echo addGeneralSecurityToken('tokenLogin') ?>"
                         hidden />

@@ -526,22 +526,24 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST)) {
     <div id="informations" class="content">
 
         <div class="form-group">
-            <label for="title">Título
+            <label for="title">Título:
+                <font color="red">*</font>
                 <small><i class="fa fa-question-circle" aria-hidden="true" data-toggle="tooltip" data-placement="top"
                         title="Nome da sua loja."></i></small>
             </label>
             <input name="title" type="text" class="form-control" id="title"
-                value="<?php echo getDatabaseSettingsInfoTitle(1) ?>">
+                value="<?php echo getDatabaseSettingsInfoTitle(1) ?>" required>
         </div>
 
 
         <div class="form-group">
-            <label for="description">Descrição
+            <label for="description">Descrição:
+                <font color="red">*</font>
                 <small><i class="fa fa-question-circle" aria-hidden="true" data-toggle="tooltip" data-placement="top"
                         title="Tipo de produtos vendido, descrição do que fazem..."></i></small>
             </label>
             <input name="description" type="text" class="form-control" id="description"
-                value="<?php echo getDatabaseSettingsInfoDescription(1) ?>">
+                value="<?php echo getDatabaseSettingsInfoDescription(1) ?>" required>
         </div>
 
 
@@ -588,12 +590,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST)) {
                 value="<?php echo getDatabaseSettingsDeliveryAddressAPI(1) ?>">
         </div>
         <div class="form-group">
-            <label for="min-delivery">Pedido Mínimo
+            <label for="min-delivery">Pedido Mínimo:
+                <font color="red">*</font>
                 <small><i class="fa fa-question-circle" aria-hidden="true" data-toggle="tooltip" data-placement="top"
                         title="Insira o valor mínimo para compra, caso não tenha, deixe em 0,00."></i></small>
             </label>
-            <input name="min-delivery" type="text" class="form-control" id="min-delivery"
-                value="<?php echo getDatabaseSettingsDeliveryOrderMin(1) ?>">
+            <input name="min-delivery" type="text" class="form-control priceFormat" id="min-delivery"
+                value="<?php echo getDatabaseSettingsDeliveryOrderMin(1) ?>" required>
         </div>
 
         <div class="form-group">
@@ -601,7 +604,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST)) {
                 <small><i class="fa fa-question-circle" aria-hidden="true" data-toggle="tooltip" data-placement="top"
                         title="Insira o valor para a taxa de entrega."></i></small>
             </label>
-            <input name="delivery-fee" type="text" class="form-control" id="delivery-fee"
+            <input name="delivery-fee" type="text" class="form-control priceFormat" id="delivery-fee"
                 value="<?php echo getDatabaseSettingsDeliveryFee(1) ?>">
         </div>
 
@@ -612,7 +615,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST)) {
                         title="Tempo mínimo que o cliente deverá esperar."></i></small>
             </label>
             <input name="time-min" type="text" class="form-control" id="time-min"
-                value="<?php echo getDatabaseSettingsDeliveryTimeMin(1) ?>">
+                value="<?php echo getDatabaseSettingsDeliveryTimeMin(1) ?>" required>
         </div>
 
         <div class="form-group">
@@ -621,7 +624,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST)) {
                         title="Tempo mínimo que o cliente deverá esperar."></i></small>
             </label>
             <input name="time-max" type="text" class="form-control" id="time-max"
-                value="<?php echo getDatabaseSettingsDeliveryTimeMax(1) ?>">
+                value="<?php echo getDatabaseSettingsDeliveryTimeMax(1) ?>" required>
         </div>
     </div>
 
@@ -1048,6 +1051,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST)) {
     <input name="token" type="text" value="<?php echo addGeneralSecurityToken('tokenSettings') ?>" hidden>
     <button type="submit" class="btn btn-primary btn-user">Salvar</button>
 </form>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.mask/0.9.0/jquery.mask.min.js"
+    integrity="sha512-oJCa6FS2+zO3EitUSj+xeiEN9UTr+AjqlBZO58OPadb2RfqwxHpjTU8ckIC8F4nKvom7iru2s8Jwdo+Z8zm0Vg=="
+    crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 <script>
 
     function verificarImagem(caminhoDaImagem, $id) {
@@ -1074,6 +1081,25 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST)) {
 
 
     $(document).ready(function () {
+        
+        // Adiciona um evento de input ao campo
+        $(".priceFormat").on('input', function () {
+            // Obtém o valor atual do campo
+            var inputValue = $(this).val();
+
+            // Remove todos os caracteres não numéricos
+            var numericValue = inputValue.replace(/[^0-9]/g, '');
+
+            // Verifica se o valor numérico não está vazio
+            if (numericValue !== '') {
+                // Converte para número e formata com duas casas decimais
+                var formattedValue = (parseFloat(numericValue) / 100).toFixed(2);
+
+                // Define o valor formatado de volta no campo
+                $(this).val(formattedValue);
+            }
+        });
+
         const dir = '<?php echo $image_config_dir; ?>';
 
         // FAVICON

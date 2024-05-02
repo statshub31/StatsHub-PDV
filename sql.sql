@@ -20,8 +20,9 @@ CREATE TABLE accounts (
     FOREIGN KEY (`group_id`) REFERENCES `groups`(`id`)
 );
 
-INSERT INTO `accounts`(`id`, `username`, `password`, `email`, `group_id`, `rules`, `block`, `created`) VALUES (1, 
-    'moratech', 'eacd55f94ae1b2956a05eb1d21c6e335', 'moratech@gmail.com', 5, 1, 0, '2024-01-01');
+INSERT INTO `accounts`
+(`username`, `password`, `email`, `group_id`, `rules`, `block`, `created`) VALUES 
+('moratech', 'eacd55f94ae1b2956a05eb1d21c6e335', 'moratech@gmail.com', 5, 1, 0, '2024-01-01');
 
 
 create table users (
@@ -29,7 +30,7 @@ create table users (
     `account_id` int not null,
     `name` varchar(255) NOT NULL,
     `phone` varchar(15) not null,
-    `photo` VARCHAR(255) NULL DEFAULT
+    `photo` VARCHAR(255) NULL,
     FOREIGN KEY (`account_id`) REFERENCES `accounts`(`id`)
 );
 
@@ -86,6 +87,27 @@ create table measure (
 INSERT INTO `measure`(`title`) VALUES ('Kilograma'), ('Grama'), ('Porção'), ('Unidade'), ('Centimetro');
 
 
+create table icons (
+    `id` int PRIMARY KEY AUTO_INCREMENT,
+    `title` varchar(100) not null
+);
+
+INSERT INTO `icons` (`title`) VALUES ('fa-solid fa-cart-shopping'),
+('fa-solid fa-car'),
+('fa-solid fa-magnifying-glass'),
+('fa-solid fa-user'),
+('fa-solid fa-star'),
+('fa-solid fa-heart'),
+('fa-solid fa-gift'),
+('fa-solid fa-briefcase'),
+('fa-solid fa-shirt'),
+('fa-solid fa-money-bill-wave'),
+('fa-solid fa-money-check-dollar'),
+('fa-solid fa-credit-card'),
+('fa-regular fa-credit-card'),
+('fa-solid fa-money-bill'),
+('fa-brands fa-pix');
+
 
 create table categorys (
     `id` int PRIMARY KEY AUTO_INCREMENT,
@@ -94,7 +116,7 @@ create table categorys (
     FOREIGN KEY (`icon_id`) REFERENCES `icons`(`id`)
 );
 
-INSERT INTO `categorys`(`title`) VALUES ('Outros'), ()'Comida'), ('Bebida');
+INSERT INTO `categorys`(`title`) VALUES ('Outros'), ('Comida'), ('Bebida');
 
 
 create table complements (
@@ -266,27 +288,6 @@ create table product_fee_exemption (
 );
 
 
-create table icons (
-    `id` int PRIMARY KEY AUTO_INCREMENT,
-    `title` varchar(100) not null
-);
-
-INSERT INTO icons (`title`) VALUES ('fa-solid fa-cart-shopping'),
-('fa-solid fa-car'),
-('fa-solid fa-magnifying-glass'),
-('fa-solid fa-user'),
-('fa-solid fa-star'),
-('fa-solid fa-heart'),
-('fa-solid fa-gift'),
-('fa-solid fa-briefcase'),
-('fa-solid fa-shirt'),
-('fa-solid fa-money-bill-wave'),
-('fa-solid fa-money-check-dollar'),
-('fa-solid fa-credit-card'),
-('fa-regular fa-credit-card'),
-('fa-solid fa-money-bill'),
-('fa-brands fa-pix')
-
 
 create table request_order (
     `id` int PRIMARY KEY AUTO_INCREMENT,
@@ -397,6 +398,7 @@ create table user_select (
     FOREIGN KEY (`user_id`) REFERENCES `users`(`id`)
 );
 
+
 create table cart_ticket_select (
     `id` int PRIMARY KEY AUTO_INCREMENT,
     `ticket_id` int not null default 1,
@@ -407,17 +409,6 @@ create table cart_ticket_select (
     FOREIGN KEY (`ticket_id`) REFERENCES `tickets`(`id`),
     FOREIGN KEY (`cart_id`) REFERENCES `carts`(`id`)
 );
-
-create table user_select (
-    `id` int PRIMARY KEY AUTO_INCREMENT,
-    `address_id` int null,
-    `pay_id` int not null default 1,
-    `user_id` int null,
-    FOREIGN KEY (`address_id`) REFERENCES `address`(`id`),
-    FOREIGN KEY (`pay_id`) REFERENCES `settings_pay`(`id`),
-    FOREIGN KEY (`user_id`) REFERENCES `users`(`id`)
-);
-
 
 create table settings_images (
     `id` int PRIMARY KEY AUTO_INCREMENT,
@@ -438,11 +429,12 @@ create table settings_info (
     `cnpj` varchar(15) null
 );
 
+insert into `settings_info` () VALUES ();
 
 create table settings_delivery (
     `id` int PRIMARY KEY AUTO_INCREMENT,
     `order_withdrawal` boolean not null default 0,
-    `address_api` varchar(255) null,
+    `address_api` text null,
     `order_min` float(5, 2) not null default 0,
     `fee` float(5, 2)  not null default 0,
     `time_min` tinyint not null,
@@ -514,35 +506,6 @@ create table settings_horary (
 
 
 
-
-
-
-create table requests (
-    `id` int PRIMARY KEY AUTO_INCREMENT,
-    `product_id` int not null,
-    `amount` int not null,
-    `user_id` int not null,
-    `observation` text,
-    FOREIGN KEY (`product_id`) REFERENCES `products`(`id`),
-    FOREIGN KEY (`user_id`) REFERENCES `users`(`id`)
-);
-
-create table requests_complements (
-    `id` int PRIMARY KEY AUTO_INCREMENT,
-    `request_id` int not null,
-    `complement_id` int not null,
-    FOREIGN KEY (`request_id`) REFERENCES `requests`(`id`),
-    FOREIGN KEY (`complement_id`) REFERENCES `complements`(`id`)
-);
-
-create table requests_additional (
-    `id` int PRIMARY KEY AUTO_INCREMENT,
-    `request_id` int not null,
-    `additional_id` int not null,
-    FOREIGN KEY (`request_id`) REFERENCES `requests`(`id`),
-    FOREIGN KEY (`additional_id`) REFERENCES `additional`(`id`)
-);
-
 create table status_delivery (
     `id` int PRIMARY KEY AUTO_INCREMENT,
     `title` varchar(50)
@@ -557,17 +520,6 @@ INSERT INTO `status_delivery`(`title`) VALUES
 ('Pedido Entregue'), 
 ('Pedido Cancelado'), 
 ('Pedido Pronto');
-
-
-create table requests_status (
-    `id` int PRIMARY KEY AUTO_INCREMENT,
-    `request_id` int not null,
-    `status_delivery` int not null,
-    `created` int not null,
-    FOREIGN KEY (`request_id`) REFERENCES `requests`(`id`),
-    FOREIGN KEY (`status_delivery`) REFERENCES `status_delivery`(`id`)
-);
-
 
 create table status_pay (
     `id` int PRIMARY KEY AUTO_INCREMENT,

@@ -45,7 +45,7 @@ function isDatabaseSettingsSocialWhatsappEnabled($id)
     $id_sanitize = sanitize($id);
 
     $query = getDatabaseSettingsSocialsData($id_sanitize, 'whatsapp_status');
-    return ($query !== false && $query == 1) ? true : false;
+    return ($query !== false && $query['whatsapp_status'] == 1) ? true : false;
 }
 
 
@@ -74,7 +74,7 @@ function isDatabaseSettingsSocialInstagramEnabled($id)
     $id_sanitize = sanitize($id);
 
     $query = getDatabaseSettingsSocialsData($id_sanitize, 'instagram_status');
-    return ($query !== false && $query == 1) ? true : false;
+    return ($query !== false && $query['instagram_status'] == 1) ? true : false;
 }
 
 function getDatabaseSettingsSocialFacebookStatus($id)
@@ -101,7 +101,7 @@ function isDatabaseSettingsSocialFacebookEnabled($id)
     $id_sanitize = sanitize($id);
 
     $query = getDatabaseSettingsSocialsData($id_sanitize, 'facebook_status');
-    return ($query !== false && $query == 1) ? true : false;
+    return ($query !== false && $query['facebook_status'] == 1) ? true : false;
 }
 
 
