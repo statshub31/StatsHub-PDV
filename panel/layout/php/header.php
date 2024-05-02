@@ -1,5 +1,6 @@
 <?php
 require_once (realpath(__DIR__ . "/../../../engine/init.php"));
+getGeneralSecurityPanelAccess();
 ?>
 
 <!DOCTYPE html>

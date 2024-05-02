@@ -9,15 +9,8 @@ RewriteRule ^logs/ - [F]
 RewriteCond %{THE_REQUEST} \.php
 RewriteRule ^ - [F]
 
-# Redirecionar para cadastro.php se a URL contiver /campanha
-RewriteRule ^gamecode(/.*)?$ gamecode.php$1 [L]
-RewriteRule ^gametele(/.*)?$ gametele.php$1 [L]
-RewriteRule ^plans/success(/.*)?$ plans/success.php$1 [L]
-RewriteRule ^gameresponse(/.*)?$ gameresponse.php$1 [L]
-
 # Redireciona de /campanha&sub=valor para /campanha/valor
-RewriteCond %{QUERY_STRING} ^sub=([^&]+)$
-RewriteRule ^gamecode$ /gamecode/%1? [R=301,L]
+# RewriteCond %{QUERY_STRING} ^sub=([^&]+)$
 
 RewriteRule ^panel/settings(/.*)?$ panel/settings.php$1 [L]
 RewriteRule ^panel/availables(/.*)?$ panel/availables.php$1 [L]
@@ -25,25 +18,29 @@ RewriteRule ^panel/users(/.*)?$ panel/users.php$1 [L]
 RewriteRule ^panel/userupdate(/.*)?$ panel/userupdate.php$1 [L]
 RewriteRule ^panel/useradd(/.*)?$ panel/useradd.php$1 [L]
 RewriteRule ^panel/teams(/.*)?$ panel/teams.php$1 [L]
+RewriteRule ^panel/categorys(/.*)?$ panel/categorys.php$1 [L]
 RewriteRule ^panel/index(/.*)?$ panel/index.php$1 [L]
 RewriteRule ^panel/products(/.*)?$ panel/products.php$1 [L]
 RewriteRule ^panel/tickets(/.*)?$ panel/tickets.php$1 [L]
 RewriteRule ^panel/ticketadd(/.*)?$ panel/ticketadd.php$1 [L]
 RewriteRule ^panel/productadd(/.*)?$ panel/productadd.php$1 [L]
+RewriteRule ^panel/productedit(/.*)?$ panel/productedit.php$1 [L]
 RewriteRule ^panel/additional(/.*)?$ panel/additional.php$1 [L]
 RewriteRule ^panel/additionaladd(/.*)?$ panel/additionaladd.php$1 [L]
-RewriteRule ^panel/reports(/.*)?$ panel/reports.php$1 [L]
-
+# RewriteRule ^panel/reports(/.*)?$ panel/reports.php$1 [L]
+RewriteRule ^panel/orders(/.*)?$ panel/orders.php$1 [L]
 RewriteRule ^panel/complements(/.*)?$ panel/complements.php$1 [L]
 RewriteRule ^panel/complementadd(/.*)?$ panel/complementadd.php$1 [L]
 
 RewriteRule ^menu(/.*)?$ menu.php$1 [L]
 RewriteRule ^complement(/.*)?$ complement.php$1 [L]
+RewriteRule ^complementedit(/.*)?$ complementedit.php$1 [L]
+RewriteRule ^order(/.*)?$ order.php$1 [L]
 RewriteRule ^cart(/.*)?$ cart.php$1 [L]
 RewriteRule ^login(/.*)?$ login.php$1 [L]
 RewriteRule ^myaccount(/.*)?$ myaccount.php$1 [L]
 RewriteRule ^logout(/.*)?$ logout.php$1 [L]
-RewriteRule ^favorite(/.*)?$ favorite.php$1 [L]
+RewriteRule ^favorites(/.*)?$ favorites.php$1 [L]
 
 # Redirecionar todas as outras solicitações para index.php
 RewriteCond %{REQUEST_FILENAME} !-f

@@ -1,7 +1,9 @@
 <?php
 include_once (realpath(__DIR__ . "/layout/php/header.php"));
+getGeneralSecurityManagerAccess();
 
 ?>
+
 <h1 class="h3 mb-0 text-gray-800">Relatórios</h1>
 <div class="container-search">
     <div class="input-group mb-3">

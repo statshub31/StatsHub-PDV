@@ -56,7 +56,7 @@ include_once (__DIR__ . "/../../engine/init.php");
                 <a href="/cart">
                     <i class="fa-solid fa-cart-shopping"></i>
                 </a>
-                <a href="/favorite">
+                <a href="/favorites">
                     <i class="fa-solid fa-star"></i>
                 </a>
                 <a href="/menu">
@@ -65,13 +65,33 @@ include_once (__DIR__ . "/../../engine/init.php");
                 <a href="/myaccount">
                     <i class="fa-solid fa-user"></i>
                 </a>
+                <?php
+                if (getGeneralSecurityLoggedIn() === true) {
+                    ?>
+                    <a href="/logout">
+                        <i class="fa-solid fa-right-from-bracket"></i>
+                    </a>
+                <?php
+                }
+                ?>
+            </section>
+            <section id="menu-exit">
+                <?php
+                if (getGeneralSecurityLoggedIn() === true) {
+                    ?>
+                    <a href="/logout">
+                        <i class="fa-solid fa-right-from-bracket"></i>
+                    </a>
+                <?php
+                }
+                ?>
             </section>
         </div>
         <div id="menu-footer">
             <a href="/cart">
                 <i class="fa-solid fa-cart-shopping"></i>
             </a>
-            <a href="/favorite">
+            <a href="/favorites">
                 <i class="fa-solid fa-star"></i>
             </a>
             <a href="/index">

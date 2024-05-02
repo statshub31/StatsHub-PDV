@@ -1,11 +1,11 @@
 /* 769 Largura Computador */
 /* 768 Largura SmartPhone */
-
+/* 
 :root {
   --primary-color: #000e40;
   --secondary-color: #e9e9e9;
   --border-color: #ced4da;
-}
+} */
 
 table {
   border: 1px solid #ced4da;
@@ -19,13 +19,13 @@ table {
 body {
   background-image: url(/layout/images/config/background.avif) !important;
   background-position: center !important;
-  background-size: 110vw 100vw !important;
+  background-size: 100% 100% !important;
   background-repeat: no-repeat !important;
 }
 
 @media only screen and (min-width: 769px) {
   header {
-    background-color: #000e40;
+    background-color: var(--primary-color);
     width: 100vw;
     height: 60px;
   }
@@ -60,6 +60,10 @@ body {
     color: white !important;
   }
 
+  #menu-exit {
+    display: none;
+  }
+
   #menu-footer {
     display: none;
   }
@@ -77,8 +81,14 @@ body {
   }
 
 
+  #restaurant-info {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-around;
+  }
+
   #user_panel section:nth-child(1) {
-    margin-right: 20px;
+    margin-bottom: 70px;
   }
 }
 
@@ -110,6 +120,17 @@ body {
 
   #menu-header {
     display: none;
+  }
+
+  #menu-exit {
+    padding: 10px;
+    float: right;
+  }
+
+  #menu-exit a {
+    margin: 0px 10px;
+    font-size: 35px;
+    color: white !important;
   }
 
   #menu-footer {
@@ -162,7 +183,13 @@ body {
   }
 
   #user_panel section:nth-child(1) {
-    margin-bottom: 20px;
+    margin-bottom: 70px;
+  }
+
+  #restaurant-info {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-start;
   }
 
   #restaurant-info section:not(:last-child) {
@@ -232,6 +259,18 @@ main {
   /* Adiciona um espaço entre as linhas de cards */
 }
 
+.promotion {
+  position: absolute;
+  width: 6em;
+  right: 0px;
+  filter: drop-shadow(0px 0px 3px red);
+  animation: blink 1s infinite;
+}
+
+.promotion img {
+  width: 100%;
+  height: 100%;
+}
 
 /* COMPLEMENT.PHP */
 
@@ -384,12 +423,21 @@ div .quantity {
 }
 
 #user_photo {
-  flex: 1 0 200px; /* Largura flexível com um tamanho mínimo de 200 pixels */
-  margin-right: 20px; /* Espaço entre as seções */
+  flex: 1 0 200px;
+  /* Largura flexível com um tamanho mínimo de 200 pixels */
+  height: 250px;
+  margin-right: 20px;
+  /* Espaço entre as seções */
+}
+
+#user_photo img {
+  width: 100%;
+  height: 100%;
 }
 
 #user_infos {
-  flex: 1 0 calc(100% - 400px); /* Largura flexível com base no espaço restante */
+  flex: 1 0 calc(100% - 400px);
+  /* Largura flexível com base no espaço restante */
 }
 
 
@@ -408,7 +456,8 @@ div .quantity {
   border-right: 5px solid black;
 }
 
-#general-rating p, #general-rating label {
+#general-rating p,
+#general-rating label {
   margin: 0px;
 }
 
@@ -425,43 +474,75 @@ div .quantity {
 .star {
   width: 20px;
 }
+
 .star img {
   width: 100%;
+  filter: grayscale(1);
   height: 100%;
 }
 
-#users-rating {
-  overflow: hidden; /* Oculta qualquer conteúdo que ultrapasse a largura do contêiner */
-  position: relative; /* Define o contexto de posicionamento para os pseudoelementos */
+.colorstar label img {
+  filter: none;
 }
+
+.colorstar img {
+  filter: none;
+}
+
+#users-rating {
+  overflow: hidden;
+  /* Oculta qualquer conteúdo que ultrapasse a largura do contêiner */
+  position: relative;
+  /* Define o contexto de posicionamento para os pseudoelementos */
+}
+
 .rating-wrapper {
   display: flex;
-  flex-wrap: nowrap; /* Evita que os elementos quebrem para a próxima linha */
-  overflow-x: hidden; /* Oculta a barra de rolagem nativa */
+  flex-wrap: nowrap;
+  background-color: #ffffff;
+  padding: 20px 0px;
+  /* Evita que os elementos quebrem para a próxima linha */
+  overflow-x: hidden;
+  /* Oculta a barra de rolagem nativa */
 }
 
 .rating-container {
-  flex: 0 0 auto; /* Define a largura automática dos elementos */
-  margin-right: 20px; /* Adiciona um espaço entre os elementos */
+  flex: 0 0 auto;
+  /* Define a largura automática dos elementos */
+  margin-right: 20px;
+  background-color: var(--secondary-color)
+    /* Adiciona um espaço entre os elementos */
 }
+
+/* 
+.scroll-left,
+.scroll-right {
+  display: none;
+} */
 
 .scroll-left,
 .scroll-right {
   position: absolute;
   top: 0;
   bottom: 0;
-  width: 30px; /* Largura das setas */
-  background-color: rgba(255, 255, 255, 0.5); /* Cor de fundo das setas */
-  z-index: 1; /* Coloca as setas sobre o conteúdo */
-  cursor: pointer; /* Altera o cursor ao passar sobre as setas */
+  width: 30px;
+  /* Largura das setas */
+  background-color: rgba(170, 167, 167, 0.5);
+  /* Cor de fundo das setas */
+  z-index: 1;
+  /* Coloca as setas sobre o conteúdo */
+  cursor: pointer;
+  /* Altera o cursor ao passar sobre as setas */
 }
 
 .scroll-left {
-  left: 0; /* Define a seta esquerda */
+  left: 0;
+  /* Define a seta esquerda */
 }
 
 .scroll-right {
-  right: 0; /* Define a seta direita */
+  right: 0;
+  /* Define a seta direita */
 }
 
 #users-rating .rating-wrapper .rating-container {
@@ -491,6 +572,9 @@ div .quantity {
   border-radius: 5px;
 }
 
+.user-comment {
+  word-wrap: break-word;
+}
 
 #address-restaurant {
   background-image: url(/layout/images/model/map.png);
@@ -504,11 +588,6 @@ div .quantity {
   padding: 15px;
 }
 
-#restaurant-info {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: space-around;
-}
 
 #restaurant-info section:not(:last-child) {
   margin-right: 10px;
@@ -519,8 +598,11 @@ div .quantity {
   align-items: center;
 }
 
-#three-info {
+.status-select:hover {
+  border-bottom: 5px solid var(--primary-color);
 }
+
+#three-info {}
 
 #three-info p {
   margin: 0px;
@@ -534,10 +616,19 @@ div .quantity {
 #status-icon {
   width: 3em;
   margin-right: 5px;
-  background-color: red;
   height: 3em;
-  border: 2px solid black;
+  border: 2px solid #0000001a;
   border-radius: 50%;
+}
+
+.status-close {
+  background-color: rgb(241, 7, 7);
+  box-shadow: 0 0 10px #ff0000;
+}
+
+.status-open {
+  background-color: rgb(7, 241, 85);
+  box-shadow: 0 0 10px #00ff01;
 }
 
 #week-horary {
@@ -554,6 +645,10 @@ div .quantity {
   display: block !important;
 }
 
+.horary {
+  float: right;
+}
+
 #time-info {
   display: flex;
   flex-wrap: wrap;
@@ -563,6 +658,7 @@ div .quantity {
 #time-icon {
   margin-right: 10px;
 }
+
 #time-icon svg {
   font-size: 3em;
 }
@@ -580,6 +676,7 @@ div .quantity {
 #pays-icon {
   margin-right: 10px;
 }
+
 #pays-icon svg {
   font-size: 3em;
 }
@@ -587,3 +684,142 @@ div .quantity {
 #pays-type {
   display: none;
 }
+
+
+/* ORDER.PHP */
+
+.bolinha {
+  min-width: 20px;
+  min-height: 20px;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  animation: piscar 1.2s infinite alternate;
+  /* Define a animação de piscar */
+  /* Adiciona uma sombra vermelha */
+}
+
+@keyframes piscar {
+  0% {
+    opacity: 1;
+    /* Opacidade máxima */
+  }
+
+  100% {
+    opacity: 0;
+    /* Opacidade mínima */
+  }
+}
+
+#order-status-delivery,
+#order-info {
+  position: relative;
+  display: table;
+  border: 1px solid var(--border-color);
+  padding: 15px;
+  width: 100%;
+  border-radius: 10px;
+  background: #ffffff;
+  margin-bottom: 20px;
+}
+
+#order-delivery-forecast {
+  color: var(--border-color);
+  font-weight: bold;
+}
+
+.stime {
+  font-size: 20px;
+  font-weight: bold;
+  color: var(--primary-color);
+}
+
+#order-status-info {
+  cursor: pointer;
+}
+
+.barra {
+
+  max-width: 100%;
+  height: 5px;
+  background-color: transparent;
+  border-radius: 2px;
+  margin-bottom: 20px;
+}
+
+.progresso {
+  width: 0;
+  height: 100%;
+  animation: carregar 2s linear infinite;
+}
+
+@keyframes carregar {
+  0% {
+    width: 40%;
+    /* Largura inicial da barra de progresso */
+  }
+
+  100% {
+    width: 100%;
+    /* Largura final da barra de progresso */
+  }
+}
+
+
+.order-main-status {
+  display: flex;
+  flex-direction: row;
+}
+
+.order-main-status label:nth-child(2) {
+  margin: 0px 15px;
+  ;
+}
+
+#order-number {
+  position: absolute;
+  right: 25px;
+  font-size: 1.5em;
+}
+
+#order-total {
+  /* position: absolute; */
+  /* right: 25px; */
+  float: right;
+  font-weight: bold;
+}
+
+.available {
+  display: flex;
+  align-items: flex-start;
+  border: 1px solid var(--border-color);
+  padding: 20px;
+  margin-bottom: 20px;
+}
+
+#availables div:not(:last-child) {
+  margin-right: 20px;
+}
+
+.comments {
+  width: 40%;
+  background-color: white;
+  padding: 15px;
+  border: 1px solid var(--border-color);
+  position: relative;
+  width: 60%;
+  height: 132px;
+  margin: 0px 20px;
+}
+
+
+#order-image {
+  display: flex;
+  justify-content: center;
+}
+
+#order-image img {
+  width: 40vw;
+  height: 25vw;
+}
+
