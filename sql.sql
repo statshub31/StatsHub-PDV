@@ -1,3 +1,4 @@
+SET sql_mode = 'NO_ZERO_DATE'; -- Altera temporariamente o modo de tratamento de datas e horas
 
 create table `groups`  (
 	`id` int PRIMARY KEY AUTO_INCREMENT,
@@ -131,7 +132,6 @@ create table complements (
     FOREIGN KEY (`category_id`) REFERENCES `categorys`(`id`),
     FOREIGN KEY (`created_by`) REFERENCES `users`(`id`)
 );
-
 INSERT INTO `complements` (`category_id`, `description`, `created`, `created_by`, `status`) VALUES (1, 'Nenhum', '0000-00-00 00:00:00', 1, 2);
 
 create table additional (
@@ -289,6 +289,14 @@ create table product_fee_exemption (
 
 
 
+create table carts (
+    `id` int PRIMARY KEY AUTO_INCREMENT,
+    `user_id` int not null,
+    `status` int not null,
+    `created` datetime,
+    FOREIGN KEY (`status`) REFERENCES `status`(`id`)
+);
+
 create table request_order (
     `id` int PRIMARY KEY AUTO_INCREMENT,
     `cart_id` int not null,
@@ -334,13 +342,6 @@ create table request_order_logs (
     FOREIGN KEY (`request_order_id`) REFERENCES `request_order`(`id`)
 );
 
-create table carts (
-    `id` int PRIMARY KEY AUTO_INCREMENT,
-    `user_id` int not null,
-    `status` int not null,
-    `created` datetime,
-    FOREIGN KEY (`status`) REFERENCES `status`(`id`)
-);
 
 create table cart_products (
     `id` int PRIMARY KEY AUTO_INCREMENT,
@@ -569,3 +570,4 @@ create table requests_pay (
 
 
 
+SET sql_mode = ''; -- Restaura o modo de tratamento de datas e horas para o padrão

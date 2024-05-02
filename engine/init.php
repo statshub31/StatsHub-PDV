@@ -22,6 +22,15 @@ $image_product_dir = '/layout/images/products/';
 require_once (__DIR__ . "/general/general.php");
 require_once (__DIR__ . "/general/security.php");
 require_once (__DIR__ . "/general/alerts.php");
+require_once (__DIR__ . "/general/aws.php");
+
+
+$dbCredentials = doAWSS3GetObject('config/credentials.ini', $version = 'latest', $region = 'sa-east-1');
+
+$config['sqlUser'] = $dbCredentials['username']; // USUARIO DO MYSQL
+$config['sqlPassword'] = $dbCredentials['password']; // SENHA DO MYSQL
+$config['sqlDatabase'] = $dbCredentials['database']; // NOME DA DATABASE DO MYSQL
+$config['sqlHost'] = $dbCredentials['hostname']; // HOST DO MYSQL
 
 // DATABASE FUNCTIONS
 
