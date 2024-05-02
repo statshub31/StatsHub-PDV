@@ -1,5 +1,7 @@
 <?php
 include_once (realpath(__DIR__ . "/layout/php/header.php"));
+getGeneralSecurityAttendantAccess();
+
 
 
 if (isCampanhaInURL("product")) {
@@ -20,16 +22,14 @@ if (isCampanhaInURL("product")) {
 
 
                 // ADD PRODUCT
-                // if (getGeneralSecurityToken('tokenEditProduct')) {
-                if (1 == 1) {
-                    // data_dump($_POST);
+                if (getGeneralSecurityToken('tokenEditProduct')) {
                     if (empty($_POST) === false) {
                         $required_fields_status = true;
                         $required_fields = array('category', 'name', 'description', 'size-p', 'size-p-description', 'size-p-price');
 
                         if (validateRequiredFields($_POST, $required_fields) === false) {
-                            // $errors[] = "Obrigatório o preenchimento de todos os campos.";
-                            // $required_fields_status = false;
+                            $errors[] = "Obrigatório o preenchimento de todos os campos.";
+                            $required_fields_status = false;
                         }
 
                         if ($required_fields_status) {

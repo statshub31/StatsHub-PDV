@@ -1,7 +1,40 @@
 <?php
 include_once (realpath(__DIR__ . "/layout/php/header.php"));
-?>
+getGeneralSecurityAttendantAccess();
 
+?>
+<?php
+
+// <!-- INICIO DA VALIDAÇÃO PHP -->
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST)) {
+    if (getGeneralSecurityToken('tokenOrderPrint')) {
+
+        if (empty($_POST) === false) {
+            $required_fields_status = true;
+            $required_fields = array('order_id');
+
+            if (validateRequiredFields($_POST, $required_fields) === false) {
+                $errors[] = "Obrigatório o preenchimento de todos os campos.";
+                $required_fields_status = false;
+            }
+
+            if (isDatabaseRequestOrderExistID($_POST['order_id']) === false) {
+                $errors[] = "Houve um erro ao processar a solicitação, reinicie a pagina e tente novamente.";
+                $required_fields_status = false;
+            }
+        }
+
+
+        if (empty($errors)) {
+            doPrintOrder($_POST['order_id']);
+
+        }
+    }
+}
+// <!-- FINAL DA VALIDAÇÃO PHP -->
+
+$tokenOrderPrint = addGeneralSecurityToken('tokenOrderPrint');
+?>
 <div class="d-sm-flex align-items-center justify-content-between mb-4">
     <h1 class="h3 mb-0 text-gray-800">Histórico de Pedidos</h1>
     <!-- <a href="#" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm" disabled><i
@@ -74,9 +107,17 @@ include_once (realpath(__DIR__ . "/layout/php/header.php"));
                                 <?php echo getDatabaseStatusDeliveryTitle($order_log_last_id) ?>
                             </td>
                             <td>
-                                <a href="/panel/orders/order/view/<?php echo $order_list_id ?>">
-                                    <i class="fa-solid fa-eye"></i>
-                                </a>
+                                <div id="align">
+                                    <a href="/panel/orders/order/view/<?php echo $order_list_id ?>">
+                                        <i class="fa-solid fa-eye"></i>
+                                    </a>
+                                    <form action="/panel/orders" method="post">
+                                        <input name="order_id" type="text" value="<?php echo $order_list_id ?>" hidden>
+                                        <input name="token" type="text" value="<?php echo $tokenOrderPrint ?>" hidden />
+                                        <button class="buttonDisabled">
+                                            <i type="submit" class="fa-solid fa-print"></i></button>
+                                    </form>
+                                </div>
                             </td>
                         </tr>
                         <?php

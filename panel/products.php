@@ -1,5 +1,6 @@
 <?php
 include_once (realpath(__DIR__ . "/layout/php/header.php"));
+getGeneralSecurityAttendantAccess();
 
 ?>
 
@@ -35,8 +36,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST)) {
                     $errors[] = "É necessário preencher com um valor numérico o campo de quantidade.";
                 }
 
-                if (isGeneralSecurityManagerAccess() === false) {
-                    $errors[] = "É obrigatório ter um cargo igual ou superior ao de gestor, para executar está ação.";
+                if (isGeneralSecurityAttendantAccess() === false) {
+                    $errors[] = "É obrigatório ter um cargo igual ou superior ao de atendente, para executar está ação.";
                 }
             }
 
@@ -410,11 +411,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST)) {
     <div class="input-group">
         <select class="custom-select" id="action-products" name="action-products">
             <option selected>-- Ação --</option>
-            <option value="1">Remover</option>
-            <option value="2">Depromocionar</option>
-            <option value="3">Promocionar</option>
-            <option value="5">Bloquear</option>
-            <option value="6">Desbloquear</option>
+            <option value="1" <?php echo (isGeneralSecurityManagerAccess()) ? 'disabled' : ''; ?> >Remover</option>
+            <option value="2" <?php echo (isGeneralSecurityManagerAccess()) ? 'disabled' : ''; ?>>Depromocionar</option>
+            <option value="3" <?php echo (isGeneralSecurityManagerAccess()) ? 'disabled' : ''; ?>>Promocionar</option>
+            <option value="5" <?php echo (isGeneralSecurityManagerAccess()) ? 'disabled' : ''; ?>>Bloquear</option>
+            <option value="6" <?php echo (isGeneralSecurityManagerAccess()) ? 'disabled' : ''; ?>>Desbloquear</option>
         </select>
         <div class="input-group-append">
             <button class="btn btn-outline-secondary" type="submit">Executar</button>

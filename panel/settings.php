@@ -1,5 +1,7 @@
 <?php
 include_once (realpath(__DIR__ . "/layout/php/header.php"));
+getGeneralSecurityManagerAccess();
+
 ?>
 
 
@@ -8,8 +10,7 @@ include_once (realpath(__DIR__ . "/layout/php/header.php"));
 // <!-- INICIO DA VALIDAÇÃO PHP -->
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST)) {
     // STOCK PRODUCTS
-    // if (getGeneralSecurityToken('tokenSettings')) {
-    if (1 == 1) {
+    if (getGeneralSecurityToken('tokenSettings')) {
 
         if (empty($_POST) === false) {
             $required_fields_status = true;
@@ -339,11 +340,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST)) {
                     'disabled' => (!isset($_POST['pay-pix'])) ? 1 : 0,
                     'pay_key' => (isset($_POST['pay-pix'])) ? $_POST['pix-key'] : NULL,
                 );
+                $vr_field = array(
+                    'disabled' => (!isset($_POST['pay-vr'])) ? 1 : 0
+                );
+
+                $va_field = array(
+                    'disabled' => (!isset($_POST['pay-va'])) ? 1 : 0
+                );
+
 
                 doDatabaseSettingsPayUpdate(getDatabaseSettingsPayMoney(), $money_field);
                 doDatabaseSettingsPayUpdate(getDatabaseSettingsPayCredit(), $credit_field);
                 doDatabaseSettingsPayUpdate(getDatabaseSettingsPayDebit(), $debit_field);
                 doDatabaseSettingsPayUpdate(getDatabaseSettingsPayPix(), $pix_field);
+                doDatabaseSettingsPayUpdate(getDatabaseSettingsPayVR(), $vr_field);
+                doDatabaseSettingsPayUpdate(getDatabaseSettingsPayVA(), $va_field);
 
                 // SOCIAL
                 $social_fields_insert = array(
@@ -728,6 +739,34 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST)) {
 
 
         <div class="form-group">
+            <label for="pay-vr">VR</label>
+            <small><i class="fa fa-question-circle" aria-hidden="true" data-toggle="tooltip" data-placement="top"
+                    title="Caso habilite está função, será mostrado para o cliente a opção de pagamento em VR."></i></small>
+            <div class="vc-toggle-container">
+                <label class="vc-switch">
+                    <input <?php echo doCheck(isDatabaseSettingsPayVREnabled(), 1) ?> type="checkbox"
+                        name="pay-vr" id="pay-vr" class="vc-switch-input">
+                    <span data-on="Sim" data-off="Não" class="vc-switch-label"></span>
+                    <span class="vc-handle"></span>
+                </label>
+            </div>
+        </div>
+        
+        <div class="form-group">
+            <label for="pay-va">VA</label>
+            <small><i class="fa fa-question-circle" aria-hidden="true" data-toggle="tooltip" data-placement="top"
+                    title="Caso habilite está função, será mostrado para o cliente a opção de pagamento em VA."></i></small>
+            <div class="vc-toggle-container">
+                <label class="vc-switch">
+                    <input <?php echo doCheck(isDatabaseSettingsPayVAEnabled(), 1) ?> type="checkbox"
+                        name="pay-va" id="pay-vr" class="vc-switch-input">
+                    <span data-on="Sim" data-off="Não" class="vc-switch-label"></span>
+                    <span class="vc-handle"></span>
+                </label>
+            </div>
+        </div>
+
+        <div class="form-group">
             <label for="pay-pix">Pix</label>
             <small><i class="fa fa-question-circle" aria-hidden="true" data-toggle="tooltip" data-placement="top"
                     title="Caso habilite está função, será mostrado para o cliente a opção de pagamento com pix."></i></small>
@@ -742,7 +781,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST)) {
         </div>
 
         <div class="form-group" id="pix-info-container">
-            <label for="pix-key">Pix:
+            <label for="pix-key">Chave Pix:
                 <small><i class="fa fa-question-circle" aria-hidden="true" data-toggle="tooltip" data-placement="top"
                         title="Chave Pix."></i></small>
             </label>

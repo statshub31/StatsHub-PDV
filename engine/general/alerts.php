@@ -163,7 +163,6 @@ function doAlertWarning($message, $type = "info")
 
 
 function doAlertSuccess($message, $refresh = false)
-
 {
     // Estilos CSS
     $alert = '

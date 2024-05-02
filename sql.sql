@@ -271,16 +271,21 @@ create table icons (
     `title` varchar(100) not null
 );
 
-INSERT INTO icons (`title`) VALUES 
-('fa-cart-shopping'),
-('fa-car'),
-('fa-magnifying-glass'),
-('fa-user'),
-('fa-star'),
-('fa-heart'),
-('fa-gift'),
-('fa-briefcase'),
-('fa-shirt')
+INSERT INTO icons (`title`) VALUES ('fa-solid fa-cart-shopping'),
+('fa-solid fa-car'),
+('fa-solid fa-magnifying-glass'),
+('fa-solid fa-user'),
+('fa-solid fa-star'),
+('fa-solid fa-heart'),
+('fa-solid fa-gift'),
+('fa-solid fa-briefcase'),
+('fa-solid fa-shirt'),
+('fa-solid fa-money-bill-wave'),
+('fa-solid fa-money-check-dollar'),
+('fa-solid fa-credit-card'),
+('fa-regular fa-credit-card'),
+('fa-solid fa-money-bill'),
+('fa-brands fa-pix')
 
 
 create table request_order (
@@ -454,7 +459,13 @@ create table settings_pay (
     FOREIGN KEY (`icon_pay`) REFERENCES `icons`(`id`)
 );
 
-insert into `settings_pay` (`type`, `pay_key`, `disabled`) VALUES ('Dinheiro', NULL, 0), ('Crédito', NULL, 0), ('Débito', NULL, 0), ('Pix', NULL, 0);
+insert into `settings_pay` (`type`, `pay_key`, `icon_pay`, `disabled`) VALUES 
+('Dinheiro', NULL, 10, 0), 
+('Crédito', NULL, 12, 0), 
+('Débito', NULL, 13, 0), 
+('Pix', NULL, 15, 0), 
+('VR', NULL, 12, 0), 
+('VA', NULL, 12, 0);
 
 create table settings_social (
     `id` int PRIMARY KEY AUTO_INCREMENT,

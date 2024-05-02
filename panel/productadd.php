@@ -1,5 +1,7 @@
 <?php
 include_once (realpath(__DIR__ . "/layout/php/header.php"));
+getGeneralSecurityAttendantAccess();
+
 ?>
 
 
@@ -10,15 +12,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST)) {
 
 
     // ADD PRODUCT
-    // if (getGeneralSecurityToken('tokenAddProduct')) {
-    if (1 == 1) {
+    if (getGeneralSecurityToken('tokenAddProduct')) {
         if (empty($_POST) === false) {
             $required_fields_status = true;
             $required_fields = array('category', 'name', 'description', 'size-p', 'size-p-description', 'size-p-price');
 
             if (validateRequiredFields($_POST, $required_fields) === false) {
-                // $errors[] = "Obrigatório o preenchimento de todos os campos.";
-                // $required_fields_status = false;
+                $errors[] = "Obrigatório o preenchimento de todos os campos.";
+                $required_fields_status = false;
             }
 
             if ($required_fields_status) {

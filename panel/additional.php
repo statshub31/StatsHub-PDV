@@ -1,6 +1,6 @@
 <?php
 include_once (realpath(__DIR__ . "/layout/php/header.php"));
-
+getGeneralSecurityAttendantAccess();
 ?>
 
 
@@ -386,12 +386,12 @@ if (isCampanhaInURL("additional")) {
                                     <div class="form-group">
                                         <label for="cost-price">Preço de Custo:</label>
                                         <font color="red">*</font>
-                                        <input type="text" name="cost-price" class="form-control" id="cost-price" value="<?php echo getDatabaseAdditionalCostPrice($additional_select_id); ?>">
+                                        <input type="text" name="cost-price" class="form-control priceFormat" id="cost-price" value="<?php echo getDatabaseAdditionalCostPrice($additional_select_id); ?>">
                                     </div>
                                     <div class="form-group">
                                         <label for="sale-price">Preço de Venda:</label>
                                         <font color="red">*</font>
-                                        <input type="text" name="sale-price" class="form-control" id="sale-price" value="<?php echo getDatabaseAdditionalSalePrice($additional_select_id); ?>">
+                                        <input type="text" name="sale-price" class="form-control priceFormat" id="sale-price" value="<?php echo getDatabaseAdditionalSalePrice($additional_select_id); ?>">
                                     </div>
                                 </section>
                                 <section id="product-left">
@@ -430,6 +430,9 @@ if (isCampanhaInURL("additional")) {
 }
 ?>
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.mask/0.9.0/jquery.mask.min.js"
+    integrity="sha512-oJCa6FS2+zO3EitUSj+xeiEN9UTr+AjqlBZO58OPadb2RfqwxHpjTU8ckIC8F4nKvom7iru2s8Jwdo+Z8zm0Vg=="
+    crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 <script>
     // SWITCH
     function submitForm(checkbox) {
@@ -469,6 +472,25 @@ if (isCampanhaInURL("additional")) {
                     "next": "Próximo"
                 }
                 // Outras opções de linguagem...
+            }
+        });
+
+        
+        // Adiciona um evento de input ao campo
+        $(".priceFormat").on('input', function () {
+            // Obtém o valor atual do campo
+            var inputValue = $(this).val();
+
+            // Remove todos os caracteres não numéricos
+            var numericValue = inputValue.replace(/[^0-9]/g, '');
+
+            // Verifica se o valor numérico não está vazio
+            if (numericValue !== '') {
+                // Converte para número e formata com duas casas decimais
+                var formattedValue = (parseFloat(numericValue) / 100).toFixed(2);
+
+                // Define o valor formatado de volta no campo
+                $(this).val(formattedValue);
             }
         });
     });

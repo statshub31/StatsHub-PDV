@@ -133,7 +133,7 @@ function getGeneralSecurityPanelAccess()
 
 	$query = getDatabaseAccountGroupID(getGeneralSecuritySession('account_id'));
 
-	if ($query < 2) {
+	if ($query <= 1) {
 		header('Location: /index');
 		exit();
 	}
@@ -145,7 +145,7 @@ function getGeneralSecurityDeliveryManAccess()
 
 	$query = getDatabaseAccountGroupID(getGeneralSecuritySession('account_id'));
 
-	if ($query < 3) {
+	if ($query < 2) {
 		header('Location: /index');
 		exit();
 	}
@@ -162,7 +162,7 @@ function getGeneralSecurityAttendantAccess()
 
 	$query = getDatabaseAccountGroupID(getGeneralSecuritySession('account_id'));
 
-	if ($query < 4) {
+	if ($query < 3) {
 		header('Location: /index');
 		exit();
 	}
@@ -179,7 +179,7 @@ function getGeneralSecurityManagerAccess()
 
 	$query = getDatabaseAccountGroupID(getGeneralSecuritySession('account_id'));
 
-	if ($query < 5) {
+	if ($query < 4) {
 		header('Location: /index');
 		exit();
 	}

@@ -55,7 +55,7 @@ function getDatabaseSettingsInfoCNPJ($id)
     $id_sanitize = sanitize($id);
 
     $query = getDatabaseSettingsInfosData($id_sanitize, 'cnpj');
-    return ($query !== false) ? $query['cnpj'] : false;
+    return ($query !== false && $query['cnpj'] != '') ? $query['cnpj'] : false;
 }
 
 

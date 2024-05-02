@@ -137,6 +137,35 @@ function isDatabaseSettingsPayExist($id)
     return ($query !== false) ? true : false;
 }
 
+function getDatabaseSettingsPayVA()
+{
+    $query = getDatabaseSettingsPayByType('va');
+
+    return ($query !== false) ? $query : false;
+}
+
+function isDatabaseSettingsPayVAEnabled()
+{
+    $type_id = getDatabaseSettingsPayVA();
+
+    $query = doSelectSingleDB("SELECT `disabled` FROM `settings_pay` WHERE `id`=$type_id;");
+    return ($query !== false && $query['disabled'] == 0) ? true : false;
+}
+
+function getDatabaseSettingsPayVR()
+{
+    $query = getDatabaseSettingsPayByType('vr');
+
+    return ($query !== false) ? $query : false;
+}
+
+function isDatabaseSettingsPayVREnabled()
+{
+    $type_id = getDatabaseSettingsPayVR();
+
+    $query = doSelectSingleDB("SELECT `disabled` FROM `settings_pay` WHERE `id`=$type_id;");
+    return ($query !== false && $query['disabled'] == 0) ? true : false;
+}
 
 function doDatabaseSettingsPayListByStatus()
 {

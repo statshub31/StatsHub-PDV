@@ -60,6 +60,10 @@ body {
     color: white !important;
   }
 
+  #menu-exit {
+    display: none;
+  }
+
   #menu-footer {
     display: none;
   }
@@ -76,6 +80,12 @@ body {
     padding: 15px;
   }
 
+
+  #restaurant-info {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-around;
+  }
 
   #user_panel section:nth-child(1) {
     margin-bottom: 70px;
@@ -110,6 +120,17 @@ body {
 
   #menu-header {
     display: none;
+  }
+
+  #menu-exit {
+    padding: 10px;
+    float: right;
+  }
+
+  #menu-exit a {
+    margin: 0px 10px;
+    font-size: 35px;
+    color: white !important;
   }
 
   #menu-footer {
@@ -163,6 +184,12 @@ body {
 
   #user_panel section:nth-child(1) {
     margin-bottom: 70px;
+  }
+
+  #restaurant-info {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-start;
   }
 
   #restaurant-info section:not(:last-child) {
@@ -448,7 +475,7 @@ div .quantity {
   width: 20px;
 }
 
-.star img{
+.star img {
   width: 100%;
   filter: grayscale(1);
   height: 100%;
@@ -484,8 +511,9 @@ div .quantity {
   /* Define a largura automática dos elementos */
   margin-right: 20px;
   background-color: var(--secondary-color)
-  /* Adiciona um espaço entre os elementos */
+    /* Adiciona um espaço entre os elementos */
 }
+
 /* 
 .scroll-left,
 .scroll-right {
@@ -560,11 +588,6 @@ div .quantity {
   padding: 15px;
 }
 
-#restaurant-info {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: space-around;
-}
 
 #restaurant-info section:not(:last-child) {
   margin-right: 10px;
@@ -578,6 +601,7 @@ div .quantity {
 .status-select:hover {
   border-bottom: 5px solid var(--primary-color);
 }
+
 #three-info {}
 
 #three-info p {
@@ -601,6 +625,7 @@ div .quantity {
   background-color: rgb(241, 7, 7);
   box-shadow: 0 0 10px #ff0000;
 }
+
 .status-open {
   background-color: rgb(7, 241, 85);
   box-shadow: 0 0 10px #00ff01;
@@ -714,7 +739,7 @@ div .quantity {
 }
 
 .barra {
-  
+
   max-width: 100%;
   height: 5px;
   background-color: transparent;
@@ -797,3 +822,4 @@ div .quantity {
   width: 40vw;
   height: 25vw;
 }
+

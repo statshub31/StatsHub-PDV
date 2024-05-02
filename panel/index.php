@@ -1,5 +1,7 @@
 <?php
 include_once (realpath(__DIR__ . "/layout/php/header.php"));
+getGeneralSecurityAttendantAccess();
+
 ?>
 
 <script>
@@ -9,7 +11,7 @@ include_once (realpath(__DIR__ . "/layout/php/header.php"));
         location.reload(); // Recarrega a página
     }
 
-    timerID = setInterval(atualizarPagina, 15 * 1000);
+    // timerID = setInterval(atualizarPagina, 15 * 1000);
 
 
 </script>
@@ -18,6 +20,29 @@ include_once (realpath(__DIR__ . "/layout/php/header.php"));
 // <!-- INICIO DA VALIDAÇÃO PHP -->
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST)) {
 
+    if (getGeneralSecurityToken('tokenOrderPrint')) {
+
+        if (empty($_POST) === false) {
+            $required_fields_status = true;
+            $required_fields = array('order_id');
+
+            if (validateRequiredFields($_POST, $required_fields) === false) {
+                $errors[] = "Obrigatório o preenchimento de todos os campos.";
+                $required_fields_status = false;
+            }
+
+            if (isDatabaseRequestOrderExistID($_POST['order_id']) === false) {
+                $errors[] = "Houve um erro ao processar a solicitação, reinicie a pagina e tente novamente.";
+                $required_fields_status = false;
+            }
+        }
+
+
+        if (empty($errors)) {
+            doPrintOrder($_POST['order_id']);
+
+        }
+    }
 
     // STATUS ORDER
 
@@ -51,7 +76,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST)) {
 
 
         if (empty($errors)) {
-            if(isset($_POST['deliveryman'])) {
+            if (isset($_POST['deliveryman'])) {
                 doUpdateOrderDeliveryStatus($_POST['order_id'], $_POST['deliveryman']);
             } else {
                 doUpdateOrderDeliveryStatus($_POST['order_id']);
@@ -194,6 +219,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST)) {
 <?php
 $tokenOrder = addGeneralSecurityToken('tokenOrder');
 $tokenOrderCancel = addGeneralSecurityToken('tokenOrderCancel');
+$tokenOrderPrint = addGeneralSecurityToken('tokenOrderPrint');
 ?>
 
 
@@ -461,9 +487,18 @@ $tokenOrderCancel = addGeneralSecurityToken('tokenOrderCancel');
                                 </form>
                             </td>
                             <td>
-                                <a href="/panel/index/order/view/<?php echo $order_list_id ?>">
-                                    <i class="fa-solid fa-eye"></i>
-                                </a>
+                                <div id="align">
+                                    <a href="/panel/index/order/view/<?php echo $order_list_id ?>">
+                                        <i class="fa-solid fa-eye"></i>
+                                    </a>
+
+                                    <form action="/panel/index" method="post">
+                                        <input name="order_id" type="text" value="<?php echo $order_list_id ?>" hidden>
+                                        <input name="token" type="text" value="<?php echo $tokenOrderPrint ?>" hidden />
+                                        <button class="buttonDisabled">
+                                            <i type="submit" class="fa-solid fa-print"></i></button>
+                                    </form>
+                                </div>
                             </td>
                         </tr>
                         <?php
@@ -658,7 +693,7 @@ if (isCampanhaInURL("order")) {
                                     <section id="address">
                                         <div>
                                             <b>Endereço:</b><br>
-                                            
+
                                             <?php
                                             $discount = getDatabaseTicketValue(getDatabaseCartTicketSelectTicketID(getDatabaseCartTicketSelectByCartID($cart_id)));
                                             $order_main_address_id = getDatabaseRequestOrderAddressIDSelect($order_select_id);

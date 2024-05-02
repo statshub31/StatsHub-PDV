@@ -36,7 +36,7 @@ function doDatabaseRemoveProduct($product_id)
                     doDatabaseCartProductQuestionDeleteUnlimited($question_remove_id);
                 }
             }
-            
+
             doDatabaseCartProductDelete($cart_product_id);
         }
 
@@ -47,7 +47,7 @@ function doDatabaseRemoveProduct($product_id)
 // Removo um produto por id 
 function doDatabaseTruncateProductTables($product_id)
 {
-    
+
     global $image_product_dir;
     $product_id_sanitize = sanitize($product_id);
 
@@ -536,120 +536,134 @@ function doAvailableGeneral()
 
 function doPrintOrder($order_id)
 {
+
     $html = '<style>
-        #content-header {
-            text-align: center;
-        }
-    
-        #name {
-            font-size: 15px;
-            font-weight: bold;
-            font-family: monospace;
-        }
-    
-        #cnpj {
-            font-size: 12px;
-            font-weight: bold;
-            font-family: monospace;
-        }
-    
-        #type_delivery {
-            text-align: center;
-            font-size: 14px;
-        }
-    
-        hr {
-            margin: 10px 0px;
-        }
-    
-        #date {
-            font-family: monospace;
-            font-size: 14px;
-            text-align: center;
-        }
-    
-        #number-delivery {
-            font-family: "Franklin Gothic Medium", "Arial Narrow", Arial, sans-serif;
-            font-size: 15px;
-            text-align: center;
-        }
-    
-        .title {
-            font-family: "Franklin Gothic Medium", "Arial Narrow", Arial, sans-serif;
-            font-size: 15px;
-            text-align: center;
-        }
-    
-        .order {
-            font-size: 15px;
-        }
-    
-        .value {
-            position: relative;
-            float: right;
-            font-weight: bold;
-            font-family: monospace;
-        }
-    
-        .subvalue {
-            position: relative;
-            float: right;
-            font-weight: bold;
-            font-family: monospace;
-            font-size: 10px !important;
-        }
-    
-        li, ul, ol {
-            margin: 1px;
-        }
-    
-        li {
-            width: 100%;
-        }
-    
-        .subtopic {
-            font-weight: 600;
-        }
-    </style>';
+    #content-header {
+        text-align: center;
+    }
+
+    #name {
+        font-size: 15px;
+        font-weight: bold;
+        font-family: monospace;
+    }
+
+    #cnpj {
+        font-size: 12px;
+        font-weight: bold;
+        font-family: monospace;
+    }
+
+    #type_delivery {
+        text-align: center;
+    }
+
+    #type_delivery {
+        font-size: 14px;
+    }
+
+    hr {
+        margin: 10px 0px;
+    }
+
+    #date {
+        font-family: monospace;
+        font-size: 14px;
+        text-align: center;
+    }
+
+    #number-delivery {
+        font-family: "Franklin Gothic Medium", "Arial Narrow", Arial, sans-serif;
+        font-size: 15px;
+        text-align: center;
+    }
+
+    .title {
+        font-family: "Franklin Gothic Medium", "Arial Narrow", Arial, sans-serif;
+        font-size: 15px;
+        text-align: center;
+    }
+
+    .order {
+        font-size: 15px;
+    }
+
+    .value {
+        position: relative;
+        float: right;
+        font-weight: bold;
+        font-family: monospace;
+    }
+
+    .subvalue {
+        position: relative;
+        float: right;
+        font-weight: bold;
+        font-family: monospace;
+        font-size: 10px !important;
+    }
+
+    li,
+    ul,
+    ol {
+        margin: 1px;
+    }
+
+    li {
+        width: 100%;
+    }
+
+    .subtopic {
+        font-weight: 600;
+    }
+</style>';
 
     $first_log = doDatabaseRequestOrderLogsFirstLogByOrderID($order_id);
-    $html .= '<div id="content">
-        <div id="content-header">
-            <label id="name">' . getDatabaseSettingsInfoTitle(1) . '</label><br>
-            <small id="cnpj">CNPJ: 10.0.0.0.0.0.0.0.</small>
-        </div>
-        <hr>
-        <div id="type_delivery">' . getDatabaseDeliveryTitle(1) . '</div>
-        <hr>
-        <div id="date">' . doDate(getDatabaseRequestOrderLogCreated($first_log)) . ' às ' . doTime(getDatabaseRequestOrderLogCreated($first_log)) . '</div>
-        <hr>
-        <div id="number-delivery">PEDIDO #' . $order_id . '</div>
-        <hr>
-        <label class="title">Itens:</label><br>
-        <hr>';
+
+    $html .= '<div id="content">';
+    $html .= '<div id="content-header">';
+    $html .= '<label id="name">' . getDatabaseSettingsInfoTitle(1) . '</label><br>';
+    $cnpj = getDatabaseSettingsInfoCNPJ(1);
+    if ($cnpj !== false) {
+        $html .= '<small id="cnpj">CNPJ: ' . $cnpj . '</small>';
+    }
+    $html .= '</div><hr>';
+
+    $html .= '<div id="type_delivery">' . getDatabaseDeliveryTitle(1) . '</div><hr>';
+
+    $html .= '<div id="date">';
+    $html .= doDate(getDatabaseRequestOrderLogCreated($first_log)) . ' às ' . doTime(getDatabaseRequestOrderLogCreated($first_log));
+    $html .= '</div><hr>';
+
+    $html .= '<div id="number-delivery">';
+    $html .= 'PEDIDO #' . $order_id;
+    $html .= '</div><hr>';
+
+    $html .= '<label class="title">Itens:</label><br><hr>';
 
     $cart_id = getDatabaseRequestOrderCartID($order_id);
+    $main_address_id = getDatabaseRequestOrderAddressIDSelect($order_id);
     $cart_list = doDatabaseCartProductsListByCartID($cart_id);
+    $user_id = getDatabaseCartUserID($cart_id);
+    $pay_id = getDatabaseRequestOrderPayIDSelect($order_id);
+
     $itens_count = 0;
     if ($cart_list) {
         foreach ($cart_list as $data) {
             $cart_product_list_id = $data['id']; // PRODUTO CART
             $cart_product_id = getDatabaseCartProductProductID($cart_product_list_id); // PRODUTO_ID
+            $obs = getDatabaseCartProductObservation($cart_product_list_id);
             $size_id = getDatabaseCartProductPriceID($cart_product_list_id);
             $measure_id = getDatabaseProductSizeMeasureID($size_id);
-            $user_id = getDatabaseCartUserID($cart_product_list_id);
             $itens_count += getDatabaseCartProductAmount($cart_product_list_id);
-            $main_address_id = getDatabaseRequestOrderAddressIDSelect($order_id);
             $discount = getDatabaseTicketValue(getDatabaseCartTicketSelectTicketID(getDatabaseCartTicketSelectByCartID($cart_id)));
-            $html .= '<label class="order">
-                (' . getDatabaseCartProductAmount($cart_product_list_id) . ')
-                ' . getDatabaseProductName($cart_product_id) . ' -
-                ' . getDatabaseProductPriceSize($size_id) . '
-                ' . getDatabaseMeasureTitle($measure_id) . '
-                <span class="value">R$ ' . doCartTotalPriceProduct($cart_product_list_id) . '</span><br>
-                <nav>
-                    <ul class="subtopic">Complementos</ul>
-                    <ol>';
+
+            $html .= '<label class="order">';
+            $html .= '(' . getDatabaseCartProductAmount($cart_product_list_id) . ')';
+            $html .= getDatabaseProductName($cart_product_id) . ' - ';
+            $html .= getDatabaseProductPriceSize($size_id);
+            $html .= getDatabaseMeasureTitle($measure_id);
+            $html .= '<nav><ul class="subtopic">Complementos</ul><ol>';
 
             $complement_list = doDatabaseProductsComplementsListByProductID($cart_product_id);
             $product_complement_select = getDatabaseCartProductComplementByCartProductID($cart_product_list_id);
@@ -663,7 +677,9 @@ function doPrintOrder($order_id)
                 }
             }
 
-            $html .= '</ol></nav><nav><ul class="subtopic">Adicionais</ul><ol>';
+            $html .= '</ol></nav>';
+
+            $html .= '<nav><ul class="subtopic">Adicionais</ul><ol>';
 
             $additional_list = doDatabaseProductsAdditionalListByProductID($cart_product_id);
             if ($additional_list) {
@@ -671,56 +687,57 @@ function doPrintOrder($order_id)
                     $product_additional_id = $dataAdditional['id'];
                     $additional_id = getDatabaseProductAdditionalAdditionalID($product_additional_id);
                     $html .= (isDatabaseCartProductAdditionalExistIDByCartAndAdditionalID($cart_product_list_id, $additional_id) == 1) ? '<li>' . getDatabaseAdditionalDescription($additional_id) . '
-                         <span class="subvalue">R$ 5.00</span>
-                         </li>' : '';
+                                 <span class="subvalue">R$ ' . sprintf("%.2f", getDatabaseAdditionalTotalPrice($additional_id)) . '</span>
+                                 </li>' : '';
                 }
             }
-
-            $html .= '</ol></nav><span class="subtopic">Observações:</span><br>' . getDatabaseCartProductObservation($cart_product_list_id) . '</label><br><hr>';
+            $html .= '</ol></nav>';
+            $html .= '<span class="subtopic">Observações:</span><br>' . getDatabaseCartProductObservation($cart_product_list_id);
+            $html .= '</label><br>';
+            $html .= '<span class="value">R$ ' . sprintf("%.2f", (doCartTotalPriceProduct($cart_product_list_id))) . '</span><br><hr>';
         }
     }
 
-    $html .= '<label class="title">Dados do Cliente:</label><br>
-        <label>
-            <span class="subtopic">Nome:</span>' . getDatabaseUserName($user_id) . '<br>
-        </label>
-        <label>
-            <span class="subtopic">Telefone:</span>' . getDatabaseUserPhone($user_id) . '<br>
-        </label>
-        <label>
-            <span class="subtopic">Quantidade de Itens:</span>' . $itens_count . '<br>
-        </label>
-        <label>
-            <span class="subtopic">Entrega:</span><br>' . getDatabaseAddressPublicPlace($main_address_id) . ',
-            ' . getDatabaseAddressNumber($main_address_id) . ', (
-            ' . getDatabaseAddressComplement($main_address_id) . ')
-            ' . getDatabaseAddressNeighborhood($main_address_id) . ',
-            ' . getDatabaseAddressCity($main_address_id) . ' -
-            ' . getDatabaseAddressState($main_address_id) . '.
-            <br>
-        </label>
-        <hr>
-        <label class="title">Pagamento:</label><br>
-        <label>
-            <span class="subtopic">Forma de Pagamento:</span><br>
-        </label>
-        <label>Desconto: <span class="value">
-                <small>Usado o cupom [' . getDatabaseTicketCode(getDatabaseCartTicketSelectTicketID(getDatabaseRequestOrderTicketID($cart_id))) . '] e obtido o desconto de
-                    [' . ($discount !== false ? $discount : 'Nenhum desconto selecionado.') . ']</small>
-    
-            </span>
-        </label><br>
-        <label>Taxa de Entrega: <span class="value">R$
-                ' . getDatabaseSettingsDeliveryFee(1) . '</span>
-        </label><br></div><br>
-        <label>Total: <span class="value">R$
-                ' . (doCartTotalPrice($order_id) - doCartTotalPriceDiscount($order_id)) . '</span>
-        </label><br></div>';
+    $html .= '<label class="title">Dados do Cliente:</label><br>';
+    $html .= '<label><span class="subtopic">Nome:</span>' . getDatabaseUserName($user_id) . '<br></label>';
+    $html .= '<label><span class="subtopic">Telefone:</span>' . getDatabaseUserPhone($user_id) . '<br></label>';
+    $html .= '<label><span class="subtopic">Quantidade de Itens:</span>' . $itens_count . '<br></label>';
+    $html .= '<label><span class="subtopic">Entrega:</span>';
+    if (isDatabaseRequestOrderSelectAddress($order_id)) {
+        $html .= getDatabaseAddressPublicPlace($main_address_id) . ', ';
+        $html .= getDatabaseAddressNumber($main_address_id) . '(';
+        $html .= getDatabaseAddressComplement($main_address_id) . '), ';
+        $html .= getDatabaseAddressNeighborhood($main_address_id) . ', ';
+        $html .= getDatabaseAddressCity($main_address_id) . ' - ';
+        $html .= getDatabaseAddressState($main_address_id);
+    } else {
+        $html .= 'Retirada no Local';
+    }
+    $html .= '<br></label><hr>';
+
+    $html .= '<label class="title">Pagamento:</label><br>';
+    $html .= '<label><span class="subtopic">Forma de Pagamento:</span>' . getDatabaseSettingsPayType($pay_id) . '<br></label>';
+    $html .= '<label><span class="subtopic">Desconto: </span><br><span class="value">';
+    $html .= getDatabaseTicketCode(getDatabaseCartTicketSelectTicketID(getDatabaseCartTicketSelectCartID($cart_id)));
+    $html .= '<small>' . (($discount !== false) ? 'Cliente teve um desconto de [' . doTypeDiscount($discount) . ']' : 'Cliente não selecionou nenhum cupom.') . '</small>';
+    $html .= '</span></label><br>';
+    $html .= '<label><span class="subtopic">Taxa de Entrega: </span><span class="value">R$ ';
+    $html .= sprintf("%.2f", (getDatabaseSettingsDeliveryFee(1))) . '</span></label><br>';
+
+    $html .= '<label><span class="subtopic">Total: </span><span class="value">R$ ';
+    $html .= sprintf("%.2f", (doCartTotalPrice($order_id) - doCartTotalPriceDiscount($order_id))) . '</span></label><br><hr>';
+
+    if ($pay_id == getDatabaseSettingsPayMoney()) {
+        $html .= '<label>Troco para: <span class="value">R$ ' . getDatabaseRequestOrderChangeOf($order_id) . '</span></label><br>';
+        $html .= '<label>Troco: <span class="value">R$ ' . sprintf("%.2f", (getDatabaseRequestOrderChangeOf($order_id) - (doCartTotalPrice($order_id) - doCartTotalPriceDiscount($order_id)))) . '</span></label><br>';
+    }
+
+    $html .= '</div>'; // Fechando a div "content"
 
     $html .= '<script>
-        window.print();
-        window.close();
-    </script>';
+    window.print();
+    window.close();
+</script>';
 
     // Escapando o conteúdo usando json_encode
     $conteudoEscapado = json_encode($html);
@@ -904,7 +921,8 @@ function isCartProductValidationUser($user_id, $cart_product_id)
 
 
 
-function echoModelDelivery($user_id) {
+function echoModelDelivery($user_id)
+{
     if (isDatabaseUserSelectAddressByUserID($user_id)) {
         echo 'Pagamento na Entrega';
     } else {
@@ -912,23 +930,25 @@ function echoModelDelivery($user_id) {
     }
 }
 
-function doUpdateOrderDeliveryStatus($order_id, $deliverman_id = false) {
+function doUpdateOrderDeliveryStatus($order_id, $deliverman_id = false)
+{
     $order_id_sanitize = sanitize($order_id);
     $deliverman_id_sanitize = sanitize($deliverman_id);
     $order_last_log_id = doDatabaseRequestOrderLogsLastLogByOrderID($order_id_sanitize);
-    
+
     $actual_order_status_id = getDatabaseRequestOrderLogStatusDelivery($order_last_log_id);
 
-    if($actual_order_status_id == 1) {
+    if ($actual_order_status_id == 1) {
         doRequestOrderLogInsert($order_id, 2);
     }
 
-    if($actual_order_status_id == 2) {
+    if ($actual_order_status_id == 2) {
+        doPrintOrder($order_id);
         doRequestOrderLogInsert($order_id, 3);
     }
 
-    if($actual_order_status_id == 3) {
-        if(isDatabaseRequestOrderSelectAddress($order_id)) {
+    if ($actual_order_status_id == 3) {
+        if (isDatabaseRequestOrderSelectAddress($order_id)) {
             $order_update_fields = array(
                 'deliveryman' => $deliverman_id_sanitize
             );
@@ -940,9 +960,9 @@ function doUpdateOrderDeliveryStatus($order_id, $deliverman_id = false) {
     }
 
 
-    if(($actual_order_status_id == 4) || ($actual_order_status_id == 7)) {
+    if (($actual_order_status_id == 4) || ($actual_order_status_id == 7)) {
         doRequestOrderLogInsert($order_id, 5);
-        
+
         $order_update_fields = array(
             'status' => 7
         );

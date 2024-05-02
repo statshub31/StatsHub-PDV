@@ -69,7 +69,9 @@ include_once (__DIR__ . "/engine/init.php");
         font-size: 10px !important;
     }
 
-    li, ul, ol {
+    li,
+    ul,
+    ol {
         margin: 1px;
     }
 
@@ -93,7 +95,15 @@ $first_log = doDatabaseRequestOrderLogsFirstLogByOrderID($order_id);
         <label id="name">
             <?php echo getDatabaseSettingsInfoTitle(1) ?>
         </label><br>
-        <small id="cnpj">CNPJ: 10.0.0.0.0.0.0.0.</small>
+        <small id="cnpj">
+            <?php
+            $cnpj = getDatabaseSettingsInfoCNPJ(1);
+
+            if ($cnpj !== false) {
+                echo 'CNPJ: ' . $cnpj;
+            }
+            ?>
+        </small>
     </div>
     <hr>
     <div id="type_delivery">
@@ -113,7 +123,11 @@ $first_log = doDatabaseRequestOrderLogsFirstLogByOrderID($order_id);
     <!-- LISTA CARRINHO START -->
     <?php
     $cart_id = getDatabaseRequestOrderCartID($order_id);
+    $main_address_id = getDatabaseRequestOrderAddressIDSelect($order_id);
     $cart_list = doDatabaseCartProductsListByCartID($cart_id);
+    $user_id = getDatabaseCartUserID($cart_id);
+    $pay_id = getDatabaseRequestOrderPayIDSelect($order_id);
+
     $itens_count = 0;
     if ($cart_list) {
         foreach ($cart_list as $data) {
@@ -122,9 +136,7 @@ $first_log = doDatabaseRequestOrderLogsFirstLogByOrderID($order_id);
             $obs = getDatabaseCartProductObservation($cart_product_list_id);
             $size_id = getDatabaseCartProductPriceID($cart_product_list_id);
             $measure_id = getDatabaseProductSizeMeasureID($size_id);
-            $user_id = getDatabaseCartUserID($cart_product_list_id);
             $itens_count += getDatabaseCartProductAmount($cart_product_list_id);
-            $main_address_id = getDatabaseRequestOrderAddressIDSelect($order_id);
             $discount = getDatabaseTicketValue(getDatabaseCartTicketSelectTicketID(getDatabaseCartTicketSelectByCartID($cart_id)));
             ?>
             <label class="order">
@@ -168,7 +180,7 @@ $first_log = doDatabaseRequestOrderLogsFirstLogByOrderID($order_id);
                                 $additional_id = getDatabaseProductAdditionalAdditionalID($product_additional_id);
                                 ?>
                                 <?php echo (isDatabaseCartProductAdditionalExistIDByCartAndAdditionalID($cart_product_list_id, $additional_id) == 1) ? '<li>' . getDatabaseAdditionalDescription($additional_id) . '
-                                 <span class="subvalue">R$ 5.00</span>
+                                 <span class="subvalue">R$ '.sprintf("%.2f", getDatabaseAdditionalTotalPrice($additional_id)).'</span>
                                  </li>' : '' ?>
                                 <?php
                             }
@@ -199,34 +211,50 @@ $first_log = doDatabaseRequestOrderLogsFirstLogByOrderID($order_id);
         <?php echo $itens_count ?><br>
     </label>
     <label>
-        <span class="subtopic">Entrega:</span><br>
-        <?php echo getDatabaseAddressPublicPlace($main_address_id) ?>,
-        <?php echo getDatabaseAddressNumber($main_address_id) ?>, (
-        <?php echo getDatabaseAddressComplement($main_address_id) ?>)
-        <?php echo getDatabaseAddressNeighborhood($main_address_id) ?>,
-        <?php echo getDatabaseAddressCity($main_address_id) ?> -
-        <?php echo getDatabaseAddressState($main_address_id) ?>.
+        <span class="subtopic">Entrega:</span>
+        <?php
+        if (isDatabaseRequestOrderSelectAddress($order_id)) {
+            echo getDatabaseAddressPublicPlace($main_address_id) . ', ';
+            echo getDatabaseAddressNumber($main_address_id) . '(';
+            echo getDatabaseAddressComplement($main_address_id) . '), ';
+            echo getDatabaseAddressNeighborhood($main_address_id) . ', ';
+            echo getDatabaseAddressCity($main_address_id) . ' - ';
+            echo getDatabaseAddressState($main_address_id);
+        } else {
+            echo 'Retirada no Local';
+        }
+        ?>
         <br>
     </label>
     <hr>
     <label class="title">Pagamento:</label><br>
     <label>
-        <span class="subtopic">Forma de Pagamento:</span><br>
+        <span class="subtopic">Forma de Pagamento:</span>
+        <?php echo getDatabaseSettingsPayType($pay_id) ?>
+        <br>
     </label>
-    <label>Desconto: <span class="value">
-            <small>Usado o cupom [<?php echo getDatabaseTicketCode(getDatabaseCartTicketSelectTicketID(getDatabaseRequestOrderTicketID($cart_id))) ?>] e obtido o desconto de
-                [<?php echo ($discount !== false) ? $discount : 'Nenhum desconto selecionado.' ?>]</small>
-
+    <label><span class="subtopic">Desconto: </span><br>
+        <span class="value">
+            <?php echo getDatabaseTicketCode(getDatabaseCartTicketSelectTicketID(getDatabaseCartTicketSelectCartID($cart_id))) ?>
+            <small><?php echo ($discount !== false) ? 'Cliente teve um desconto de [' . doTypeDiscount($discount) . ']' : 'Cliente não selecionou nenhum cupom.' ?></small>
         </span>
     </label><br>
-    <label>Total: <span class="value">R$
-            <?php echo (doCartTotalPrice($order_id) - doCartTotalPriceDiscount($order_id)) ?></span>
+    <label><span class="subtopic">Total: </span><br>
+     <span class="value">R$
+            <?php echo sprintf("%.2f", (doCartTotalPrice($order_id) - doCartTotalPriceDiscount($order_id))) ?></span>
     </label><br>
-    <!-- <hr>
-    <label>Troco para: <span class="value">R$ 10.00</span>
-    </label><br>
-    <label>Troco: <span class="value">R$ 10.00</span>
-    </label><br> -->
+    <hr>
+    <?php
+
+    if ($pay_id == getDatabaseSettingsPayMoney()) {
+        ?>
+        <label>Troco para: <span class="value">R$ <?php echo getDatabaseRequestOrderChangeOf($order_id) ?></span>
+        </label><br>
+        <label>Troco: <span class="value">R$ <?php echo sprintf("%.2f", (getDatabaseRequestOrderChangeOf($order_id) - (doCartTotalPrice($order_id) - doCartTotalPriceDiscount($order_id)))) ?></span>
+        </label><br>
+        <?php
+    }
+    ?>
 </div>
 
 <script>

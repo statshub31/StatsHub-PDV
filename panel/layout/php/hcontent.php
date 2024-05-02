@@ -2,7 +2,7 @@
 <ul class="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion" id="accordionSidebar">
 
     <!-- Sidebar - Brand -->
-    <a class="sidebar-brand d-flex align-items-center justify-content-center" href="index.html">
+    <a class="sidebar-brand d-flex align-items-center justify-content-center" href="\panel\index">
         <div class="sidebar-brand-icon rotate-n-15">
             <i class="fas fa-laugh-wink"></i>
         </div>
@@ -32,21 +32,25 @@
                 <a class="collapse-item" href="/panel/useradd">Adicionar Cliente</a>
             </div>
         </div>
+        <?php
+        if (isGeneralSecurityManagerAccess()) {
+            ?>
+            <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#campaigns" aria-expanded="true"
+                aria-controls="collapseTwo">
 
-        <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#campaigns" aria-expanded="true"
-            aria-controls="collapseTwo">
-
-            <i class="fa-solid fa-barcode" aria-hidden="true"></i>
-            <span>Cupons</span>
-        </a>
-        <div id="campaigns" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
-            <div class="bg-white py-2 collapse-inner rounded">
-                <h6 class="collapse-header">Opções</h6>
-                <a class="collapse-item" href="/panel/tickets">Cupons</a>
-                <a class="collapse-item" href="/panel/ticketadd">Criar cupom</a>
+                <i class="fa-solid fa-barcode" aria-hidden="true"></i>
+                <span>Cupons</span>
+            </a>
+            <div id="campaigns" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
+                <div class="bg-white py-2 collapse-inner rounded">
+                    <h6 class="collapse-header">Opções</h6>
+                    <a class="collapse-item" href="/panel/tickets">Cupons</a>
+                    <a class="collapse-item" href="/panel/ticketadd">Criar cupom</a>
+                </div>
             </div>
-        </div>
-
+            <?php
+        }
+        ?>
         <a class="nav-link" href="/panel/orders">
             <i class="fa fa-user-secret" aria-hidden="true"></i>
             <span>Pedidos</span></a>
@@ -65,19 +69,27 @@
                 <a class="collapse-item" href="/panel/complements">Complementos</a>
             </div>
         </div>
-<!-- 
+        <!-- 
         <a class="nav-link" href="/panel/finances">
             <i class="fa-solid fa-dollar-sign"></i>
             <span>Financeiro</span></a> -->
 
-            <a class="nav-link" href="/panel/categorys">
+        <a class="nav-link" href="/panel/categorys">
             <i class="fa-solid fa-chart-line"></i>
             <span>Categorias</span></a>
-        <!-- <a class="nav-link" href="/panel/reports"> -->
-        <a class="nav-link" href="#">
-            <i class="fa-solid fa-chart-line"></i>
-            <span>Relatórios (DESATIVADO)</span>
-        </a >
+
+        <?php
+        if (isGeneralSecurityManagerAccess()) {
+            ?>
+            <!-- <a class="nav-link" href="/panel/reports"> -->
+            <a class="nav-link" href="#">
+                <i class="fa-solid fa-chart-line"></i>
+                <span>Relatórios (DESATIVADO)</span>
+            </a>
+            <?php
+        }
+
+        ?>
 
         <a class="nav-link" href="/panel/availables">
             <i class="fa-solid fa-star"></i>
@@ -95,9 +107,15 @@
                     <a class="collapse-item" href="/panel/alterplans">Modificar Planos</a>
                 </div>
             </div> -->
-        <a class="nav-link" href="/panel/settings">
-            <i class="fa fa-cog"></i>
-            <span>Configurações</span></a>
+        <?php
+        if (isGeneralSecurityManagerAccess()) {
+            ?>
+            <a class="nav-link" href="/panel/settings">
+                <i class="fa fa-cog"></i>
+                <span>Configurações</span></a>
+            <?php
+        }
+        ?>
         <a class="nav-link" href="/logout">
             <i class="fa fa-sign-out" aria-hidden="true"></i>
             <span>Sair</span></a>

@@ -205,9 +205,8 @@ if (isCampanhaInURL("product")) {
                                 ++$count_checked;
                             }
                         }
-
-
-                        doAlertSuccess("Produto alterado ao com sucesso.", '/cart');
+                        
+                        header("Location: /cart");
                     }
 
 

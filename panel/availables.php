@@ -1,5 +1,6 @@
 <?php
 include_once (realpath(__DIR__ . "/layout/php/header.php"));
+getGeneralSecurityAttendantAccess();
 
 ?>
 

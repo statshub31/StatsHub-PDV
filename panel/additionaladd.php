@@ -1,5 +1,7 @@
 <?php
 include_once (realpath(__DIR__ . "/layout/php/header.php"));
+getGeneralSecurityAttendantAccess();
+
 ?>
 
 <?php
@@ -42,8 +44,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST)) {
                     $errors[] = "No campo de desconto, apenas são aceitos valores numéricos.";
                 }
 
-                if (isGeneralSecurityManagerAccess() === false) {
-                    $errors[] = "É obrigatório ter um cargo igual ou superior ao de gestor, para executar está ação.";
+                if (isGeneralSecurityAttendantAccess() === false) {
+                    $errors[] = "É obrigatório ter um cargo igual ou superior ao de atendente, para executar está ação.";
                 }
             }
 
