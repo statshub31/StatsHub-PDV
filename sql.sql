@@ -173,6 +173,7 @@ create table products_price (
     `size` varchar(50) NOT NULL,
     `description` varchar(255),
     `price` float(5, 2) NOT NULL,
+    `disabled` boolean NOT NULL default 0,
     FOREIGN KEY (`product_id`) REFERENCES `products`(`id`),
     FOREIGN KEY (`size_measure_id`) REFERENCES `measure`(`id`)
 );
@@ -289,14 +290,6 @@ create table product_fee_exemption (
 
 
 
-create table carts (
-    `id` int PRIMARY KEY AUTO_INCREMENT,
-    `user_id` int not null,
-    `status` int not null,
-    `created` datetime,
-    FOREIGN KEY (`status`) REFERENCES `status`(`id`)
-);
-
 create table request_order (
     `id` int PRIMARY KEY AUTO_INCREMENT,
     `cart_id` int not null,
@@ -342,6 +335,13 @@ create table request_order_logs (
     FOREIGN KEY (`request_order_id`) REFERENCES `request_order`(`id`)
 );
 
+create table carts (
+    `id` int PRIMARY KEY AUTO_INCREMENT,
+    `user_id` int not null,
+    `status` int not null,
+    `created` datetime,
+    FOREIGN KEY (`status`) REFERENCES `status`(`id`)
+);
 
 create table cart_products (
     `id` int PRIMARY KEY AUTO_INCREMENT,

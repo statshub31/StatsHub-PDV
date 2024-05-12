@@ -158,7 +158,7 @@ function isDatabaseProductComplementValidation($product_id, $complement_id) {
 	return ($data !== false) ? true : false;
 }
 
-function getDatabaseProductComplementowCountByProductID($product_id)
+function getDatabaseProductComplementRowCountByProductID($product_id)
 {
     $product_id_sanitize = sanitize($product_id);
 

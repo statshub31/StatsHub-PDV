@@ -25,7 +25,7 @@ if (isCampanhaInURL("product")) {
                 if (getGeneralSecurityToken('tokenEditProduct')) {
                     if (empty($_POST) === false) {
                         $required_fields_status = true;
-                        $required_fields = array('category', 'name', 'description', 'size-p', 'size-p-description', 'size-p-price');
+                        $required_fields = array('category', 'name', 'description', 'size-p', 'size-p-price');
 
                         if (validateRequiredFields($_POST, $required_fields) === false) {
                             $errors[] = "Obrigatório o preenchimento de todos os campos.";

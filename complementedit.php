@@ -65,7 +65,7 @@ if (isCampanhaInURL("product")) {
                             }
                         }
 
-                        if (getDatabaseProductComplementowCountByProductID($_POST['product_select_id']) > 0) {
+                        if (getDatabaseProductComplementRowCountByProductID($_POST['product_select_id']) > 0) {
                             if (!isset($_POST['complement'])) {
                                 $errors[] = "É necessário escolher uma opção para o complemento.";
                             } else {
@@ -140,7 +140,7 @@ if (isCampanhaInURL("product")) {
 
                         // ADICIONAR COMPLEMENTO
 
-                        if (getDatabaseProductComplementowCountByProductID($_POST['product_select_id']) > 0) {
+                        if (getDatabaseProductComplementRowCountByProductID($_POST['product_select_id']) > 0) {
                             $cart_product_complement_insert_fields = array(
                                 'complement_id' => $_POST['complement']
                             );
@@ -205,7 +205,7 @@ if (isCampanhaInURL("product")) {
                                 ++$count_checked;
                             }
                         }
-                        
+
                         header("Location: /cart");
                     }
 
@@ -283,131 +283,145 @@ if (isCampanhaInURL("product")) {
                         ?>
                     </section>
                     <hr>
-                    <section id="complements">
-                        <center>
-                            <h6>Complementos<font color="red">*</font>
-                            </h6>
-                        </center>
-
-                        <?php
-                        $complement_list = doDatabaseProductsComplementsListByProductID($product_id);
-                        if ($complement_list) {
-                            foreach ($complement_list as $dataComplement) {
-                                $product_complement_id = $dataComplement['id'];
-                                $complement_id = getDatabaseProductComplementComplementID($product_complement_id);
-                                ?>
-                                <div class="complement-select">
-                                    <input <?php echo doCheck($complement_select, $complement_id) ?> type="radio" name="complement"
-                                        value="<?php echo $complement_id ?>" required>
-                                    <small><?php echo getDatabaseComplementDescription($complement_id) ?></small>
-                                </div>
-
-                                <?php
-                            }
-                        }
+                    <?php
+                    if (getDatabaseProductComplementRowCountByProductID($product_id) > 0) {
                         ?>
-                    </section>
-                    <hr>
-                    <section id="additional">
-                        <center>
-                            <h6>Adicionais</h6>
-                        </center>
+                        <section id="complements">
+                            <center>
+                                <h6>Complementos<font color="red">*</font>
+                                </h6>
+                            </center>
 
-                        <?php
-                        $additional_list = doDatabaseProductsAdditionalListByProductID($product_id);
-                        if ($additional_list) {
-                            foreach ($additional_list as $dataAdditional) {
-                                $product_additional_id = $dataAdditional['id'];
-                                $additional_id = getDatabaseProductAdditionalAdditionalID($product_additional_id);
-                                ?>
-                                <div class="additional-select">
-                                    <input <?php
-                                    echo doCheck(isDatabaseCartProductAdditionalExistIDByCartAndAdditionalID($product_cart_select_id, $additional_id), 1) ?> class="calc" type="checkbox" name="additional[]"
-                                        value="<?php echo $additional_id ?>"
-                                        price="<?php echo getDatabaseAdditionalTotalPrice($additional_id) ?>">
-                                    <br>
-                                    <small><?php echo getDatabaseAdditionalDescription($additional_id) ?></small>
-                                    <label class="v">R$ <?php echo getDatabaseAdditionalTotalPrice($additional_id) ?></label>
-                                </div>
-                                <?php
-                            }
-                        }
-                        ?>
-                    </section>
-                    <hr>
-                    <section id="questions">
-                        <center>
-                            <h6>Perguntas</h6>
-                        </center>
-                        <!-- PERGUNTAS START -->
-                        <?php
-                        $question_list = doDatabaseProductsQuestionsListByProductID($product_id);
+                            <?php
+                            $complement_list = doDatabaseProductsComplementsListByProductID($product_id);
+                            if ($complement_list) {
+                                foreach ($complement_list as $dataComplement) {
+                                    $product_complement_id = $dataComplement['id'];
+                                    $complement_id = getDatabaseProductComplementComplementID($product_complement_id);
+                                    ?>
+                                    <div class="complement-select">
+                                        <input <?php echo doCheck($complement_select, $complement_id) ?> type="radio" name="complement"
+                                            value="<?php echo $complement_id ?>" required>
+                                        <small><?php echo getDatabaseComplementDescription($complement_id) ?></small>
+                                    </div>
 
-                        if ($question_list) {
-                            $question_count = 1;
-                            foreach ($question_list as $dataQuestion) {
-                                $question_list_id = $dataQuestion['id'];
-                                $question_response_select = getDatabaseCartProductQuestionIDByCartAndQuestID($product_cart_select_id, $question_list_id);
-                                $response_text = getDatabaseCartProductQuestionResponseText($question_response_select);
-                                ?>
-                                <div class="question-select">
-                                    <label><?php echo getDatabaseProductQuestionText($question_list_id) ?>
-                                        <?php
-
-                                        if (isDatabaseProductQuestionResponseFree($question_list_id) === false) {
-                                            ?>
-                                            <font color="red">*</font>
-                                        <?php }
-                                        ?>
-                                    </label>
-                                    <input type="text" name="question<?php echo $question_count ?>" value="<?php echo $question_list_id ?>"
-                                        hidden>
-                                    <br>
-                                    <!-- RESPOSTAS START -->
                                     <?php
-                                    if (isDatabaseProductQuestionResponseFree($question_list_id)) {
-                                        ?>
-                                        <input type="text" name="response<?php echo $question_count ?>" class="form-control"
-                                            value="<?php echo $response_text ?>">
+                                }
+                            }
+                            ?>
+                        </section>
+                        <hr>
+                        <?php
+                    }
+                    if (getDatabaseProductAdditionalRowCountByProductID($product_id) > 0) {
+                        ?>
+                        <section id="additional">
+                            <center>
+                                <h6>Adicionais</h6>
+                            </center>
 
-                                        <?php
+                            <?php
+                            $additional_list = doDatabaseProductsAdditionalListByProductID($product_id);
+                            if ($additional_list) {
+                                foreach ($additional_list as $dataAdditional) {
+                                    $product_additional_id = $dataAdditional['id'];
+                                    $additional_id = getDatabaseProductAdditionalAdditionalID($product_additional_id);
+                                    ?>
+                                    <div class="additional-select">
+                                        <input <?php
+                                        echo doCheck(isDatabaseCartProductAdditionalExistIDByCartAndAdditionalID($product_cart_select_id, $additional_id), 1) ?> class="calc" type="checkbox" name="additional[]"
+                                            value="<?php echo $additional_id ?>"
+                                            price="<?php echo getDatabaseAdditionalTotalPrice($additional_id) ?>">
+                                        <br>
+                                        <small><?php echo getDatabaseAdditionalDescription($additional_id) ?></small>
+                                        <label class="v">R$ <?php echo getDatabaseAdditionalTotalPrice($additional_id) ?></label>
+                                    </div>
+                                    <?php
+                                }
+                            }
+                            ?>
+                        </section>
+                        <hr>
+                        <?php
+                    }
+                    if (getDatabaseProductQuestionRowCountByProductID($product_id) > 0) {
+                        ?>
+                        <section id="questions">
+                            <center>
+                                <h6>Perguntas</h6>
+                            </center>
+                            <!-- PERGUNTAS START -->
+                            <?php
+                            $question_list = doDatabaseProductsQuestionsListByProductID($product_id);
 
-                                    } else {
-                                        $response_list = doDatabaseProductsQuestionResponsesListByQuestionID($question_list_id);
-                                        if ($response_list) {
-                                            foreach ($response_list as $dataQuestionResponse) {
-                                                $response_list_id = $dataQuestionResponse['id'];
+                            if ($question_list) {
+                                $question_count = 1;
+                                foreach ($question_list as $dataQuestion) {
+                                    $question_list_id = $dataQuestion['id'];
+                                    $question_response_select = getDatabaseCartProductQuestionIDByCartAndQuestID($product_cart_select_id, $question_list_id);
+                                    $response_text = getDatabaseCartProductQuestionResponseText($question_response_select);
+                                    ?>
+                                    <div class="question-select">
+                                        <label><?php echo getDatabaseProductQuestionText($question_list_id) ?>
+                                            <?php
+
+                                            if (isDatabaseProductQuestionResponseFree($question_list_id) === false) {
                                                 ?>
-                                                <?php
-                                                if (isDatabaseProductQuestionMultipleResponse($question_list_id)) {
+                                                <font color="red">*</font>
+                                            <?php }
+                                            ?>
+                                        </label>
+                                        <input type="text" name="question<?php echo $question_count ?>" value="<?php echo $question_list_id ?>"
+                                            hidden>
+                                        <br>
+                                        <!-- RESPOSTAS START -->
+                                        <?php
+                                        if (isDatabaseProductQuestionResponseFree($question_list_id)) {
+                                            ?>
+                                            <input type="text" name="response<?php echo $question_count ?>" class="form-control"
+                                                value="<?php echo $response_text ?>">
+
+                                            <?php
+
+                                        } else {
+                                            $response_list = doDatabaseProductsQuestionResponsesListByQuestionID($question_list_id);
+                                            if ($response_list) {
+                                                foreach ($response_list as $dataQuestionResponse) {
+                                                    $response_list_id = $dataQuestionResponse['id'];
                                                     ?>
-                                                    <input <?php
-                                                    echo doCheck(doDatabaseCartProductQuestionResponseIDExistByCartAndQuestID($question_response_select, $response_list_id), 1) ?> type="checkbox" name="response<?php echo $question_count ?>[]"
-                                                        value="<?php echo $response_list_id ?>" />
-                                                    <small><?php echo getDatabaseProductQuestionResponseResponse($response_list_id) ?></small><br>
                                                     <?php
-                                                } else {
-                                                    ?>
-                                                    <input <?php
-                                                    echo doCheck(doDatabaseCartProductQuestionResponseIDExistByCartAndQuestID($question_response_select, $response_list_id), 1) ?> type="radio" name="response<?php echo $question_count ?>"
-                                                        value="<?php echo $response_list_id ?>" required />
-                                                    <small><?php echo getDatabaseProductQuestionResponseResponse($response_list_id) ?></small><br>
-                                                    <?php
+                                                    if (isDatabaseProductQuestionMultipleResponse($question_list_id)) {
+                                                        ?>
+                                                        <input <?php
+                                                        echo doCheck(doDatabaseCartProductQuestionResponseIDExistByCartAndQuestID($question_response_select, $response_list_id), 1) ?> type="checkbox" name="response<?php echo $question_count ?>[]"
+                                                            value="<?php echo $response_list_id ?>" />
+                                                        <small><?php echo getDatabaseProductQuestionResponseResponse($response_list_id) ?></small><br>
+                                                        <?php
+                                                    } else {
+                                                        ?>
+                                                        <input <?php
+                                                        echo doCheck(doDatabaseCartProductQuestionResponseIDExistByCartAndQuestID($question_response_select, $response_list_id), 1) ?> type="radio" name="response<?php echo $question_count ?>"
+                                                            value="<?php echo $response_list_id ?>" required />
+                                                        <small><?php echo getDatabaseProductQuestionResponseResponse($response_list_id) ?></small><br>
+                                                        <?php
+                                                    }
                                                 }
                                             }
                                         }
-                                    }
-                                    ?>
-                                    <!-- RESPOSTAS FIM -->
-                                </div>
-                                <?php
-                                ++$question_count;
+                                        ?>
+                                        <!-- RESPOSTAS FIM -->
+                                    </div>
+                                    <?php
+                                    ++$question_count;
+                                }
                             }
-                        }
-                        ?>
-                        <!-- PERGUNTAS FIM -->
-                    </section>
-                    <hr>
+                            ?>
+                            <!-- PERGUNTAS FIM -->
+                        </section>
+                        <hr>
+                        <?php
+                    }
+                    ?>
                     <section class="list-group-item">
                         <div class="form-floating">
                             <label for="floatingTextarea">Observações</label>

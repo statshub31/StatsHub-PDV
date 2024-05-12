@@ -156,4 +156,14 @@ function isDatabaseProductAdditionalValidation($product_id, $additional_id) {
 	
 	return ($data !== false) ? true : false;
 }
+
+function getDatabaseProductAdditionalRowCountByProductID($product_id)
+{
+    $product_id_sanitize = sanitize($product_id);
+
+    $result = doSelectSingleDB("SELECT COUNT(*) AS rowCount FROM `products_additional` where `product_id` = '".$product_id_sanitize."';");
+
+    return ($result !== false) ? $result['rowCount'] : 0;
+}
+
 ?>

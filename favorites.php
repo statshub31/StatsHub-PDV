@@ -12,7 +12,7 @@ if (isCampanhaInURL("favorite")) {
         doGeneralSecurityProtect();
         $favorite_id = getDatabaseProductFavoriteExistIDByUserAndProductID($product_select_id, $in_user_id);
 
-        if($favorite_id !== false) {
+        if ($favorite_id !== false) {
             doDatabaseProductFavoriteDelete($favorite_id);
             header('Location: /favorites');
         } else {
@@ -117,9 +117,9 @@ if (isCampanhaInURL("favorite")) {
 
                                     if (isDatabaseProductPromotionExistIDByProductID($product_list_id)) {
                                         ?>
-                                        
-                                        <small><strike>R$ <?php echo getDatabaseProductPrice($price_list_id) ?></strike></small> por 
-                                        <b>R$ <?php echo  sprintf("%.2f", doCalcDiscountPromotion($product_list_id, $price_list_id)) ?></b>
+
+                                        <small><strike>R$ <?php echo getDatabaseProductPrice($price_list_id) ?></strike></small> por
+                                        <b>R$ <?php echo sprintf("%.2f", doCalcDiscountPromotion($product_list_id, $price_list_id)) ?></b>
                                         <?php
                                     } else {
                                         ?>
@@ -137,7 +137,8 @@ if (isCampanhaInURL("favorite")) {
                     <div class="card-body">
                         <a href="/complement/product/<?php echo $product_list_id ?>" class="card-link"><i
                                 class="fa-solid fa-cart-shopping"></i></a>
-                        <a <?php echo isDatabaseProductFavoriteExistIDByUserAndProductID($product_list_id, $in_user_id) ? 'style="color: #e2d500;"' : 'style="color: #8f8f87;"'; ?> href="/favorites/favorite/<?php echo $product_list_id ?>" class="card-link">
+                        <a <?php echo isDatabaseProductFavoriteExistIDByUserAndProductID($product_list_id, $in_user_id) ? 'style="color: #e2d500;"' : 'style="color: #8f8f87;"'; ?>
+                            href="/favorites/favorite/<?php echo $product_list_id ?>" class="card-link">
                             <i class="fa-solid fa-star"></i>
                         </a>
                     </div>
@@ -192,15 +193,19 @@ if (isCampanhaInURL("favorite")) {
                         card.style.display = 'block';
                     });
                 } else {
-                    // Percorre todos os cartões de produtos
                     cards.forEach(function (card) {
-                        const cardCategory = card.querySelector('.category').textContent.toLowerCase();
+                        const categoryElement = card.querySelector('.category');
+                        if (categoryElement) {
+                            const cardCategory = categoryElement.textContent.toLowerCase();
 
-                        // Verifica se a categoria do produto corresponde à categoria selecionada
-                        if (cardCategory.includes(selectedCategory)) {
-                            card.style.display = 'block'; // Exibe o produto
+                            // Verifica se a categoria do produto corresponde à categoria selecionada
+                            if (cardCategory.includes(selectedCategory)) {
+                                card.style.display = 'block'; // Exibe o produto
+                            } else {
+                                card.style.display = 'none'; // Oculta o produto
+                            }
                         } else {
-                            card.style.display = 'none'; // Oculta o produto
+                            // Trate o caso em que o elemento .category não é encontrado, talvez exibindo uma mensagem de erro ou tomando outra ação apropriada.
                         }
                     });
                 }

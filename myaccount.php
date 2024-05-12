@@ -104,8 +104,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST)) {
             $image = True;
 
             if (isset($_FILES['avatarImage']) && $_FILES['avatarImage']['size'] > 0) {
-                $newName = md5($in_user_id . '_' . date("Y_m_d"));
-                removerArquivos(__DIR__ . $image_user_dir, $in_user_id);
+                $newName = md5($in_user_id . '_' . date("Y_m_d_H_i:s"));
+                doGeneralRemoveArchive($image_user_dir, getDatabaseUserPhotoName($in_user_id));
                 $fileInfo = pathinfo($_FILES['avatarImage']['name']);
                 $fileExtension = $fileInfo['extension'];
 
