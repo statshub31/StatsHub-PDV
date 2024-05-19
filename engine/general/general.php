@@ -444,3 +444,34 @@ function doTypeDiscount($discount)
 
     return (doGeneralValidationPriceType($discount)) ? $discount : 'R$ ' . sprintf("%.2f", (int) $discount);
 }
+
+
+function showLoading()
+{
+
+    return '
+<script>
+function showLoading() {
+    document.getElementById("loadingDiv").style.display = "block";
+}
+
+showLoading();
+</script>
+';
+
+}
+function hideLoading()
+{
+
+    return '
+<script>
+
+function hideLoading() {
+    document.getElementById("loadingDiv").style.display = "none";
+}
+
+hideLoading();
+</script>
+';
+
+}

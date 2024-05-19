@@ -40,7 +40,10 @@ include_once (__DIR__ . "/../../engine/init.php");
         integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy"
         crossorigin="anonymous"></script>
 </head>
-
+    <div id="loadingDiv"><i class="fas fa-spinner fa-spin"></i> Carregando...</div>
+<?php 
+echo showLoading();
+?>
 <body>
     <header>
         <div id="header">
@@ -71,7 +74,7 @@ include_once (__DIR__ . "/../../engine/init.php");
                     <a href="/logout">
                         <i class="fa-solid fa-right-from-bracket"></i>
                     </a>
-                <?php
+                    <?php
                 }
                 ?>
             </section>
@@ -82,7 +85,7 @@ include_once (__DIR__ . "/../../engine/init.php");
                     <a href="/logout">
                         <i class="fa-solid fa-right-from-bracket"></i>
                     </a>
-                <?php
+                    <?php
                 }
                 ?>
             </section>

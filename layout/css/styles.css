@@ -7,6 +7,23 @@
   --border-color: #ced4da;
 } */
 
+#loadingDiv {
+  display: none;
+  position: fixed;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 1000;
+  text-align: center;
+  color: white;
+  font-size: 2em;
+  padding-top: 20%;
+}
+
 table {
   border: 1px solid #ced4da;
 }
@@ -447,6 +464,16 @@ div .quantity {
   flex-wrap: wrap;
   align-items: center;
   justify-content: space-evenly;
+  padding: 10px; /* Adiciona um padding interno para espaçamento */
+}
+
+/* Adiciona um hack para forçar re-renderização em iOS */
+@supports (-webkit-touch-callout: none) {
+  #rating::after {
+    content: '';
+    display: block;
+    clear: both;
+  }
 }
 
 #general-rating {
@@ -468,7 +495,8 @@ div .quantity {
 
 #stars {
   display: inline-flex;
-  float: right;
+  justify-content: flex-end; /* Alinha à direita */
+  width: 100%; /* Garante que ocupe a largura disponível */
 }
 
 .star {
@@ -478,40 +506,32 @@ div .quantity {
 .star img {
   width: 100%;
   filter: grayscale(1);
-  height: 100%;
+  height: auto; /* Garante que a altura seja proporcional */
 }
 
-.colorstar label img {
-  filter: none;
-}
-
+.colorstar label img,
 .colorstar img {
   filter: none;
 }
 
 #users-rating {
-  overflow: hidden;
-  /* Oculta qualquer conteúdo que ultrapasse a largura do contêiner */
-  position: relative;
-  /* Define o contexto de posicionamento para os pseudoelementos */
+  overflow: hidden; /* Oculta qualquer conteúdo que ultrapasse a largura do contêiner */
+  position: relative; /* Define o contexto de posicionamento para os pseudoelementos */
 }
 
 .rating-wrapper {
   display: flex;
   flex-wrap: nowrap;
   background-color: #ffffff;
-  padding: 20px 0px;
-  /* Evita que os elementos quebrem para a próxima linha */
-  overflow-x: hidden;
-  /* Oculta a barra de rolagem nativa */
+  padding: 20px 0px; /* Evita que os elementos quebrem para a próxima linha */
+  overflow-x: hidden; /* Oculta a barra de rolagem nativa */
 }
 
 .rating-container {
-  flex: 0 0 auto;
-  /* Define a largura automática dos elementos */
+  flex: 0 0 auto; /* Define a largura automática dos elementos */
   margin-right: 20px;
-  background-color: var(--secondary-color)
-    /* Adiciona um espaço entre os elementos */
+  background-color: var(--secondary-color);
+  /* Adiciona um espaço entre os elementos */
 }
 
 /* 
