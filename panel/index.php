@@ -11,7 +11,7 @@ getGeneralSecurityAttendantAccess();
         location.reload(); // Recarrega a página
     }
 
-    // timerID = setInterval(atualizarPagina, 15 * 1000);
+    timerID = setInterval(atualizarPagina, 15 * 1000);
 
 
 </script>

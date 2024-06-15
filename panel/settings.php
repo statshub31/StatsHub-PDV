@@ -410,7 +410,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST)) {
                     doDatabaseSettingsHoraryInsert($horary_fields_insert);
                 }
             }
-            doAlertSuccess("O estoque foi ajustado com sucesso.");
+            doAlertSuccess("Informações foram ajustadadas com sucesso.");
 
         }
     }

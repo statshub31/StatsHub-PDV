@@ -11,7 +11,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST)) {
 
 
     // REMOVE USER
-
     if (getGeneralSecurityToken('tokenRemoveUser')) {
 
         if (empty($_POST) === false) {

@@ -633,7 +633,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST)) {
         location.reload();
     }
 
-    if (getDatabaseRequestOrderLogStatusDelivery($order_last_log_id) != 5) {
+    if (getDatabaseRequestOrderLogStatusDelivery($order_last_log_id) < 5) {
         setInterval(atualizarPagina, 10 * 1000);
     }
 
